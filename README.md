@@ -4,7 +4,7 @@
 npm init -y <br />
 npm install -d parcel <br />
 npm i @parcel/transformer-raw <br />
-npm install -D tailwindcss <br />
+npm install -D tailwindcss postcss <br />
 npx tailwindcss init
 
 ### update package.json
