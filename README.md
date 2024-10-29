@@ -3,6 +3,7 @@
 ### npm packages to be installed
 npm init -y <br />
 npm install -d parcel <br />
+npm i @parcel/transformer-raw <br />
 npm install -D tailwindcss <br />
 npx tailwindcss init
 
