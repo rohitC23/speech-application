@@ -128,6 +128,10 @@ function NewSentence({ audioFile, question }) {
         const audioUrl = URL.createObjectURL(wavBlob);
         setAudioURL(audioUrl);
 
+        if(globalId === 5){
+          globalId = 1;
+        }
+
         const formData = new FormData();
         formData.append('index', globalId);
         formData.append('user_id',user_id);
@@ -327,7 +331,13 @@ function NewSentence({ audioFile, question }) {
           {globalId < 5 ? (
             <NextSentence setIsHidden={setIsHidden} id={globalId} />
           ) : (
-            <Finish />
+            <>
+              <Finish />
+              {/* Use useEffect to reset the globalId to 1 after rendering Finish */}
+              {useEffect(() => {
+                globalId = 1; // Reset the globalId after Finish renders
+              }, [])}
+            </>
           )}
         </div>
       )}
