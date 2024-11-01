@@ -128,6 +128,10 @@ function NewTenses({ audioFile }) {
         const audioUrl = URL.createObjectURL(wavBlob);
         setAudioURL(audioUrl);
 
+        if(globalId === 5){
+          globalId = 1;
+        }
+
         const formData = new FormData();
         formData.append('index', globalId);
         formData.append('user_id',user_id);
@@ -172,9 +176,8 @@ function NewTenses({ audioFile }) {
           localStorage.setItem('score', JSON.stringify(updatedScores));
         }
         
-
-        // Increment the global ID after a successful API call
-        globalId++;
+          globalId++;
+          
       } catch (error) {
         console.error('Error uploading audio file:', error);
       }
