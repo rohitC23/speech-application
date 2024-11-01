@@ -7,6 +7,22 @@ npm i @parcel/transformer-raw <br />
 npm install -D tailwindcss postcss <br />
 npx tailwindcss init
 
+### tailwind.config.js file should looks similar as below:
+/** @type {import('tailwindcss').Config} */<br />
+module.exports = {<br />
+  content: [<br />
+    "./src/**/*.{html,js,ts,jsx,tsx}",<br />
+  ],<br />
+  theme: {<br />
+    extend: {<br />
+      fontFamily: {<br />
+        sans: ['Poppins', 'sans-serif'],<br />
+      },<br />
+    },<br />
+  },<br />
+  plugins: [],<br />
+}<br />
+
 ### update package.json
 "scripts": {<br />
 	"start": "parcel index.html",<br />
