@@ -51,8 +51,11 @@ function Home() {
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
               {typedWord} {/* Display the typed word */}
             </h1>
-            <p className="text-lg text-gray-600 mb-8">
+            <p className="text-lg text-gray-600 mb-8 font-semibold">
               {wordData.Meaning}
+            </p>
+            <p className="text-lg text-gray-600 mb-8">
+              {wordData.Example}
             </p>
             <button className="bg-blue-500 text-white py-2 px-6 rounded-lg hover:bg-blue-600 transition duration-300">
               <Link to="/app">
