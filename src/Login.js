@@ -4,14 +4,15 @@ import { useNavigate } from 'react-router-dom';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState(''); // State for displaying success or error messages
-  const [isSuccess, setIsSuccess] = useState(null); // Track if the message is success or error
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
-    event.preventDefault(); // Prevent page reload on form submission
+    event.preventDefault();
+    setLoading(true);
 
-    // API payload
     const loginData = {
       usermail: email,
       password: password,
@@ -26,22 +27,19 @@ function Login() {
         body: JSON.stringify(loginData),
       });
 
-      const data = await response.json(); // Parse the response
+      const data = await response.json();
 
       if (response.ok) {
-        // If the response is successful, save user_id to localStorage
+        
         localStorage.setItem('user_id', data.user_id);
 
-        // Display a success message
         setMessage('Login successful!');
         setIsSuccess(true);
 
-        // Wait for 3 seconds before navigating to the main page
         setTimeout(() => {
           navigate('/home');
-        }, 3000);
+        }, 2000);
       } else {
-        // If login fails, display an error message
         setMessage('Invalid credentials. Please try again.');
         setIsSuccess(false);
       }
@@ -49,12 +47,13 @@ function Login() {
       console.error('Error during login:', error);
       setMessage('An error occurred. Please try again.');
       setIsSuccess(false);
+    } finally {
+      setLoading(false);
     }
 
-    // Clear the message after 3 seconds
     setTimeout(() => {
       setMessage('');
-    }, 3000);
+    }, 2000);
   };
 
   return (
@@ -69,7 +68,7 @@ function Login() {
               required
               className="mt-1 p-2 border border-gray-300 rounded w-full"
               value={email}
-              onChange={(e) => setEmail(e.target.value)} // Update email state
+              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="mb-4">
@@ -80,13 +79,25 @@ function Login() {
               required
               className="mt-1 p-2 border border-gray-300 rounded w-full"
               value={password}
-              onChange={(e) => setPassword(e.target.value)} // Update password state
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
-          <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Login</button>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center"
+            disabled={loading}
+          >
+            {loading ? (
+              <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+              </svg>
+            ) : (
+              'Login'
+            )}
+          </button>
         </form>
         
-        {/* Display message below the form */}
         {message && (
           <div className={`mt-4 text-center ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
             {message}
