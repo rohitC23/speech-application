@@ -14,7 +14,7 @@ function ScoreBoard() {
         setTotalScore(sum);
 
         // Show the emoji slide-up effect for a few seconds if the score is 0
-        if (sum === 0) {
+        if (sum != 0) {
             setShowEmoji(true);
             setTimeout(() => {
                 setShowEmoji(false);
