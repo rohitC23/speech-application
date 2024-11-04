@@ -333,10 +333,6 @@ function NewSentence({ audioFile, question }) {
           ) : (
             <>
               <Finish />
-              {/* Use useEffect to reset the globalId to 1 after rendering Finish */}
-              {useEffect(() => {
-                globalId = 1; // Reset the globalId after Finish renders
-              }, [])}
             </>
           )}
         </div>
