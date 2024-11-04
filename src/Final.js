@@ -17,7 +17,7 @@ function Final() {
         setTotalScore(sum);
 
         // Show the emoji for a few seconds
-        if (sum === 0) { // Show only if there's a score
+        if (sum != 0) { // Show only if there's a score
             setShowEmoji(true);
             setTimeout(() => {
                 setShowEmoji(false); // Hide after 3 seconds
