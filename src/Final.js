@@ -32,7 +32,7 @@ function Final() {
 
     const handleContinue = () => {
         localStorage.setItem('score', []);
-        navigate('/home');
+        navigate('/level-para');
     };
 
     return (
@@ -51,38 +51,66 @@ function Final() {
                         onClick={handleContinue}
                         className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                     >
-                        Return to Home
+                        Continue
                     </button>
                 </div>
                 
                 {/* Emoji animation */}
                 {showEmoji && (
-                    <div className="absolute top-20 animate-slide-up text-6xl">
-                        🎉🎉 🎉🎉 🎉🎉
+                    <div className="emoji-slide-up">
+                        {Array.from({ length: 30 }).map((_, index) => (
+                            <span key={index} className="emoji">🎉</span>
+                        ))}
                     </div>
                 )}
             </div>
 
-            {/* CSS for the slide-up animation */}
+            {/* CSS for emoji slide-up animation */}
             <style>
                 {`
+                .emoji-slide-up {
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    overflow: hidden;
+                }
+
+                .emoji {
+                    position: absolute;
+                    bottom: -50px;
+                    font-size: 3rem;
+                    animation: slide-up 3s linear infinite;
+                }
+
                 @keyframes slide-up {
                     0% {
-                        transform: translateY(50px);
-                        opacity: 0;
-                    }
-                    50% {
+                        transform: translateY(100vh);
                         opacity: 1;
                     }
                     100% {
-                        transform: translateY(-50px);
+                        transform: translateY(-120vh);
                         opacity: 0;
                     }
                 }
 
-                .animate-slide-up {
-                    animation: slide-up 3s ease-in-out;
+                .emoji {
+                    left: calc(100% * var(--emoji-x));
+                    animation-delay: calc(0.1s * var(--emoji-delay));
                 }
+
+                .emoji:nth-child(1) { --emoji-x: 0.1; --emoji-delay: 1; }
+                .emoji:nth-child(2) { --emoji-x: 0.3; --emoji-delay: 1.5; }
+                .emoji:nth-child(3) { --emoji-x: 0.5; --emoji-delay: 0.5; }
+                .emoji:nth-child(4) { --emoji-x: 0.7; --emoji-delay: 2; }
+                .emoji:nth-child(5) { --emoji-x: 0.9; --emoji-delay: 0.8; }
+                .emoji:nth-child(6) { --emoji-x: 0.2; --emoji-delay: 0.3; }
+                .emoji:nth-child(7) { --emoji-x: 0.4; --emoji-delay: 0.7; }
+                .emoji:nth-child(8) { --emoji-x: 0.6; --emoji-delay: 1.2; }
+                .emoji:nth-child(9) { --emoji-x: 0.8; --emoji-delay: 1.7; }
+                .emoji:nth-child(10) { --emoji-x: 0.95; --emoji-delay: 1; }
                 `}
             </style>
         </div>
