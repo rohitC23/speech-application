@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState(''); // State to store success or error message
-  const [isSuccess, setIsSuccess] = useState(null); // State to track if the message is success or error
+  const [message, setMessage] = useState('');
+  const [isSuccess, setIsSuccess] = useState(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
+    e.preventDefault();
 
     try {
       const response = await fetch('http://127.0.0.1:5000/assessment/signup', {
@@ -17,22 +17,20 @@ function Signup() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ usermail: email, password }),
       });
 
-      if (response.ok) {
+      const data = await response.json();
 
-        // Display success message
+      if (response.ok && !data.Fail) {
+        localStorage.setItem('user_id', data.user_id);
         setMessage('Signup successful! Redirecting...');
         setIsSuccess(true);
-
-        // Wait for 3 seconds before navigating to the home page
         setTimeout(() => {
           navigate('/home');
-        }, 3000);
+        }, 2000);
       } else {
-        // If signup fails, display an error message
-        setMessage('Signup failed. Please try again.');
+        setMessage(data.Fail || 'Signup failed. Please try again.');
         setIsSuccess(false);
       }
     } catch (error) {
@@ -41,10 +39,9 @@ function Signup() {
       setIsSuccess(false);
     }
 
-    // Clear the message after 3 seconds
     setTimeout(() => {
       setMessage('');
-    }, 3000);
+    }, 2000);
   };
 
   return (
@@ -76,7 +73,6 @@ function Signup() {
           <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Sign Up</button>
         </form>
 
-        {/* Display message below the form */}
         {message && (
           <div className={`mt-4 text-center ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
             {message}
