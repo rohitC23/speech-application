@@ -30,14 +30,17 @@ function Login() {
       const data = await response.json();
 
       if (response.ok) {
-        
         localStorage.setItem('user_id', data.user_id);
 
         setMessage('Login successful!');
         setIsSuccess(true);
 
         setTimeout(() => {
-          navigate('/home');
+          if (data.success === "Admin Logged in successfully") {
+            navigate('/dashboard');
+          } else {
+            navigate('/home');
+          }
         }, 2000);
       } else {
         setMessage('Invalid credentials. Please try again.');
