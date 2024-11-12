@@ -85,45 +85,55 @@ function Dashboard() {
           <div className="max-h-96 overflow-y-auto shadow-lg rounded-lg">
             <table {...getTableProps()} className="min-w-full bg-white border border-gray-200 rounded-lg">
             <thead>
-              {headerGroups.map(headerGroup => (
-                <tr
-                  key={headerGroup.id} // Use a unique key from headerGroup
-                  {...headerGroup.getHeaderGroupProps()}
-                  className="bg-blue-50 text-gray-700 uppercase text-sm leading-normal"
-                >
-                  {headerGroup.headers.map(column => (
-                    <th
-                      key={column.id} // Use a unique key from column
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                      className="px-4 py-3 border-b text-left cursor-pointer"
-                    >
-                      {column.render('Header')}
-                      <span>
-                        {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              ))}
+              {headerGroups.map(headerGroup => {
+                const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps(); // Destructure key
+                return (
+                  <tr
+                    key={key} // Use the destructured key
+                    {...restHeaderGroupProps} // Spread the remaining props
+                    className="bg-blue-50 text-gray-700 uppercase text-sm leading-normal"
+                  >
+                    {headerGroup.headers.map(column => {
+                      const { key: columnKey, ...restColumnProps } = column.getHeaderProps(column.getSortByToggleProps());
+                      return (
+                        <th
+                          key={columnKey} // Use the destructured key
+                          {...restColumnProps} // Spread the remaining props
+                          className="px-4 py-3 border-b text-left cursor-pointer"
+                        >
+                          {column.render('Header')}
+                          <span>
+                            {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
+                          </span>
+                        </th>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
             </thead>
             <tbody {...getTableBodyProps()}>
               {rows.map(row => {
                 prepareRow(row);
+                const { key: rowKey, ...restRowProps } = row.getRowProps(); // Destructure key from row props
                 return (
                   <tr
-                    key={row.id} // Use a unique key from row
-                    {...row.getRowProps()}
+                    key={rowKey} // Use the destructured key
+                    {...restRowProps} // Spread the remaining props
                     className="hover:bg-blue-50 transition-colors"
                   >
-                    {row.cells.map(cell => (
-                      <td
-                        key={cell.column.id} // Use a unique key from cell's column
-                        {...cell.getCellProps()}
-                        className="px-4 py-2 border-b"
-                      >
-                        {cell.render('Cell')}
-                      </td>
-                    ))}
+                    {row.cells.map(cell => {
+                      const { key: cellKey, ...restCellProps } = cell.getCellProps(); // Destructure key from cell props
+                      return (
+                        <td
+                          key={cellKey} // Use the destructured key
+                          {...restCellProps} // Spread the remaining props
+                          className="px-4 py-2 border-b"
+                        >
+                          {cell.render('Cell')}
+                        </td>
+                      );
+                    })}
                   </tr>
                 );
               })}
