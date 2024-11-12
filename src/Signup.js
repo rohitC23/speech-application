@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Signup() {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -17,7 +19,12 @@ function Signup() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ usermail: email, password }),
+        body: JSON.stringify({
+          firstname: firstName,
+          lastname: lastName,
+          usermail: email,
+          password
+        }),
       });
 
       const data = await response.json();
@@ -48,6 +55,28 @@ function Signup() {
     <div className="flex items-center justify-center bg-gray-100">
       <div className="bg-white p-8 rounded shadow-md w-96">
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700" htmlFor="firstName">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+              className="mt-1 p-2 border border-gray-300 rounded w-full"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700" htmlFor="lastName">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+              className="mt-1 p-2 border border-gray-300 rounded w-full"
+            />
+          </div>
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700" htmlFor="email">Email</label>
             <input
