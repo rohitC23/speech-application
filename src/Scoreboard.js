@@ -36,7 +36,7 @@ function ScoreBoard() {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20 relative">
             <Header showNav={true} />
             <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center relative">
-                <h2 className="text-xl font-bold mb-4">You achieved a score {totalScore} out of 50</h2>
+                <h2 className="text-xl font-bold mb-4">You achieved a score {totalScore} out of 5</h2>
                 <div className="mt-6 flex space-x-4">
                     <button 
                         onClick={handleRetry}
