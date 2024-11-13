@@ -171,7 +171,7 @@ function Sentences({ audioFile, question }) {
   };
 
   useEffect(() => {
-    if (apiResponse?.Score === 10) {
+    if (apiResponse?.Score === 1) {
       setEmoji('🎉🎉 🎉🎉 🎉🎉');
     } else if (apiResponse?.Score !== undefined) {
       setEmoji('🥲🥲 🥲🥲 🥲🥲');
