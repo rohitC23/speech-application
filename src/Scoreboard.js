@@ -14,7 +14,7 @@ function ScoreBoard() {
         setTotalScore(sum);
 
         // Show the emoji slide-up effect for a few seconds if the score is 0
-        if (sum != 0) {
+        if (sum !== 0) {
             setShowEmoji(true);
             setTimeout(() => {
                 setShowEmoji(false);
@@ -22,13 +22,50 @@ function ScoreBoard() {
         }
     }, []);
 
-    const handleRetry = () => {
-        localStorage.setItem('score', []);
+    const submitScore = async () => {
+        const user_id = localStorage.getItem('user_id');
+        const duration = localStorage.getItem('duration');
+        const level_number = 1;
+        const score = totalScore;
+        const durationInMinutes = duration ? parseFloat(duration) / 60 : 0;
+
+        const requestBody = {
+            user_id,
+            level_number,
+            score,
+            duration: durationInMinutes,
+        };
+
+        try {
+            const response = await fetch('http://127.0.0.1:5000/user/insert/score', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody),
+            });
+
+            if (response.ok) {
+                console.log('Score submitted successfully');
+            } else {
+                console.error('Failed to submit score');
+            }
+        } catch (error) {
+            console.error('Error submitting score:', error);
+        }
+    };
+
+    const handleRetry = async () => {
+        await submitScore();
+        localStorage.setItem('duration', 0);
+        localStorage.setItem('score', JSON.stringify([]));
         navigate('/app');
     };
 
-    const handleContinue = () => {
-        localStorage.setItem('score', []);
+    const handleContinue = async () => {
+        await submitScore();
+        localStorage.setItem('duration', 0);
+        localStorage.setItem('score', JSON.stringify([]));
         navigate('/level-tenses');
     };
 
