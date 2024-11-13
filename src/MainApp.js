@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import sampleImage from 'url:./assets/sound.png';
 import Header from './Header';
 import Tenses from './tenses';
@@ -7,11 +7,34 @@ function MainApp() {
   const [hasStarted, setHasStarted] = useState(false); // State to control the initial screen
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file
   const [loading, setLoading] = useState(false); // State to handle loading
+  const [duration, setDuration] = useState(0); // State to track the timer duration
   const user_id = localStorage.getItem('user_id');
+  let timerInterval = null;
+
+  useEffect(() => {
+    // Clear the interval when component unmounts
+    return () => {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
+    };
+  }, []);
 
   const handleStartClick = async () => {
-    setLoading(true); // Show loading message
+    setLoading(true);
+    setDuration(0); // Reset duration to 0
+    localStorage.setItem('duration', 0); // Initialize duration in localStorage
+
     try {
+      // Start the timer
+      timerInterval = setInterval(() => {
+        setDuration((prevDuration) => {
+          const newDuration = prevDuration + 1;
+          localStorage.setItem('duration', newDuration); // Update localStorage
+          return newDuration;
+        });
+      }, 1000);
+
       // Trigger the POST API when the Start button is clicked
       const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
         method: 'POST',
@@ -60,7 +83,7 @@ function MainApp() {
           <div className="border px-4 py-2 text-center rounded-md shadow-sm flex justify-between items-center mb-8 w-full max-w-[400px]">
             <div className="flex-1">
               <p className="font-semibold">Time Per Question</p>
-              <p>1 minute, 30 seconds</p>
+              <p>30 seconds</p>
             </div>
             <div className="border-l h-full mx-2"></div> {/* Separator line */}
             <div className="flex-1">
