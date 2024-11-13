@@ -32,7 +32,7 @@ function Final() {
 
     const handleContinue = () => {
         localStorage.setItem('score', []);
-        navigate('/level-para');
+        navigate('/home');
     };
 
     return (
@@ -51,7 +51,7 @@ function Final() {
                         onClick={handleContinue}
                         className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
                     >
-                        Continue
+                        Return to Home
                     </button>
                 </div>
                 
