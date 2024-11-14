@@ -6,6 +6,9 @@ import ScoreBoard from './Scoreboard';
 import AuthForm from './AuthForm';
 import NextLevel from './NextLevel';
 import Final from './Final';
+import Generator from './Generator';
+import Image from './Image';
+import Dashboard from './Dashboard';
 
 function App() {
   return (
@@ -17,6 +20,9 @@ function App() {
         <Route path="/score-board" element={<ScoreBoard/>} />
         <Route path="/level-tenses" element={<NextLevel/>} />
         <Route path="/end" element={<Final/>} />
+        <Route path='/level-para' element={<Generator/>} />
+        <Route path='/image' element={<Image />} />
+        <Route path='/dashboard' element={<Dashboard />} />
       </Routes>
     </Router>
   );
