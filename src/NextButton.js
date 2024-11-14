@@ -10,7 +10,7 @@ function NextButton({ setIsHidden, id }) {
   const handleNextClick = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
+      const response = await fetch('http://104.155.186.187:5000/generate_sentences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
