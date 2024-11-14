@@ -12,7 +12,7 @@ function Dashboard() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch('http://127.0.0.1:8000/admin/get/score', {
+      const response = await fetch('http://104.155.186.187:5000/admin/get/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
