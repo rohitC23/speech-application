@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Header from './Header';
 import Sentences from './Sentences';
 
@@ -8,18 +8,7 @@ function NextLevel() {
   const [loading, setLoading] = useState(false); // State to handle loading
   const [question, setQuestion] = useState(null); // State to store question from API
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file
-  const [duration, setDuration] = useState(0); // State to track the timer duration
   const user_id = localStorage.getItem('user_id');
-  let timerInterval = null;
-
-  useEffect(() => {
-    // Clear the interval when component unmounts
-    return () => {
-      if (timerInterval) {
-        clearInterval(timerInterval);
-      }
-    };
-  }, []);
 
   const handleStartClick = async () => {
     if (!difficultyLevel) {
@@ -28,18 +17,12 @@ function NextLevel() {
     }
 
     setLoading(true);
-    setDuration(0); // Reset duration to 0
-    localStorage.setItem('duration', 0);
-
+    // Set the current time to 'duration' in localStorage
+    const now = new Date();
+    let currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    localStorage.setItem('duration', currentTime);
+  
     try {
-      timerInterval = setInterval(() => {
-        setDuration((prevDuration) => {
-          const newDuration = prevDuration + 1;
-          localStorage.setItem('duration', newDuration); // Update localStorage
-          return newDuration;
-        });
-      }, 1000);
-
       // API call to get the audio file
       const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
         method: 'POST',
