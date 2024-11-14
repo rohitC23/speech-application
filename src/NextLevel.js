@@ -24,7 +24,7 @@ function NextLevel() {
   
     try {
       // API call to get the audio file
-      const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
+      const audioResponse = await fetch('http://104.155.186.187:5000/generate_tenses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +47,7 @@ function NextLevel() {
       }
       
       // API call to get the question
-      const questionResponse = await fetch('http://127.0.0.1:8000/generate_question', {
+      const questionResponse = await fetch('http://104.155.186.187:5000/generate_question', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
