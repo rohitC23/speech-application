@@ -35,7 +35,7 @@ function Dashboard() {
     { Header: 'Level', accessor: 'level' },
     { Header: 'Attempt', accessor: 'attempt' },
     { Header: 'Score', accessor: 'score' },
-    { Header: 'Duration', accessor: 'duration' },
+    { Header: 'Duration (HH:mm:ss)', accessor: 'duration' },
   ], []);
 
   const data = useMemo(() => scores, [scores]);
