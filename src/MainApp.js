@@ -18,7 +18,7 @@ function MainApp() {
 
     try {
       // Trigger the POST API when the Start button is clicked
-      const response = await fetch('http://104.155.186.187:5000/generate_sentences', {
+      const response = await fetch('https://104.155.186.187:5000/generate_sentences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -35,7 +35,7 @@ function Finish (){
     };
 
     try {
-      const response = await fetch('http://104.155.186.187:5000/user/insert/score', {
+      const response = await fetch('https://104.155.186.187:5000/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +115,7 @@ function Finish (){
 
     try {
       // Send the POST request
-      const response = await fetch('http://104.155.186.187:5000/submit', {
+      const response = await fetch('https://104.155.186.187:5000/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

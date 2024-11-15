@@ -38,7 +38,7 @@ function AuthForm() {
     setEmailError('');
 
     try {
-      const response = await fetch('http://104.155.186.187:5000/assessment/otp/password', {
+      const response = await fetch('https://104.155.186.187:5000/assessment/otp/password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ function AuthForm() {
 
   const handleResetPassword = async () => {
     try {
-      const response = await fetch('http://104.155.186.187:5000/assessment/forgot/password', {
+      const response = await fetch('https://104.155.186.187:5000/assessment/forgot/password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -13,7 +13,7 @@ function NextSentence({ setIsHidden, id }) {
     try {      
   
         // API call to get the audio file
-        const audioResponse = await fetch('http://104.155.186.187:5000/generate_tenses', {
+        const audioResponse = await fetch('https://104.155.186.187:5000/generate_tenses', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ function NextSentence({ setIsHidden, id }) {
         }
 
         // API call to get the question
-        const questionResponse = await fetch('http://104.155.186.187:5000/generate_question', {
+        const questionResponse = await fetch('https://104.155.186.187:5000/generate_question', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

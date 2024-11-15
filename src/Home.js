@@ -11,7 +11,7 @@ function Home() {
   
   // Fetch the word of the day when the component mounts
   useEffect(() => {
-    fetch('http://104.155.186.187:5000/generate_word')
+    fetch('https://104.155.186.187:5000/generate_word')
       .then((response) => response.json())
       .then((data) => {
         // Assuming the structure from the API response
