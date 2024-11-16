@@ -19,7 +19,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch('https://104.155.186.187:5000/assessment/login', {
+      const response = await fetch('https://communication.theknowhub.com/api/assessment/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

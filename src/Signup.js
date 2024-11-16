@@ -14,7 +14,7 @@ function Signup() {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://104.155.186.187:5000/assessment/signup', {
+      const response = await fetch('https://communication.theknowhub.com/api/assessment/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

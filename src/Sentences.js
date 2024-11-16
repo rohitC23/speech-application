@@ -125,7 +125,7 @@ function Sentences({ audioFile, question }) {
         formData.append('user_id', user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://104.155.186.187:5000/evaluate_tense', {
+        const response = await fetch('https://communication.theknowhub.com/api/evaluate_tense', {
           method: 'POST',
           body: formData,
         });

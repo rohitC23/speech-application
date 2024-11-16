@@ -105,7 +105,7 @@ function Paragraph({ paragraph }) {
         formData.append('paragraph', paragraph);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('http://127.0.0.1:8000/evaluate_audio', {
+        const response = await fetch('http://communication.theknowhub.com/api/evaluate_audio', {
           method: 'POST',
           body: formData,
         });
@@ -171,7 +171,7 @@ function Paragraph({ paragraph }) {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
+      const response = await fetch('http://communication.theknowhub.com/api/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

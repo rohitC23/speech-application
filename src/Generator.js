@@ -21,7 +21,7 @@ function Generator() {
     setLoading(true);
     try {
       // Trigger the POST API when the Start button is clicked
-      const response = await fetch('http://127.0.0.1:8000/generate_paragraph', {
+      const response = await fetch('http://communication.theknowhub.com/api/generate_paragraph', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
