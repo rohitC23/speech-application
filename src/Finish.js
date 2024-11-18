@@ -23,7 +23,7 @@ function Finish (){
   const submitScore = async () => {
     const user_id = localStorage.getItem('user_id');
     const duration = await waitForTotalDuration(); // Wait for totalDuration to be available
-    const level_number = 1;
+    const level_number = 2;
     const score = sum;
     const durationInMinutes = duration;
 
