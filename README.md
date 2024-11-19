@@ -6,8 +6,9 @@ npm install -d parcel <br />
 npm i @parcel/transformer-raw <br />
 npm install -D tailwindcss postcss <br />
 npx tailwindcss init <br />
-npm i react react-dom react-router-dom
-npm i react-table
+npm i react react-dom react-router-dom <br />
+npm i react-table <br />
+npm i react-icons
 
 ### tailwind.config.js file should looks similar as below:
 /** @type {import('tailwindcss').Config} */<br />
