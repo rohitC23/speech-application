@@ -6,22 +6,24 @@ import Paragraph from './Paragraph';
 function Generator() {
   const [hasStarted, setHasStarted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [userTopic, setUserTopic] = useState(''); // State for the user-entered topic
-  const [paragraph, setParagraph] = useState(''); // State for the generated paragraph
+  const [userTopic, setUserTopic] = useState('');
+  const [paragraph, setParagraph] = useState('');
+  const [popup, setPopup] = useState({ message: '', type: '' });
 
   const handleStartClick = async () => {
     const now = new Date();
     let currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     localStorage.setItem('duration', currentTime);
     if (!userTopic.trim()) {
-      alert('Please enter a topic');
+      setPopup({ message: 'Please enter a topic', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       return;
     }
     
     setLoading(true);
     try {
       // Trigger the POST API when the Start button is clicked
-      const response = await fetch('https://communication.theknowhub.com/api/generate_paragraph', {
+      const response = await fetch('http://127.0.0.1:8000/generate_paragraph', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,10 +41,12 @@ function Generator() {
         
         setHasStarted(true); // Proceed to the next screen
       } else {
-        console.error('Failed to generate paragraph');
+        setPopup({ message: 'Failed to generate paragraph', type: 'error' });
+        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     } catch (error) {
-      console.error('Error generating paragraph:', error);
+      setPopup({ message: 'Failed to generate paragraph', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     } finally {
       setLoading(false); // Stop loading effect once the request is complete
     }
@@ -86,6 +90,16 @@ function Generator() {
         </div>
       ) : (
         <Paragraph paragraph={paragraph} />
+      )}
+      
+      {popup.message && (
+        <div
+          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+            popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        >
+          {popup.message}
+        </div>
       )}
     </div>
   );
