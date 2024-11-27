@@ -19,7 +19,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/assessment/login', {
+      const response = await fetch('http://127.0.0.1:8000/assessment/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -36,10 +36,27 @@ function Login() {
         setIsSuccess(true);
 
         setTimeout(() => {
-          if (data.success === "Admin Logged in successfully") {
-            navigate('/dashboard');
+          if (data.current_level) {
+            switch (data.current_level) {
+              case 'level_1':
+                navigate('/level-tenses');
+                break;
+              case 'level_2':
+                navigate('/level-para');
+                break;
+              case 'level_3':
+                navigate('/image');
+                break;
+              case 'level_4':
+                navigate('/home');
+                break;
+              default:
+                navigate('/home'); // Fallback route
+                break;
+            }
           } else {
-            navigate('/home');
+            setMessage('Unable to determine user level. Please contact support.');
+            setIsSuccess(false);
           }
         }, 2000);
       } else {
@@ -100,7 +117,7 @@ function Login() {
             )}
           </button>
         </form>
-        
+
         {message && (
           <div className={`mt-4 text-center ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
             {message}
