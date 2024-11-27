@@ -9,6 +9,7 @@ import Final from './Final';
 import Generator from './Generator';
 import Image from './Image';
 import Dashboard from './Dashboard';
+import Listener from './Listener';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path='/level-para' element={<Generator/>} />
         <Route path='/image' element={<Image />} />
         <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/level-listen' element={<Listener />} />
       </Routes>
     </Router>
   );
