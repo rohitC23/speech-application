@@ -6,11 +6,12 @@ function NextButton({ setIsHidden, id }) {
   const [audioFile, setAudioFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const user_id = localStorage.getItem('user_id');
+  const [popup, setPopup] = useState({ message: '', type: '' });
 
   const handleNextClick = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/generate_sentences', {
+      const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,9 +32,12 @@ function NextButton({ setIsHidden, id }) {
         setIsHidden(true); // Hide the API response when the next audio starts
       } else {
         console.error('Failed to fetch audio file');
+        setPopup({ message: 'Failed to fetch the audio.', type: 'error' });
+        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     } catch (error) {
-      console.error('Error fetching audio file:', error);
+      setPopup({ message: 'Failed to fetch the audio.', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     } finally {
       setLoading(false);
     }
@@ -64,6 +68,16 @@ function NextButton({ setIsHidden, id }) {
         ) : (
           <p className="text-lg font-semibold text-blue-500">Loading audio...</p>
         )
+      )}
+      
+      {popup.message && (
+        <div
+          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+            popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        >
+          {popup.message}
+        </div>
       )}
     </div>
   );
