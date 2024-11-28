@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Paragraph({ questions }) {
+function Questions({ questions }) {
   const [answers, setAnswers] = useState({}); // To store selected answers
   const [popup, setPopup] = useState({ message: '', type: '' });
   const [canContinue, setCanContinue] = useState(false);
@@ -41,7 +41,7 @@ function Paragraph({ questions }) {
 
     try {
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_reading_comprehension',
+        'https://communication.theknowhub.com/api/evaluate_listening_comprehension',
         {
           method: 'POST',
           headers: {
@@ -113,7 +113,6 @@ function Paragraph({ questions }) {
 
     // Call submitScore after ensuring totalDuration is set
     await submitScore();
-
   };
 
   const waitForTotalDuration = async () => {
@@ -133,7 +132,7 @@ function Paragraph({ questions }) {
   const submitScore = async () => {
     const user_id = localStorage.getItem('user_id');
     const duration = await waitForTotalDuration(); // Wait for totalDuration to be available
-    const level_number = 3;
+    const level_number = 4;
     const score = localStorage.getItem('totalScore');;
     const durationInMinutes = duration;
 
@@ -165,7 +164,7 @@ function Paragraph({ questions }) {
 
 
   const handleContinueClick = () => {
-    navigate('/level-listen');
+    navigate('/image');
   };
 
   return (
@@ -240,4 +239,4 @@ function Paragraph({ questions }) {
   );
 }
 
-export default Paragraph;
+export default Questions;

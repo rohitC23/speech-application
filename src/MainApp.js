@@ -8,6 +8,7 @@ function MainApp() {
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file
   const [loading, setLoading] = useState(false); // State to handle loading
   const user_id = localStorage.getItem('user_id');
+  const [popup, setPopup] = useState({ message: '', type: '' });
 
   const handleStartClick = async () => {
     setLoading(true);
@@ -40,10 +41,12 @@ function MainApp() {
         setAudioFile({ url: audioFileURL, name: filename }); // Store the file in state
         setHasStarted(true); // Proceed to the next screen
       } else {
-        console.error('Failed to fetch audio file');
+        setPopup({ message: 'Issue with the server. Please try again', type: 'error' });
+        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     } catch (error) {
-      console.error('Error fetching audio file:', error);
+      setPopup({ message: 'Issue with the server. Please try again', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     } finally {
       setLoading(false); // Stop loading effect once the request is complete
     }
@@ -91,6 +94,16 @@ function MainApp() {
         </div>
       ) : (
         <Tenses audioFile={audioFile} /> // Pass audioFile as prop
+      )}
+
+      {popup.message && (
+        <div
+          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+            popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        >
+          {popup.message}
+        </div>
       )}
     </div>
   );

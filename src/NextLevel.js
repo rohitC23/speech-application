@@ -8,22 +8,27 @@ function NextLevel() {
   const [loading, setLoading] = useState(false); // State to handle loading
   const [question, setQuestion] = useState(null); // State to store question from API
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file
+  const [popup, setPopup] = useState({ message: '', type: '' }); // State for popup message
   const user_id = localStorage.getItem('user_id');
 
   const handleStartClick = async () => {
     if (!difficultyLevel) {
-      alert('Please select a difficulty level!');
+      setPopup({ message: 'Please select a difficulty level!', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000); // Clear popup after 3 seconds
       return;
     }
 
     setLoading(true);
-    // Set the current time to 'duration' in localStorage
     const now = new Date();
-    let currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    let currentTime = now.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
     localStorage.setItem('duration', currentTime);
-  
+
     try {
-      // API call to get the audio file
+      // Fetch audio file
       const audioResponse = await fetch('https://communication.theknowhub.com/api/generate_tenses', {
         method: 'POST',
         headers: {
@@ -33,20 +38,21 @@ function NextLevel() {
       });
 
       if (audioResponse.ok) {
-        const blob = await audioResponse.blob(); // Extract the audio file as a blob
+        const blob = await audioResponse.blob();
         const contentDisposition = audioResponse.headers.get('Content-Disposition');
         const filename = contentDisposition
           ? contentDisposition.split('filename=')[1].replace(/['"]/g, '')
           : 'audio_file.mp3';
 
-        const audioFileURL = URL.createObjectURL(blob); // Create a URL for the blob
-        setAudioFile({ url: audioFileURL, name: filename }); // Store the file in state
-        setHasStarted(true); // Proceed to the next screen
+        const audioFileURL = URL.createObjectURL(blob);
+        setAudioFile({ url: audioFileURL, name: filename });
+        setHasStarted(true);
       } else {
-        console.error('Failed to fetch audio file');
+        setPopup({ message: 'Failed to fetch audio', type: 'error' });
+        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
-      
-      // API call to get the question
+
+      // Fetch question
       const questionResponse = await fetch('https://communication.theknowhub.com/api/generate_question', {
         method: 'POST',
         headers: {
@@ -56,15 +62,17 @@ function NextLevel() {
       });
 
       if (questionResponse.ok) {
-        const questionData = await questionResponse.json(); // Parse the JSON response
-        setQuestion(questionData.question); // Set question from API response
+        const questionData = await questionResponse.json();
+        setQuestion(questionData.question);
       } else {
-        console.error('Failed to fetch question');
+        setPopup({ message: 'Failed to fetch data', type: 'error' });
+        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     } catch (error) {
-      console.error('Error fetching question or audio file:', error);
+      setPopup({ message: 'Error fetching data', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     } finally {
-      setLoading(false); // Stop loading effect once the request is complete
+      setLoading(false);
     }
   };
 
@@ -76,12 +84,14 @@ function NextLevel() {
           <h2 className="text-2xl font-bold mb-6">Speak in correct tense</h2>
           <p className="text-md mb-6">Choose a level to begin the test</p>
 
-          {/* Three levels: easy, medium, and hard */}
+          {/* Difficulty levels */}
           <div className="flex flex-col w-full mb-8 items-center">
             <div
               onClick={() => setDifficultyLevel('easy')}
               className={`text-2xl w-full font-medium py-3 cursor-pointer border rounded-lg px-6 mb-4 transition-all ${
-                difficultyLevel === 'easy' ? 'bg-green-100 border-green-500 text-green-600' : 'bg-white border-gray-300 text-gray-400'
+                difficultyLevel === 'easy'
+                  ? 'bg-green-100 border-green-500 text-green-600'
+                  : 'bg-white border-gray-300 text-gray-400'
               }`}
             >
               Easy
@@ -89,7 +99,9 @@ function NextLevel() {
             <div
               onClick={() => setDifficultyLevel('medium')}
               className={`text-2xl w-full font-medium py-3 cursor-pointer border rounded-lg px-6 mb-4 transition-all ${
-                difficultyLevel === 'medium' ? 'bg-yellow-100 border-yellow-500 text-yellow-600' : 'bg-white border-gray-300 text-gray-400'
+                difficultyLevel === 'medium'
+                  ? 'bg-yellow-100 border-yellow-500 text-yellow-600'
+                  : 'bg-white border-gray-300 text-gray-400'
               }`}
             >
               Medium
@@ -97,27 +109,41 @@ function NextLevel() {
             <div
               onClick={() => setDifficultyLevel('hard')}
               className={`text-2xl w-full font-medium py-3 cursor-pointer border rounded-lg px-6 mb-4 transition-all ${
-                difficultyLevel === 'hard' ? 'bg-red-100 border-red-500 text-red-600' : 'bg-white border-gray-300 text-gray-400'
+                difficultyLevel === 'hard'
+                  ? 'bg-red-100 border-red-500 text-red-600'
+                  : 'bg-white border-gray-300 text-gray-400'
               }`}
             >
               Hard
             </div>
           </div>
 
-          {/* Conditionally show loading text */}
           {loading ? (
-            <p className="text-lg font-semibold text-blue-500 mt-4">Your test is about to begin, Please wait...</p>
+            <p className="text-lg font-semibold text-blue-500 mt-4">
+              Your test is about to begin, Please wait...
+            </p>
           ) : (
-          <button
-            onClick={handleStartClick}
-            className="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-200"
-          >
-            Start
-          </button>)
-          }
+            <button
+              onClick={handleStartClick}
+              className="bg-blue-500 text-white font-bold py-3 px-6 rounded-lg hover:bg-blue-600 transition duration-200"
+            >
+              Start
+            </button>
+          )}
         </div>
       ) : (
-        <Sentences audioFile={audioFile} question={question} /> // Pass both audioFile and question as props
+        <Sentences audioFile={audioFile} question={question} />
+      )}
+
+      {/* Popup for feedback */}
+      {popup.message && (
+        <div
+          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+            popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        >
+          {popup.message}
+        </div>
       )}
     </div>
   );
