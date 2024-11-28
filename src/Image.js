@@ -274,7 +274,7 @@ function Image() {
     // Call submitScore after ensuring totalDuration is set
     await submitScore();
 
-    navigate('/app');
+    navigate('/home');
   };
 
 
