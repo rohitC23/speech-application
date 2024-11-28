@@ -6,6 +6,7 @@ function Questions({ questions }) {
   const [popup, setPopup] = useState({ message: '', type: '' });
   const [canContinue, setCanContinue] = useState(false);
   const navigate = useNavigate();
+  const [totalScore, setTotalScore] = useState(0);
 
   const handleOptionChange = (questionId, option) => {
     setAnswers((prevAnswers) => ({
@@ -56,6 +57,7 @@ function Questions({ questions }) {
       }
 
       const result = await response.json();
+      setTotalScore(result.score);
       localStorage.setItem('totalScore', result.score);
       setPopup({ message: 'Answers submitted successfully!', type: 'success' });
       setCanContinue(true); // Enable the 'Continue' button
@@ -202,6 +204,10 @@ function Questions({ questions }) {
             </div>
           );
         })}
+      </div>
+
+      <div className="mt-4 flex">
+      {canContinue &&(<h2 className="text-xl font-bold mb-4">You achieved a score {totalScore} out of 5</h2>)}
       </div>
 
       {/* Buttons Section */}
