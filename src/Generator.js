@@ -25,7 +25,7 @@ function Generator() {
     const fetchData = async () => {
       const user_id = localStorage.getItem('user_id'); // Retrieve the user ID from localStorage
       try {
-        const response = await fetch('http://127.0.0.1:8000/reading_comprehension', {
+        const response = await fetch('https://communication.theknowhub.com/api/reading_comprehension', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
