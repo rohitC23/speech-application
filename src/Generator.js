@@ -65,6 +65,8 @@ function Generator() {
         <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
           <h2 className="text-2xl font-bold mb-6">Reading Comprehension</h2>
 
+          {!isClicked &&(<p className="text-md mb-6">Read the paragraph carefully then answer the questions</p>)}
+          {!isClicked &&(<div className="border-t border-gray-300 mb-8 w-full"></div>)}
           {/* Show paragraph if not clicked */}
           {!isClicked && (
             <div>
