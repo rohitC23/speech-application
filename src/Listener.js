@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import sampleImage from 'url:./assets/sound.png';
 import Header from './Header';
 import Questions from './Questions';
 
@@ -53,8 +54,6 @@ function Listener() {
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     } catch (error) {
-      setPopup({ message: 'Server error. Please try again', type: 'error' });
-      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     } finally {
       setLoading(false); // Stop loading spinner
     }
@@ -86,14 +85,19 @@ function Listener() {
         <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
           <h2 className="text-2xl font-bold mb-6">Listening Comprehension</h2>
 
+          {!isClicked &&(<img src={sampleImage} alt="Prompt" className="mb-6 w-[100px] h-[100px] mx-auto rounded-lg" />)}
+          {!isClicked &&(<p className="text-md mb-6">Listen to the audio carefully then answer the questions</p>)}
+
           {/* Display audio file if available */}
           {audioFile && !isClicked &&(
-            <div className="mb-6">
-              <audio controls src={audioFile.url}>
+            <div className="mb-6 w-full">
+              <audio controls src={audioFile.url} className="w-full">
                 Your browser does not support the audio element.
               </audio>
             </div>
           )}
+
+          {!isClicked &&(<div className="border-t border-gray-300 mb-8 w-full"></div>)}
 
           {/* Show paragraph if not clicked */}
           {!isClicked && (
