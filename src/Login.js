@@ -38,6 +38,8 @@ function Login() {
         setTimeout(() => {
           if (data.current_level) {
             switch (data.current_level) {
+              case 'level_0':
+                navigate('/home');
               case 'level_1':
                 navigate('/level-tenses');
                 break;
