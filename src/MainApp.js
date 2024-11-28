@@ -19,7 +19,7 @@ function MainApp() {
 
     try {
       // Trigger the POST API when the Start button is clicked
-      const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
+      const response = await fetch('https://communication.theknowhub.com/api/generate_sentences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
