@@ -77,45 +77,46 @@ function Listener() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
       <Header showNav={true} />
-
-      {/* Show loading message while fetching data */}
-      {loading ? (
-        <div className="text-lg font-semibold text-blue-500">Loading data, please wait...</div>
-      ) : (
-        <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
-          <h2 className="text-2xl font-bold mb-6">Listening Comprehension</h2>
-
-          {!isClicked &&(<img src={sampleImage} alt="Prompt" className="mb-6 w-[100px] h-[100px] mx-auto rounded-lg" />)}
-          {!isClicked &&(<p className="text-md mb-6">Listen to the audio carefully then answer the questions</p>)}
-
-          {/* Display audio file if available */}
-          {audioFile && !isClicked &&(
-            <div className="mb-6 w-full">
-              <audio controls src={audioFile.url} className="w-full">
-                Your browser does not support the audio element.
-              </audio>
-            </div>
-          )}
-
-          {!isClicked &&(<div className="border-t border-gray-300 mb-8 w-full"></div>)}
-
-          {/* Show paragraph if not clicked */}
-          {!isClicked && (
-            <div>
-              <button
-                onClick={handleClick} // Call handleClick on button click
-                className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
-              >
-                Generate Questions
-              </button>
-            </div>
-          )}
-
-          {/* Render Paragraph component with questions */}
-          {isClicked && <Questions questions={questions} />}
-        </div>
-      )}
-
+  
+      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
+        <h2 className="text-2xl font-bold mb-6">Listening Comprehension</h2>
+        <p className="text-md mb-6">
+          {loading
+            ? 'Loading data, please wait...'
+            : 'Listen to the audio carefully then answer the questions'}
+        </p>
+  
+        {!isClicked && (
+          <>
+            <img
+              src={sampleImage}
+              alt="Prompt"
+              className="mb-6 w-[100px] h-[100px] mx-auto rounded-lg"
+            />
+  
+            {audioFile && (
+              <div className="mb-6 w-full">
+                <audio controls src={audioFile.url} className="w-full">
+                  Your browser does not support the audio element.
+                </audio>
+              </div>
+            )}
+  
+            <div className="border-t border-gray-300 mb-8 w-full"></div>
+  
+            <button
+              onClick={handleClick} // Call handleClick on button click
+              className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+            >
+              Generate Questions
+            </button>
+          </>
+        )}
+  
+        {/* Render Questions component with questions */}
+        {!loading && isClicked && <Questions questions={questions} />}
+      </div>
+  
       {popup.message && (
         <div
           className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
@@ -127,6 +128,7 @@ function Listener() {
       )}
     </div>
   );
+  
 }
 
 export default Listener;
