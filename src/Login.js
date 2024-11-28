@@ -63,6 +63,10 @@ function Login() {
             setMessage('Unable to determine user level. Please contact support.');
             setIsSuccess(false);
           }
+          if (data.success === "Admin Logged in successfully") {
+            navigate('/dashboard');
+            return;
+          } 
         }, 2000);
       } else {
         setMessage('Invalid credentials. Please try again.');
