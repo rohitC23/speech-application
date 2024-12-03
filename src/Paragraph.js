@@ -167,7 +167,7 @@ function Paragraph({ questions }) {
 
 
   const handleContinueClick = () => {
-    navigate('/level-listen');
+    navigate('/image');
   };
 
   return (
@@ -239,7 +239,7 @@ function Paragraph({ questions }) {
       {/* Popup Message */}
       {popup.message && (
         <div
-          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >
