@@ -22,6 +22,8 @@ function Generator() {
   };
 
   useEffect(() => {
+    let isMounted = true; // Flag to track if the component is still mounted
+  
     const fetchData = async () => {
       const user_id = localStorage.getItem('user_id'); // Retrieve the user ID from localStorage
       try {
@@ -32,43 +34,52 @@ function Generator() {
           },
           body: JSON.stringify({ user_id }), // Pass user_id in the request body
         });
-
+  
         const data = await response.json();
-
-        if (response.ok) {
+  
+        if (response.ok && isMounted) {
           // Set paragraph and questions from API response
           setParagraph(data.paragraph);
           setQuestions(data.questions);
-        } else {
+        } else if (isMounted) {
           setPopup({ message: 'Failed to fetch data', type: 'error' });
           setTimeout(() => setPopup({ message: '', type: '' }), 3000);
         }
       } catch (error) {
-        setPopup({ message: 'Failed to fetch data', type: 'error' });
-        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+        if (isMounted) {
+          setPopup({ message: 'Failed to fetch data', type: 'error' });
+          setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+        }
       } finally {
-        setLoading(false); // Stop loading spinner
+        if (isMounted) {
+          setLoading(false); // Stop loading spinner
+        }
       }
     };
-
+  
     fetchData();
+  
+    return () => {
+      isMounted = false; // Set flag to false when the component unmounts
+    };
   }, []);
+  
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
       <Header showNav={true} />
 
-      {/* Show loading message while fetching data */}
-      {loading ? (
-        <div className="text-lg font-semibold text-blue-500">Loading data, please wait...</div>
-      ) : (
-        <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
-          <h2 className="text-2xl font-bold mb-6">Reading Comprehension</h2>
+      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
+        <h2 className="text-2xl font-bold mb-6">Reading Comprehension</h2>
+        {!isClicked && (<p className="text-md mb-6">
+          {loading
+            ? 'Loading data, please wait...'
+            : 'Read the paragraph carefully then answer the questions'}
+        </p>)}
 
-          {!isClicked &&(<p className="text-md mb-6">Read the paragraph carefully then answer the questions</p>)}
-          {!isClicked &&(<div className="border-t border-gray-300 mb-8 w-full"></div>)}
-          {/* Show paragraph if not clicked */}
-          {!isClicked && (
+        {!isClicked && !loading && (
+          <>
+            <div className="border-t border-gray-300 mb-8 w-full"></div>
             <div>
               <p className="text-md mb-6">{paragraph}</p>
               <button
@@ -78,22 +89,25 @@ function Generator() {
                 Generate Questions
               </button>
             </div>
-          )}
+          </>
+        )}
 
-          {/* Render Paragraph component with questions */}
-          {isClicked && <Paragraph questions={questions} />}
-        </div>
-      )}
+        {/* Render Paragraph component with questions */}
+        {isClicked && <Paragraph questions={questions} />}
+      </div>
 
       {popup.message && (
         <div
-          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >
           {popup.message}
         </div>
       )}
+
+
+
     </div>
   );
 }
