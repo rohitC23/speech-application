@@ -32,7 +32,7 @@ function Final() {
 
     const handleContinue = async () => {
         localStorage.setItem('score', []);
-        navigate('/level-para');
+        navigate('/level-listen');
     };
 
     return (
