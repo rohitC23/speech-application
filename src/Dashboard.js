@@ -1,23 +1,23 @@
-import React, { useState, useMemo } from 'react';
-import { useTable, useSortBy } from 'react-table';
+import React, { useState, useEffect } from 'react';
+import {Line, Bar } from 'react-chartjs-2';
+import 'chart.js/auto';
+import moment from 'moment';
 import Header from './Header';
 
-function Dashboard() {
-  const [userName, setUserName] = useState('');
+const Dashboard = () => {
   const [scores, setScores] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  const handleSearch = async () => {
-    setLoading(true);
-    setError(null);
+  const [loading, setLoading] = useState(false);
+  const userName = localStorage.getItem('user_id');
+  const fetchScores = async () => {
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/admin/get/score', {
+      setLoading(true);
+      const response = await fetch('http://127.0.0.1:8000/user/get/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ user_fullname: userName }),
+        body: JSON.stringify({ user_id: userName }),
       });
 
       if (!response.ok) throw new Error('Failed to fetch data');
@@ -30,121 +30,285 @@ function Dashboard() {
     }
   };
 
-  const columns = useMemo(() => [
-    { Header: 'Date', accessor: 'date' },
-    { Header: 'Level', accessor: 'level' },
-    { Header: 'Attempt', accessor: 'attempt' },
-    { Header: 'Score', accessor: 'score' },
-    { Header: 'Duration (HH:mm:ss)', accessor: 'duration' },
-  ], []);
+  useEffect(() => {
+    if (userName) fetchScores();
+  }, [userName]);
 
-  const data = useMemo(() => scores, [scores]);
+  const dates = [...new Set(scores.map((item) => item.date))];
+  const levels = [...new Set(scores.map((item) => item.level))].sort((a, b) => {
+    // Extract the numeric part of the level and compare
+    const numA = parseInt(String(a).replace('Level ', ''), 10);
+    const numB = parseInt(String(b).replace('Level ', ''), 10);
+    return numA - numB;
+  });
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    headerGroups,
-    rows,
-    prepareRow,
-  } = useTable({ columns, data }, useSortBy);
+  const fixedColors = ["#0bb4ff", "#50e991", "#e6d800", "#9b19f5", "#ffa300"];
+
+  const sortedDates = dates.sort((a, b) => new Date(b) - new Date(a));
+
+  const latestDates = sortedDates.slice(0, 7);
+
+  // Prepare the Score Improvement chart
+  const lineChartData = {
+    labels: latestDates.map((date) => moment(date).format('DD MMM')),
+    datasets: levels.map((level, index) => {
+      const dataForLevel = latestDates.map((date) => {
+        const scoreForDateAndLevel = scores.find(
+          (item) => item.level === level && item.date === date
+        );
+        return scoreForDateAndLevel ? scoreForDateAndLevel.score : null;
+      });
+
+      return {
+        label: `Level ${level}`,
+        data: dataForLevel,
+        borderColor: fixedColors[index % fixedColors.length],
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+      };
+    }),
+  };
+
+  // Prepare data for the chart
+  const groupedData = latestDates.map((date) => {
+    return levels.map((level) => {
+      const scoresForDateLevel = scores.filter(
+        (item) => item.date === date && item.level === level
+      );
+      return {
+        date,
+        level,
+        attempt: scoresForDateLevel.length > 0 ? scoresForDateLevel[0].attempt : 0,
+      };
+    });
+  });
+
+  const barChartData = {
+    labels: latestDates.map((date) => moment(date).format('DD MMM')),
+    datasets: levels.map((level, index) => ({
+      label: `Level ${level}`,
+      data: groupedData.map((group) => {
+        const levelData = group.find((item) => item.level === level);
+        return levelData ? levelData.attempt : 0;
+      }),
+      backgroundColor: fixedColors[index % fixedColors.length],
+      borderWidth: 1,
+    })),
+  };
+
+  const maxAttempt = Math.max(...scores.map((item) => item.attempt));
+
+  // Calculate KPI metrics
+  const latestDate = Math.max(...scores.map((item) => new Date(item.date)));
+  const latestDateData = scores.filter(
+    (item) => new Date(item.date).getTime() === latestDate
+  );
+
+  // Convert duration to minutes
+  const convertDurationToMinutes = (duration) => {
+    const [hours, minutes, seconds] = duration.split(':').map(Number);
+    return hours * 60 + minutes + seconds / 60;
+  };
+
+    // Group data by levels
+    const levelData = levels
+    .map((level) => {
+      const levelData = scores.filter((item) => item.level === level);
+      return {
+        level: parseInt(String(level).replace('Level ', ''), 10), // Ensure level is treated as a string
+        totalDuration: levelData.reduce(
+          (sum, item) => sum + convertDurationToMinutes(item.duration),
+          0
+        ),
+      };
+    })
+    .sort((a, b) => a.level - b.level); // Sort levels in ascending order
+  
+  
+    // Stacked Area Chart Data
+    const areaChartData = {
+      labels: levelData.map((item) => `Level ${item.level}`),
+      datasets: [
+        {
+          label: 'Total Duration (Minutes)',
+          data: levelData.map((item) => item.totalDuration),
+          backgroundColor: 'rgba(133, 217, 255)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1,
+          fill: true,
+        },
+      ],
+    };
+
+  const totalLevelsAttempted = [...new Set(latestDateData.map((item) => item.level))].length;
+  const totalTimeSpent = latestDateData
+    .map((item) => convertDurationToMinutes(item.duration))
+    .reduce((sum, time) => sum + time, 0);
+
+  const avgScore =
+  latestDateData.reduce((sum, item) => sum + Number(item.score || 0), 0) /
+  (latestDateData.length || 1);
+
+  const mostAttemptedLevelData = latestDateData.reduce(
+    (acc, curr) => (curr.attempt > acc.attempt ? curr : acc),
+    { level: '', attempt: 0 }
+  );
+  const mostAttemptedLevel =
+    mostAttemptedLevelData.attempt > 1 ? mostAttemptedLevelData.level : '--';
 
   return (
-    <div className="flex flex-col items-center relative min-h-screen bg-gray-100 p-4 pt-20">
-      {/* Header component */}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200 p-4 pt-20">
       <Header showNav={true} />
+      <div className="max-w-5xl mx-auto">
 
-      {/* Title */}
-      <h1 className="text-3xl font-bold text-gray-700 mt-8 mb-4">Admin Dashboard</h1>
+        {loading && <p className="text-center text-xl">Loading...</p>}
+        {error && <p className="text-center text-xl text-red-500">{error}</p>}
 
-      {/* Search bar section with side-by-side alignment */}
-      <div className="flex flex-col items-center w-full max-w-lg">
-        <div className="flex items-center space-x-2 w-full">
-          <input
-            type="text"
-            value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            placeholder="Enter User Full Name"
-            className="px-4 py-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring focus:border-blue-300"
-          />
-          <button
-            onClick={handleSearch}
-            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
-            disabled={loading}
-          >
-            {loading ? 'Searching...' : 'Search'}
-          </button>
-        </div>
-      </div>
+        {!loading && !error && scores.length > 0 && (
+          <div>
+            {/* KPI Cards */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 mt-10">
+              <div className="bg-white p-4 shadow rounded text-center">
+                <h3 className="text-lg font-semibold">Total Levels Attempted</h3>
+                <p className="text-2xl font-bold">{totalLevelsAttempted}</p>
+              </div>
+              <div className="bg-white p-4 shadow rounded text-center">
+                <h3 className="text-lg font-semibold">Total Time Spent</h3>
+                <p className="text-2xl font-bold">{totalTimeSpent.toFixed(2)} mins</p>
+              </div>
+              <div className="bg-white p-4 shadow rounded text-center">
+                <h3 className="text-lg font-semibold">Average Score</h3>
+                <p className="text-2xl font-bold">{avgScore.toFixed(2)}</p>
+              </div>
+              <div className="bg-white p-4 shadow rounded text-center">
+                <h3 className="text-lg font-semibold">Most Attempted Level</h3>
+                <p className="text-2xl font-bold">{mostAttemptedLevel}</p>
+              </div>
+            </div>
 
-      {/* Error message */}
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-      {/* Table section */}
-      {scores.length > 0 && (
-        <div className="overflow-x-auto mt-6 w-full max-w-5xl">
-          <div className="max-h-96 overflow-y-auto shadow-lg rounded-lg">
-            <table {...getTableProps()} className="min-w-full bg-white border border-gray-200 rounded-lg">
-            <thead>
-              {headerGroups.map(headerGroup => {
-                const { key, ...restHeaderGroupProps } = headerGroup.getHeaderGroupProps(); // Destructure key
-                return (
-                  <tr
-                    key={key} // Use the destructured key
-                    {...restHeaderGroupProps} // Spread the remaining props
-                    className="bg-blue-50 text-gray-700 uppercase text-sm leading-normal"
-                  >
-                    {headerGroup.headers.map(column => {
-                      const { key: columnKey, ...restColumnProps } = column.getHeaderProps(column.getSortByToggleProps());
-                      return (
-                        <th
-                          key={columnKey} // Use the destructured key
-                          {...restColumnProps} // Spread the remaining props
-                          className="px-4 py-3 border-b text-left cursor-pointer"
-                        >
-                          {column.render('Header')}
-                          <span>
-                            {column.isSorted ? (column.isSortedDesc ? ' 🔽' : ' 🔼') : ''}
-                          </span>
-                        </th>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {rows.map(row => {
-                prepareRow(row);
-                const { key: rowKey, ...restRowProps } = row.getRowProps(); // Destructure key from row props
-                return (
-                  <tr
-                    key={rowKey} // Use the destructured key
-                    {...restRowProps} // Spread the remaining props
-                    className="hover:bg-blue-50 transition-colors"
-                  >
-                    {row.cells.map(cell => {
-                      const { key: cellKey, ...restCellProps } = cell.getCellProps(); // Destructure key from cell props
-                      return (
-                        <td
-                          key={cellKey} // Use the destructured key
-                          {...restCellProps} // Spread the remaining props
-                          className="px-4 py-2 border-b"
-                        >
-                          {cell.render('Cell')}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
+              <div className="p-4 bg-white rounded shadow">
+                <h2 className="text-xl font-semibold mb-2">Score Improvement by Level</h2>
+                <Line
+                  data={lineChartData}
+                  options={{
+                    plugins: {
+                      legend: {
+                        position: 'top',
+                        onClick: (e, legendItem, legend) => {
+                          const ci = legend.chart;
+                          const index = legendItem.datasetIndex;
+                          const meta = ci.getDatasetMeta(index);
 
-            </table>
+                          // Check if all other datasets are already hidden
+                          const allHidden = ci.data.datasets.every((dataset, i) => 
+                            i === index || ci.getDatasetMeta(i).hidden
+                          );
+
+                          if (meta.hidden || allHidden) {
+                            // If the selected dataset is hidden or all others are hidden, reset all visibility
+                            ci.data.datasets.forEach((_, i) => {
+                              ci.getDatasetMeta(i).hidden = false; // Show all datasets
+                            });
+                          } else {
+                            // Hide all datasets except the selected one
+                            ci.data.datasets.forEach((_, i) => {
+                              ci.getDatasetMeta(i).hidden = i !== index;
+                            });
+                          }
+
+                          // Update the chart to reflect the changes
+                          ci.update();
+                        },
+                      },
+                    },
+                    responsive: true,
+                    scales: {
+                      x: {
+                        title: {
+                          display: true,
+                        },
+                      },
+                      y: {
+                        beginAtZero: true,
+                        title: {
+                          display: true,
+                          text: 'Score',
+                        },
+                      },
+                    },
+                  }}
+                />;
+
+              </div>
+
+              {/* Chart */}
+              <div className="p-4 bg-white rounded shadow">
+                <h2 className="text-xl font-semibold mb-2">Attempts by Level and Date</h2>
+                <Bar
+                  data={barChartData}
+                  options={{
+                    plugins: {
+                      legend: {
+                        position: 'top',
+                      },
+                    },
+                    responsive: true,
+                    scales: {
+                      x: {
+                        stacked: false,
+                        title: {
+                          display: true,
+                        },
+                      },
+                      y: {
+                        stacked: false,
+                        beginAtZero: true,
+                        suggestedMax: maxAttempt + 1,
+                        title: {
+                          display: true,
+                          text: 'Number of attempts',
+                        },
+                      },
+                    },
+                  }}
+                />
+              </div>
+
+            </div>
+            <div className="p-4 bg-white rounded shadow mt-6">
+              <h2 className="text-xl font-semibold mb-2">Duration by Levels</h2>
+              <Line
+                data={areaChartData}
+                options={{
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                  },
+                  responsive: true,
+                  scales: {
+                    x: {
+                      title: {
+                        display: true,
+                      },
+                    },
+                    y: {
+                      beginAtZero: true,
+                      title: {
+                        display: true,
+                        text: 'Total Duration (Minutes)',
+                      },
+                    },
+                  },
+                }}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
-}
+};
 
 export default Dashboard;
