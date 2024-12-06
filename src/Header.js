@@ -20,10 +20,16 @@ function Header({ showNav }) {
         </div>
         {/* Navigation Items */}
         {showNav && (
-          <nav className="flex space-x-4">
+          <nav className="flex items-center space-x-6 mr-2">
+            <Link 
+              to="/dashboard" 
+              className="text-gray-700 hover:text-blue-500 text-base font-medium"
+            >
+              My Performance
+            </Link>
             <Link 
               to="/" 
-              className="text-gray-700 hover:text-blue-500 pr-4"
+              className="text-gray-700 hover:text-blue-500 text-base font-medium"
               onClick={handleLogout}
             >
               Sign Out
