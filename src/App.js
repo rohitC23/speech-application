@@ -10,6 +10,9 @@ import Generator from './Generator';
 import Image from './Image';
 import Dashboard from './Dashboard';
 import Listener from './Listener';
+import Welcome from './Welcome';
+import Bonus from './Bonus';
+import Admin from './Admin';
 
 function App() {
   return (
@@ -25,6 +28,9 @@ function App() {
         <Route path='/image' element={<Image />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/level-listen' element={<Listener />} />
+        <Route path='/welcome-back' element={<Welcome />} />
+        <Route path='/bonus' element={<Bonus />} />
+        <Route path='/admin' element={<Admin />} />
       </Routes>
     </Router>
   );
