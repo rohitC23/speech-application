@@ -31,39 +31,30 @@ function Login() {
 
       if (response.ok) {
         localStorage.setItem('user_id', data.user_id);
+        localStorage.setItem('level', data.current_level);
 
         setMessage('Login successful!');
         setIsSuccess(true);
 
         setTimeout(() => {
           if (data.current_level) {
-            switch (data.current_level) {
-              case 'level_0':
-                navigate('/home');
-              case 'level_1':
-                navigate('/level-tenses');
-                break;
-              case 'level_2':
-                navigate('/level-para');
-                break;
-              case 'level_3':
-                navigate('/level-listen');
-                break;
-              case 'level_4':
-                navigate('/image');
-                break;
-              case 'level_5':
-                navigate('/home');
-                break;
-              default:
-                navigate('/home'); // Fallback route
-                break;
+            if (data.current_level === 'Level 0') {
+              navigate('/home');
+            } else {
+              navigate('/welcome-back');
             }
+            
           } else {
             setMessage('Unable to determine user level. Please contact support.');
             setIsSuccess(false);
           }
+
+          if (data.success === "Admin Logged in successfully") {
+            navigate('/admin');
+            return; // Stop further execution after routing
+          }
         }, 2000);
+        
       } else {
         setMessage('Invalid credentials. Please try again.');
         setIsSuccess(false);
