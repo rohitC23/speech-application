@@ -8,23 +8,7 @@ npm install -D tailwindcss postcss <br />
 npx tailwindcss init <br />
 npm i react react-dom react-router-dom <br />
 npm i react-table <br />
-npm i react-icons
-
-### tailwind.config.js file should looks similar as below:
-/** @type {import('tailwindcss').Config} */<br />
-module.exports = {<br />
-  content: [<br />
-    "./src/**/*.{html,js,ts,jsx,tsx}",<br />
-  ],<br />
-  theme: {<br />
-    extend: {<br />
-      fontFamily: {<br />
-        sans: ['Poppins', 'sans-serif'],<br />
-      },<br />
-    },<br />
-  },<br />
-  plugins: [],<br />
-}<br />
+npm i react-icons recharts react-chartjs-2 moment
 
 ### update package.json
 "scripts": {<br />
