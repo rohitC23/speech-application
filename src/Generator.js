@@ -69,7 +69,7 @@ function Generator() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
       <Header showNav={true} />
 
-      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-[650px] flex flex-col justify-center items-center">
+      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
         <h2 className="text-2xl font-bold mb-6">Reading Comprehension</h2>
         {!isClicked && (<p className="text-md mb-6">
           {loading
@@ -98,13 +98,16 @@ function Generator() {
 
       {popup.message && (
         <div
-          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >
           {popup.message}
         </div>
       )}
+
+
+
     </div>
   );
 }
