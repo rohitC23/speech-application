@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {Line, Bar } from 'react-chartjs-2';
+import { useNavigate } from "react-router-dom";
 import 'chart.js/auto';
 import moment from 'moment';
 import Header from './Header';
@@ -9,6 +10,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const userName = localStorage.getItem('user_id');
+  const navigate = useNavigate();
   const fetchScores = async () => {
     try {
       setLoading(true);
@@ -19,12 +21,20 @@ const Dashboard = () => {
         },
         body: JSON.stringify({ user_id: userName }),
       });
-
-      if (!response.ok) throw new Error('Failed to fetch data');
-      const data = await response.json();
-      setScores(data);
+    
+      if (response.status === 404) {
+        setError("Your metrics are currently unavailable. Please take a test to see your performance.");
+      } else if (!response.ok) {
+        throw new Error('Data fetch failed. Server is temporarily unavailable. Please retry shortly.');
+      } else {
+        const data = await response.json();
+        setScores(data);
+      }
     } catch (err) {
-      setError('Failed to fetch data');
+      // Handle any other errors that might occur
+      if (!setError) {
+        setError(err.message || 'Data fetch failed. Server is temporarily unavailable. Please retry shortly.');
+      }
     } finally {
       setLoading(false);
     }
@@ -98,7 +108,13 @@ const Dashboard = () => {
   const maxAttempt = Math.max(...scores.map((item) => item.attempt));
 
   // Calculate KPI metrics
-  const latestDate = Math.max(...scores.map((item) => new Date(item.date)));
+  const latestDate = Math.max(...scores.map((item) => new Date(item.date).getTime()));
+  const latestDateFormatted = new Date(latestDate).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+
   const latestDateData = scores.filter(
     (item) => new Date(item.date).getTime() === latestDate
   );
@@ -155,12 +171,16 @@ const Dashboard = () => {
   const mostAttemptedLevel =
     mostAttemptedLevelData.attempt > 1 ? mostAttemptedLevelData.level : '--';
 
+  const handleBack = () => {
+    navigate("/home");
+  };
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200 p-4 pt-20">
       <Header showNav={true} />
       <div className="max-w-5xl mx-auto">
 
-        {loading && <p className="text-center text-xl">Loading...</p>}
+        {loading && <p className="text-center text-xl">Hang tight, your performance metrics are loading...</p>}
         {error && <p className="text-center text-xl text-red-500">{error}</p>}
 
         {!loading && !error && scores.length > 0 && (
@@ -170,18 +190,22 @@ const Dashboard = () => {
               <div className="bg-white p-4 shadow rounded text-center">
                 <h3 className="text-lg font-semibold">Total Levels Attempted</h3>
                 <p className="text-2xl font-bold">{totalLevelsAttempted}</p>
+                <p className="text-sm ">{latestDateFormatted}</p>
               </div>
               <div className="bg-white p-4 shadow rounded text-center">
                 <h3 className="text-lg font-semibold">Total Time Spent</h3>
                 <p className="text-2xl font-bold">{totalTimeSpent.toFixed(2)} mins</p>
+                <p className="text-sm ">{latestDateFormatted}</p>
               </div>
               <div className="bg-white p-4 shadow rounded text-center">
                 <h3 className="text-lg font-semibold">Average Score</h3>
                 <p className="text-2xl font-bold">{avgScore.toFixed(2)}</p>
+                <p className="text-sm ">{latestDateFormatted}</p>
               </div>
               <div className="bg-white p-4 shadow rounded text-center">
                 <h3 className="text-lg font-semibold">Most Attempted Level</h3>
                 <p className="text-2xl font-bold">{mostAttemptedLevel}</p>
+                <p className="text-sm ">{latestDateFormatted}</p>
               </div>
             </div>
 
@@ -238,7 +262,7 @@ const Dashboard = () => {
                       },
                     },
                   }}
-                />;
+                />
 
               </div>
 
@@ -306,6 +330,18 @@ const Dashboard = () => {
             </div>
           </div>
         )}
+
+        {!loading && (
+          <div className='flex mt-8 justify-center'>
+            <button
+              onClick={handleBack}
+              className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+            >
+              Back to Home
+            </button>
+          </div>
+        )}
+
       </div>
     </div>
   );
