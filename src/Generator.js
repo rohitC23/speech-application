@@ -69,7 +69,7 @@ function Generator() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/Home']}/>
+      <Header showNav={true} hiddenNavItems={['/bonus']}/>
 
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
         <h2 className="text-2xl font-bold mb-4">Reading Comprehension</h2>
