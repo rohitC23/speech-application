@@ -14,7 +14,7 @@ const Dashboard = () => {
   const fetchScores = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://communication.theknowhub.com/api/user/get/score', {
+      const response = await fetch('http://127.0.0.1:8000/user/get/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -177,7 +177,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200 p-4 pt-20">
-      <Header showNav={true} />
+      <Header showNav={true} hiddenNavItems={['/dashboard']}/>
       <div className="max-w-5xl mx-auto">
 
         {loading && <p className="text-center text-xl">Hang tight, your performance metrics are loading...</p>}
