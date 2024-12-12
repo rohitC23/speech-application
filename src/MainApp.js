@@ -96,7 +96,7 @@ function MainApp() {
 
           {/* Conditionally show loading text or Start button */}
           {loading ? (
-            <p className="text-lg font-semibold text-blue-500">Your test is about to begin, Please wait...</p>
+            <p className="text-lg font-semibold text-blue-500">Your test is about to begin, Hang Tight!</p>
           ) : (
             <button
               onClick={handleStartClick}
