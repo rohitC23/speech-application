@@ -106,7 +106,7 @@ function Generator() {
           </button>
         )}
 
-        {isClicked && loading && <p className="text-lg font-semibold text-blue-500">Loading data, please wait...</p>}
+        {isClicked && loading && <p className="text-lg font-semibold text-blue-500">Preparing your Reading Comprehension exercise... Hang tight!</p>}
 
         {isClicked && !loading && !hasError && (
           <>
