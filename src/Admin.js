@@ -15,7 +15,7 @@ function Admin() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('https://communication.theknowhub.com/api/admin/get/score');
+        const response = await fetch('http://127.0.0.1:8000/admin/get/score');
         if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         setUsers(data);
@@ -90,7 +90,7 @@ function Admin() {
   return (
     <div className="flex flex-col items-center relative min-h-screen bg-gray-100 p-4 pt-20">
       {/* Header component */}
-      <Header showNav={true} />
+      <Header showNav={true} hiddenNavItems={['/dashboard','/bonus']}/>
 
       {/* Title */}
       <h1 className="text-3xl font-bold text-gray-700 mt-8 mb-4">Admin Dashboard</h1>
