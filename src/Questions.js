@@ -42,7 +42,7 @@ function Questions({ questions }) {
 
     try {
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_listening_comprehension',
+        'http://127.0.0.1:8000/evaluate_listening_comprehension',
         {
           method: 'POST',
           headers: {
@@ -134,7 +134,7 @@ function Questions({ questions }) {
   const submitScore = async () => {
     const user_id = localStorage.getItem('user_id');
     const duration = await waitForTotalDuration(); // Wait for totalDuration to be available
-    const level_number = 4;
+    const level_number = 3;
     const score = localStorage.getItem('totalScore');;
     const durationInMinutes = duration;
 
@@ -146,7 +146,7 @@ function Questions({ questions }) {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/user/insert/score', {
+      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -165,12 +165,40 @@ function Questions({ questions }) {
   };
 
 
-  const handleContinueClick = () => {
-    navigate('/bonus');
+  const handleContinueClick = async () => {
+    const user_id = localStorage.getItem('user_id');
+    if (!user_id) {
+      console.error("User ID not found in local storage");
+      return;
+    }
+
+    // Prepare the body for the POST request
+    const requestBody = { user_id };
+
+    try {
+      // Send the POST request
+      const response = await fetch('http://127.0.0.1:8000/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      // Check if the response is successful
+      if (response.ok) {
+        // If successful, navigate to the score-board
+        navigate('/bonus');
+      } else {
+        console.error("Failed to submit: ", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error during API call: ", error);
+    }
   };
 
   return (
-    <div className="w-full max-w-[900px] h-[550px] flex flex-col">
+    <div className="w-full max-w-[900px] h-[350px] flex flex-col">
       <h2 className="text-xl font-bold mb-6">Answer the Questions</h2>
 
       {/* Questions Container with Vertical Scrolling */}
@@ -207,7 +235,7 @@ function Questions({ questions }) {
       </div>
 
       <div className="mt-4 flex">
-      {canContinue &&(<h2 className="text-xl font-bold mb-4">You achieved a score {totalScore} out of 5</h2>)}
+      {canContinue &&(<h2 className="text-xl font-bold mb-4">Great job on your score of {totalScore} out of 5</h2>)}
       </div>
 
       {/* Buttons Section */}
