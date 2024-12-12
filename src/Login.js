@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [isSuccess, setIsSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+
+  const handlePasswordToggle = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,7 +24,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/assessment/login', {
+      const response = await fetch('http://127.0.0.1:8000/assessment/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,24 +42,23 @@ function Login() {
         setIsSuccess(true);
 
         setTimeout(() => {
-          if (data.current_level) {
-            if (data.current_level === 'Level 0') {
+          if (data.success === "Admin Logged in successfully") {
+            navigate('/admin');
+            return;
+          }
+          const level = localStorage.getItem("level");
+          if (level) {
+            if (level === 'Level 0' || level === 'Level 3' || level === 'Level 4' || level === 'Level 5') {
               navigate('/home');
             } else {
               navigate('/welcome-back');
             }
-            
           } else {
             setMessage('Unable to determine user level. Please contact support.');
             setIsSuccess(false);
           }
-
-          if (data.success === "Admin Logged in successfully") {
-            navigate('/admin');
-            return; // Stop further execution after routing
-          }
         }, 2000);
-        
+
       } else {
         setMessage('Invalid credentials. Please try again.');
         setIsSuccess(false);
@@ -87,20 +91,32 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
-          <div className="mb-4">
+          <div className="mb-4 relative"> {/* Add relative positioning */}
             <label className="block text-sm font-medium text-gray-700" htmlFor="password">Password</label>
             <input
-              type="password"
+              type={showPassword ? 'text' : 'password'} // Change input type based on state
               id="password"
               required
               className="mt-1 p-2 border border-gray-300 rounded w-full"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
+            <button 
+              type="button" 
+              onClick={handlePasswordToggle} 
+              className="absolute right-2 top-8" // Position the eye icon
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <i className="fa fa-eye" aria-hidden="true"></i>
+              ) : (
+                <i className="fa fa-eye-slash" aria-hidden="true"></i>
+              )}
+            </button>
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex items-center justify-center mt-4"
             disabled={loading}
           >
             {loading ? (
