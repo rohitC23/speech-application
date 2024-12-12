@@ -29,7 +29,7 @@ function NextLevel() {
 
     try {
       // Fetch audio file
-      const audioResponse = await fetch('https://communication.theknowhub.com/api/generate_tenses', {
+      const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ function NextLevel() {
       }
 
       // Fetch question
-      const questionResponse = await fetch('https://communication.theknowhub.com/api/generate_question', {
+      const questionResponse = await fetch('http://127.0.0.1:8000/generate_question', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,17 @@ function NextLevel() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} />
+      <Header showNav={true} hiddenNavItems={['/Home']}/>
+      <div className="flex items-center space-x-4 mb-12">
+          <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center">1</div>
+          <p className="text-green-500">Correct the Sentences</p>
+          <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">2</div>
+          <p className="text-blue-500">Correct the Tenses</p>
+          <div className="bg-gray-300 w-8 h-8 rounded-full text-gray-400 flex items-center justify-center">
+            <i className="fas fa-lock" style={{ color: '#9CA3AF' }}></i>
+          </div>
+          <p className="text-gray-400">Listening Comprehension</p>
+      </div>
       {!hasStarted ? (
         <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
           <h2 className="text-2xl font-bold mb-6">Speak in correct tense</h2>
@@ -138,7 +148,7 @@ function NextLevel() {
       {/* Popup for feedback */}
       {popup.message && (
         <div
-          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >
