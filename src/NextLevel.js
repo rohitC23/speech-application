@@ -130,7 +130,7 @@ function NextLevel() {
 
           {loading ? (
             <p className="text-lg font-semibold text-blue-500 mt-4">
-              Your test is about to begin, Please wait...
+              Your test is about to begin, Hang Tight!
             </p>
           ) : (
             <button
