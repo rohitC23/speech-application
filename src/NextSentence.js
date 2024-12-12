@@ -13,7 +13,7 @@ function NextSentence({ setIsHidden, id }) {
     try {      
   
         // API call to get the audio file
-        const audioResponse = await fetch('https://communication.theknowhub.com/api/generate_tenses', {
+        const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ function NextSentence({ setIsHidden, id }) {
         }
 
         // API call to get the question
-        const questionResponse = await fetch('https://communication.theknowhub.com/api/generate_question', {
+        const questionResponse = await fetch('http://127.0.0.1:8000/generate_question', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
