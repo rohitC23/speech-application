@@ -32,14 +32,24 @@ function Final() {
 
     const handleContinue = async () => {
         localStorage.setItem('score', []);
-        navigate('/level-para');
+        navigate('/level-listen');
     };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20 relative">
             <Header showNav={true} />
+            <div className="flex items-center space-x-4 mb-12">
+                <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center">1</div>
+                <p className="text-green-500">Correct the Sentences</p>
+                <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">2</div>
+                <p className="text-blue-500">Correct the Tenses</p>
+                <div className="bg-gray-300 w-8 h-8 rounded-full text-gray-400 flex items-center justify-center">
+                    <i className="fas fa-lock" style={{ color: '#9CA3AF' }}></i>
+                </div>
+                <p className="text-gray-400">Listening Comprehension</p>
+            </div>
             <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center relative">
-                <h2 className="text-xl font-bold mb-4">You achieved a score {totalScore} out of 5</h2>
+                <h2 className="text-xl font-bold mb-4">Great job on your score of {totalScore} out of 5 score!</h2>
                 <div className="mt-6 flex space-x-4">
                     <button 
                         onClick={handleRetry}
