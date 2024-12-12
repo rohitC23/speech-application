@@ -8,10 +8,12 @@ function Generator() {
   const [questions, setQuestions] = useState([]);
   const [popup, setPopup] = useState({ message: '', type: '' });
   const [isClicked, setIsClicked] = useState(false);
+  const [hasError, setHasError] = useState(false); // State to track if there was an error fetching data
 
   // Function to handle button click
   const handleClick = () => {
     setLoading(true); // Start loading on button click
+    setHasError(false); // Reset error state
     setIsClicked(true);
     const now = new Date();
     let currentTime = now.toLocaleTimeString('en-US', {
@@ -43,12 +45,15 @@ function Generator() {
             // Set paragraph and questions from API response
             setParagraph(data.paragraph);
             setQuestions(data.questions);
+            setHasError(false); // Reset error state on successful fetch
           } else if (isMounted) {
+            setHasError(true); // Set error state to true
             setPopup({ message: 'Failed to fetch data', type: 'error' });
             setTimeout(() => setPopup({ message: '', type: '' }), 3000);
           }
         } catch (error) {
           if (isMounted) {
+            setHasError(true); // Set error state to true
             setPopup({ message: 'Failed to fetch data', type: 'error' });
             setTimeout(() => setPopup({ message: '', type: '' }), 3000);
           }
@@ -66,6 +71,10 @@ function Generator() {
       };
     }
   }, [isClicked]);
+
+  const handleTryAgain = () => {
+    handleClick(); // Attempt to fetch data again
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
@@ -97,13 +106,22 @@ function Generator() {
           </button>
         )}
 
-        {isClicked && loading && <p className="text-md mb-6">Loading data, please wait...</p>}
+        {isClicked && loading && <p className="text-lg font-semibold text-blue-500">Loading data, please wait...</p>}
 
-        {isClicked && !loading && (
+        {isClicked && !loading && !hasError && (
           <>
             <p className="text-md mb-6">{paragraph}</p>
             <Paragraph questions={questions} />
           </>
+        )}
+
+        {isClicked && !loading && hasError && (
+          <button
+            onClick={handleTryAgain}
+            className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+          >
+            Try Again
+          </button>
         )}
       </div>
 
