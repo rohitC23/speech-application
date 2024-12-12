@@ -20,7 +20,7 @@ function App() {
       <Routes>
         <Route path="/home" element={<Home />} /> 
         <Route path="/app" element={<MainApp />} />
-        <Route path="/" element={<AuthForm />} />=
+        <Route path="/" element={<AuthForm />} />
         <Route path="/score-board" element={<ScoreBoard/>} />
         <Route path="/level-tenses" element={<NextLevel/>} />
         <Route path="/end" element={<Final/>} />
