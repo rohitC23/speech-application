@@ -36,7 +36,7 @@ function Welcome() {
                 navigate("/bonus");
                 break;
             case "Level 4":
-                navigate("/image");
+                navigate("/bonus-level");
                 break;
             case "Level 5":
                 navigate("/home");
@@ -52,7 +52,7 @@ function Welcome() {
         className="flex flex-col items-center justify-center min-h-screen bg-cover bg-center p-4 pt-20 relative"
         style={{ backgroundImage: `url(${backgroundImage})` }}
         >
-            <Header showNav={true} />
+            <Header showNav={true} hiddenNavItems={['/Home']}/>
             <div
                 className={`absolute inset-0 bg-gray-900 transition-opacity duration-500 ${
                     isLoading ? "opacity-50" : "opacity-0"
@@ -65,8 +65,8 @@ function Welcome() {
                 
             >
                 <div className="flex flex-col justify-center items-center relative">
-                    <h2 className="text-5xl font-bold mb-4 text-white">
-                    Congratulations on completing {level}!
+                    <h2 className="text-4xl font-bold mb-4 text-white">
+                    Welcome back! Congratulations on completing {level}!
                     </h2>
                     <p className="text-white text-xl">Would you like to continue or start over?</p>
                     <div className="mt-12 flex space-x-12">
