@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Login from './Login';
 import Signup from './Signup';
 import Header from './Header';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function AuthForm() {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,6 +17,8 @@ function AuthForm() {
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [otpMessage, setOtpMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); // State for loading
   const navigate = useNavigate();
 
   const toggleForm = () => {
@@ -29,6 +32,10 @@ function AuthForm() {
     setIsLogin(false);
   };
 
+  const handlePasswordToggle = () => {
+    setShowPassword(!showPassword);
+  };
+
   const handleSendOtp = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -36,6 +43,8 @@ function AuthForm() {
       return;
     }
     setEmailError('');
+
+    setLoading(true); // Set loading to true before sending OTP
 
     try {
       const response = await fetch('http://127.0.0.1:8000/assessment/otp/password', {
@@ -62,6 +71,8 @@ function AuthForm() {
     } catch (error) {
       console.error('Error sending OTP:', error);
       setOtpMessage('Failed to send OTP. Please try again.');
+    } finally {
+      setLoading(false); // Reset loading state after the operation
     }
   };
 
@@ -170,16 +181,28 @@ function AuthForm() {
                       required
                     />
                   </div>
-                  <div className="mb-4">
+                  <div className="mb-4 relative">
                     <label className="block text-gray-700">New Password</label>
                     <input
-                      type="password"
+                      type={showPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       className="w-full p-2 border rounded"
                       placeholder="Enter new password"
                       required
                     />
+                    <button 
+                      type="button" 
+                      onClick={handlePasswordToggle} 
+                      className="absolute right-2 top-8"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? (
+                        <i className="fa fa-eye" aria-hidden="true"></i>
+                      ) : (
+                        <i className="fa fa-eye-slash" aria-hidden="true"></i>
+                      )}
+                    </button>
                   </div>
                   <button
                     type="button"
@@ -195,9 +218,17 @@ function AuthForm() {
                 <button
                   type="button"
                   onClick={handleSendOtp}
-                  className="w-full bg-blue-500 text-white py-2 rounded"
+                  className="w-full bg-blue-500 text-white py-2 rounded flex items-center justify-center mt-4"
+                  disabled={loading}
                 >
-                  Send OTP
+                  {loading ? (
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
+                  ) : (
+                    'Send OTP'
+                  )}
                 </button>
               )}
             </form>
