@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import sampleImage from 'url:./assets/sound.png';
 import Header from './Header';
 import Tenses from './Tenses';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 function MainApp() {
   const [hasStarted, setHasStarted] = useState(false); // State to control the initial screen
@@ -19,7 +20,7 @@ function MainApp() {
 
     try {
       // Trigger the POST API when the Start button is clicked
-      const response = await fetch('https://communication.theknowhub.com/api/generate_sentences', {
+      const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,25 +55,38 @@ function MainApp() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} />
+      <Header showNav={true} hiddenNavItems={['/Home']}/>
+        <div className="flex items-center space-x-4 mb-12">
+          <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">1</div>
+          <p className="text-blue-500">Correct the Sentences</p>
+          <div className="bg-gray-300 text-white rounded-full w-8 h-8 flex items-center justify-center">
+            <i className="fas fa-lock" style={{ color: '#9CA3AF' }}></i>
+          </div>
+          <p className="text-gray-400">Correct the Tenses</p>
+          <div className="bg-gray-300 w-8 h-8 rounded-full text-gray-400 flex items-center justify-center">
+            <i className="fas fa-lock" style={{ color: '#9CA3AF' }}></i>
+          </div>
+          <p className="text-gray-400">Listening Comprehension</p>
+        </div>
       {!hasStarted ? (
+        
         // Initial screen with instructions, image, info box, separator, and start button
         <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
-          <h2 className="text-2xl font-bold mb-6">Listen, Then Speak</h2>
+          <h2 className="text-2xl font-bold mb-6">Correct the Sentences</h2>
 
           {/* Centered Image */}
           <img src={sampleImage} alt="Prompt" className="mb-6 w-[100px] h-[100px] mx-auto rounded-lg" />
-          <p className="text-md mb-6">You will listen to a Prompt, Then Speak</p>
-
+          <p className="text-md">Pay close attention to the incorrect sentence, then take the time to</p>
+          <p className="text-md mb-6">thoughtfully revise and correct it.</p>
           {/* Time and questions in a single box with a separator */}
           <div className="border px-4 py-2 text-center rounded-md shadow-sm flex justify-between items-center mb-8 w-full max-w-[400px]">
             <div className="flex-1">
-              <p className="font-semibold">Time Per Question</p>
+              <p className="font-semibold">Time Per Sentence</p>
               <p>30 seconds</p>
             </div>
             <div className="border-l h-full mx-2"></div> {/* Separator line */}
             <div className="flex-1">
-              <p className="font-semibold">Questions</p>
+              <p className="font-semibold">Sentences</p>
               <p>5</p>
             </div>
           </div>
@@ -98,7 +112,7 @@ function MainApp() {
 
       {popup.message && (
         <div
-          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >
