@@ -11,7 +11,7 @@ function NextButton({ setIsHidden, id }) {
   const handleNextClick = async () => {
     setLoading(true);
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/generate_sentences', {
+      const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ function NextButton({ setIsHidden, id }) {
       
       {popup.message && (
         <div
-          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >

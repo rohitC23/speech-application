@@ -128,7 +128,7 @@ function Tenses({ audioFile }) {
         formData.append('user_id', user_id);
         formData.append('file', wavBlob, 'recording.wav');
   
-        const response = await fetch('https://communication.theknowhub.com/api/evaluate_sentence', {
+        const response = await fetch('http://127.0.0.1:8000/evaluate_sentence', {
           method: 'POST',
           body: formData,
         });
@@ -166,7 +166,7 @@ function Tenses({ audioFile }) {
       setIsLoading(true);
   
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_incorrect_answer',
+        'http://127.0.0.1:8000/evaluate_incorrect_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -396,7 +396,7 @@ function Tenses({ audioFile }) {
 
       {popup.message && (
         <div
-          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >

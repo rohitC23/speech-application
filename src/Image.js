@@ -138,7 +138,7 @@ function Image() {
         formData.append('image_filename', imageFilename);
         formData.append('audio', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://communication.theknowhub.com/api/image_evaluation', {
+        const response = await fetch('http://127.0.0.1:8000/image_evaluation', {
           method: 'POST',
           body: formData,
         });
@@ -205,7 +205,7 @@ function Image() {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/user/insert/score', {
+      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -286,7 +286,7 @@ function Image() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={false} />
+      <Header showNav={true} hiddenNavItems={['/bonus']}/>
       <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
         {!isStopped && (
           <>
@@ -377,7 +377,7 @@ function Image() {
 
       {popup.message && (
         <div
-          className={`absolute top-20 p-4 rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >

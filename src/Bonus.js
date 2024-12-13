@@ -24,7 +24,7 @@ function Bonus() {
     return (
         <div className="relative flex flex-col items-center justify-center min-h-screen bg-cover bg-center p-4 pt-20"
         style={{ backgroundImage: `url(${backgroundImage})` }}>
-            <Header showNav={true} />
+            <Header showNav={true} hiddenNavItems={['/bonus']}/>
             <div
                 className={`absolute inset-0 bg-gray-900 transition-opacity duration-500 ${
                     isLoading ? "opacity-50" : "opacity-0"
@@ -39,10 +39,10 @@ function Bonus() {
                 
                 <div className="flex flex-col justify-center items-center relative">
                     <h2 className="text-5xl font-bold mb-4 text-white">
-                        Congratulations on entering the Bonus Level!
+                        Welcome to the Bonus Level! Almost there!
                     </h2>
                     <p className="text-white text-xl">
-                        This level includes reading comprehension and image description tasks
+                        This level includes reading comprehension and image description
                     </p>
                     <div className="mt-12 flex space-x-4">
                         <button

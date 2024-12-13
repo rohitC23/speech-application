@@ -13,14 +13,14 @@ function Home() {
   
   // Fetch the word of the day when the component mounts
   useEffect(() => {
-    fetch('https://communication.theknowhub.com/api/generate_word')
+    fetch('http://127.0.0.1:8000/generate_word')
       .then((response) => response.json())
       .then((data) => {
         const today = Object.keys(data)[0]; // Get the date
         setWordData(data[today]); // Save the word data
         
         // Fetch the audio file for the word of the day
-        fetch('https://communication.theknowhub.com/api/generate_word_audio', {
+        fetch('http://127.0.0.1:8000/generate_word_audio', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         })
@@ -61,7 +61,7 @@ function Home() {
   return (
     <div>
       {/* Header component */}
-      <Header showNav={true} />
+      <Header showNav={true} hiddenNavItems={['/Home']}/>
 
       {/* Hero section */}
       <section className="flex items-center justify-center h-screen bg-gray-100">

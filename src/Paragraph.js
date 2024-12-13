@@ -6,6 +6,7 @@ function Paragraph({ questions }) {
   const [popup, setPopup] = useState({ message: '', type: '' });
   const [canContinue, setCanContinue] = useState(false);
   const navigate = useNavigate();
+  const [answersDisabled, setAnswersDisabled] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
 
   const handleOptionChange = (questionId, option) => {
@@ -42,7 +43,7 @@ function Paragraph({ questions }) {
 
     try {
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_reading_comprehension',
+        'http://127.0.0.1:8000/evaluate_reading_comprehension',
         {
           method: 'POST',
           headers: {
@@ -61,6 +62,7 @@ function Paragraph({ questions }) {
       localStorage.setItem('totalScore', result.score);
       setPopup({ message: 'Answers submitted successfully!', type: 'success' });
       setCanContinue(true); // Enable the 'Continue' button
+      setAnswersDisabled(true);
     } catch (error) {
       setPopup({ message: error.message || 'Something went wrong', type: 'error' });
     } finally {
@@ -135,7 +137,7 @@ function Paragraph({ questions }) {
   const submitScore = async () => {
     const user_id = localStorage.getItem('user_id');
     const duration = await waitForTotalDuration(); // Wait for totalDuration to be available
-    const level_number = 3;
+    const level_number = 4;
     const score = localStorage.getItem('totalScore');;
     const durationInMinutes = duration;
 
@@ -147,7 +149,7 @@ function Paragraph({ questions }) {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/user/insert/score', {
+      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,12 +168,40 @@ function Paragraph({ questions }) {
   };
 
 
-  const handleContinueClick = () => {
-    navigate('/image');
+  const handleContinueClick = async () => {
+    const user_id = localStorage.getItem('user_id');
+    if (!user_id) {
+      console.error("User ID not found in local storage");
+      return;
+    }
+
+    // Prepare the body for the POST request
+    const requestBody = { user_id };
+
+    try {
+      // Send the POST request
+      const response = await fetch('http://127.0.0.1:8000/submit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      // Check if the response is successful
+      if (response.ok) {
+        // If successful, navigate to the score-board
+        navigate('/image');
+      } else {
+        console.error("Failed to submit: ", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error during API call: ", error);
+    }
   };
 
   return (
-    <div className="w-full max-w-[900px] h-[550px] flex flex-col">
+    <div className="w-full max-w-[900px] h-[410px] flex flex-col">
       <h2 className="text-xl font-bold mb-6">Answer the Questions</h2>
 
       {/* Questions Container with Vertical Scrolling */}
@@ -196,6 +226,7 @@ function Paragraph({ questions }) {
                       value={option}
                       checked={answers[questionId] === option}
                       onChange={() => handleOptionChange(questionId, option)}
+                      disabled={answersDisabled}
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                     />
                     <span className="text-gray-800">{option}</span>
@@ -208,7 +239,21 @@ function Paragraph({ questions }) {
       </div>
 
       <div className="mt-4 flex">
-      {canContinue &&(<h2 className="text-xl font-bold mb-4">You achieved a score {totalScore} out of 5</h2>)}
+        {canContinue && (
+          <h2 className="text-lg font-bold mb-4">
+            Fantastic! You scored {totalScore} out of 5! Think you can beat your own score?
+            <a 
+              href="#"
+              onClick={(e) => {
+                e.preventDefault(); // Prevent default anchor behavior
+                window.location.reload(); // Refresh the page
+              }} 
+              className="text-lg text-blue-500 mx-4 underline hover:text-blue-700 focus:outline-none"
+            >
+              Let's try it again!
+            </a>
+          </h2>
+        )}
       </div>
 
       {/* Buttons Section */}
@@ -230,11 +275,7 @@ function Paragraph({ questions }) {
         >
           Continue
         </button>
-
-        
       </div>
-
-      
 
       {/* Popup Message */}
       {popup.message && (
