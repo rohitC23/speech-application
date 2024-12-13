@@ -239,17 +239,17 @@ function Questions({ questions }) {
 
     <div className="mt-4 flex">
       {canContinue && (
-        <h2 className="text-xl font-bold mb-4">
-          Great job on your score of {totalScore} out of 5 
+        <h2 className="text-lg font-bold mb-4">
+          Fantastic! You scored {totalScore} out of 5! Think you can beat your own score?
           <a 
             href="#"
             onClick={(e) => {
               e.preventDefault(); // Prevent default anchor behavior
               window.location.reload(); // Refresh the page
             }} 
-            className="text-xl text-blue-500 mx-4 underline hover:text-blue-700 focus:outline-none"
+            className="text-lg text-blue-500 mx-4 underline hover:text-blue-700 focus:outline-none"
           >
-            Retry
+            Let's try it again!
           </a>
         </h2>
       )}
