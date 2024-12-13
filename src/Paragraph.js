@@ -6,6 +6,7 @@ function Paragraph({ questions }) {
   const [popup, setPopup] = useState({ message: '', type: '' });
   const [canContinue, setCanContinue] = useState(false);
   const navigate = useNavigate();
+  const [answersDisabled, setAnswersDisabled] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
 
   const handleOptionChange = (questionId, option) => {
@@ -61,6 +62,7 @@ function Paragraph({ questions }) {
       localStorage.setItem('totalScore', result.score);
       setPopup({ message: 'Answers submitted successfully!', type: 'success' });
       setCanContinue(true); // Enable the 'Continue' button
+      setAnswersDisabled(true);
     } catch (error) {
       setPopup({ message: error.message || 'Something went wrong', type: 'error' });
     } finally {
@@ -224,6 +226,7 @@ function Paragraph({ questions }) {
                       value={option}
                       checked={answers[questionId] === option}
                       onChange={() => handleOptionChange(questionId, option)}
+                      disabled={answersDisabled}
                       className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500"
                     />
                     <span className="text-gray-800">{option}</span>
@@ -272,11 +275,7 @@ function Paragraph({ questions }) {
         >
           Continue
         </button>
-
-        
       </div>
-
-      
 
       {/* Popup Message */}
       {popup.message && (
