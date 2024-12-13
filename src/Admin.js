@@ -15,7 +15,7 @@ function Admin() {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch('http://127.0.0.1:8000/admin/get/score');
+        const response = await fetch('https://communication.theknowhub.com/api/admin/get/score');
         if (!response.ok) throw new Error('Failed to fetch data');
         const data = await response.json();
         setUsers(data);
