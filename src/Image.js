@@ -274,7 +274,19 @@ function Image() {
     // Call submitScore after ensuring totalDuration is set
     await submitScore();
 
-    navigate('/home');
+    const level = localStorage.getItem("bonusLevel");
+    
+    switch (level) {
+      case "1":
+          navigate("/level-tenses");
+          break;
+      case "2":
+          navigate("/level-listen");
+          break;
+      default:
+          navigate("/home"); // Fallback route
+          break;
+    }
   };
 
 
