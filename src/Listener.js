@@ -120,7 +120,7 @@ function Listener() {
         ) : (
           <>
             <p className="text-lg font-semibold text-blue-500">
-              {loading &&( 'Loading data, please wait...')}
+              {loading &&( 'Preparing your Listening Comprehension exercise... Hang tight!')}
             </p>
 
             {audioFile && (
