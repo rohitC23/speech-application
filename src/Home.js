@@ -13,14 +13,14 @@ function Home() {
   
   // Fetch the word of the day when the component mounts
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/generate_word')
+    fetch('https://communication.theknowhub.com/api/generate_word')
       .then((response) => response.json())
       .then((data) => {
         const today = Object.keys(data)[0]; // Get the date
         setWordData(data[today]); // Save the word data
         
         // Fetch the audio file for the word of the day
-        fetch('http://127.0.0.1:8000/generate_word_audio', {
+        fetch('https://communication.theknowhub.com/api/generate_word_audio', {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' }
         })
