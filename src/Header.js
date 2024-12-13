@@ -23,7 +23,7 @@ function Header({ showNav, hiddenNavItems = [] }) {
         .bonus-link {
           position: relative;
           display: inline-block;
-          color: orange;
+          color: #FF6428;
           background-image: linear-gradient(45deg, #f5c980, #f5a942, #f5a942, #f5c980);
           background-size: 300%;
           -webkit-background-clip: text;
