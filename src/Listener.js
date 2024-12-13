@@ -16,7 +16,7 @@ function Listener() {
     setErrorOccurred(false); // Reset error state before fetching
     try {
       // Fetch audio first
-      const audioResponse = await fetch('http://127.0.0.1:8000/listening_comprehension_audio', {
+      const audioResponse = await fetch('https://communication.theknowhub.com/api/listening_comprehension_audio', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ function Listener() {
         setAudioFile({ url: audioFileURL, name: filename });
 
         // Fetch questions only after audio fetch is successful
-        const questionsResponse = await fetch('http://127.0.0.1:8000/listening_comprehension', {
+        const questionsResponse = await fetch('https://communication.theknowhub.com/api/listening_comprehension', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
