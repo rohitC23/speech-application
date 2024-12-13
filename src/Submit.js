@@ -54,6 +54,7 @@ function Submit() {
   };
 
   const handleSubmitClick = async () => {
+    localStorage.setItem('bonusLevel', 1);
     // Retrieve initial 'duration' from local storage
     const initialDuration = localStorage.getItem('duration');
 
