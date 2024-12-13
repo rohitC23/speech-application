@@ -43,7 +43,7 @@ function Paragraph({ questions }) {
 
     try {
       const response = await fetch(
-        'http://127.0.0.1:8000/evaluate_reading_comprehension',
+        'https://communication.theknowhub.com/api/evaluate_reading_comprehension',
         {
           method: 'POST',
           headers: {
@@ -149,7 +149,7 @@ function Paragraph({ questions }) {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
+      const response = await fetch('https://communication.theknowhub.com/api/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -180,7 +180,7 @@ function Paragraph({ questions }) {
 
     try {
       // Send the POST request
-      const response = await fetch('http://127.0.0.1:8000/submit', {
+      const response = await fetch('https://communication.theknowhub.com/api/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
