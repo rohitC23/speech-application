@@ -118,6 +118,14 @@ function Header({ showNav, hiddenNavItems = [] }) {
       {isMobileMenuOpen && showNav && (
         <div className="absolute top-16 right-0 w-64 bg-white shadow-md py-2 z-50">
           <div className="flex flex-col space-y-2">
+            {!isNavItemHidden('/Home') && (
+              <Link 
+                to="/Home" 
+                className="text-gray-700 hover:text-blue-500 text-base font-medium"
+              >
+                Home
+              </Link>
+            )}
             {!isNavItemHidden('/dashboard') && (
               <Link 
                 to="/dashboard" 
