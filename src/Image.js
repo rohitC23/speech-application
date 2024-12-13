@@ -382,7 +382,7 @@ function Image() {
               onClick={handleContinueClick}
               className="px-8 py-3 bg-blue-500 hover:bg-green-600 text-white font-semibold rounded-lg text-lg"
             >
-              Return to Home
+              Back
             </button>
         </div>
         )}
