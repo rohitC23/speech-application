@@ -140,7 +140,7 @@ function NewSentence({ audioFile, question }) {
         formData.append('user_id',user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('http://127.0.0.1:8000/evaluate_tense', {
+        const response = await fetch('https://communication.theknowhub.com/api/evaluate_tense', {
           method: 'POST',
           body: formData,
         });
@@ -207,7 +207,7 @@ function NewSentence({ audioFile, question }) {
       }
 
       const response = await fetch(
-        'http://127.0.0.1:8000/evaluate_tense_answer',
+        'https://communication.theknowhub.com/api/evaluate_tense_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
