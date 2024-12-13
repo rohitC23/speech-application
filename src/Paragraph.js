@@ -236,7 +236,21 @@ function Paragraph({ questions }) {
       </div>
 
       <div className="mt-4 flex">
-      {canContinue &&(<h2 className="text-xl font-bold mb-4">Great job on your score of {totalScore} out of 5</h2>)}
+        {canContinue && (
+          <h2 className="text-xl font-bold mb-4">
+            Great job on your score of {totalScore} out of 5 
+            <a 
+              href="#"
+              onClick={(e) => {
+                e.preventDefault(); // Prevent default anchor behavior
+                window.location.reload(); // Refresh the page
+              }} 
+              className="text-xl text-blue-500 mx-4 underline hover:text-blue-700 focus:outline-none"
+            >
+              Retry
+            </a>
+          </h2>
+        )}
       </div>
 
       {/* Buttons Section */}
