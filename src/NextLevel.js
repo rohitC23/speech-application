@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Header from './Header';
 import Sentences from './Sentences';
-
+import { Link } from 'react-router-dom';
 function NextLevel() {
   const [hasStarted, setHasStarted] = useState(false); // State to control the initial screen
   const [difficultyLevel, setDifficultyLevel] = useState(null); // State to store difficulty level
@@ -81,7 +81,8 @@ function NextLevel() {
       <Header showNav={true} hiddenNavItems={['/Home']}/>
       <div className="flex items-center space-x-4 mb-12">
           <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center">1</div>
-          <p className="text-green-500">Correct the Sentences</p>
+          <p className="text-green-500"><Link 
+                  to="/app" >Correct the Sentences</Link></p>
           <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">2</div>
           <p className="text-blue-500">Correct the Tenses</p>
           <div className="bg-gray-300 w-8 h-8 rounded-full text-gray-400 flex items-center justify-center">
