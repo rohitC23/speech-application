@@ -59,9 +59,9 @@ function Header({ showNav, hiddenNavItems = [] }) {
         }
       `}</style>
       <header className="fixed top-0 left-0 w-full bg-white shadow-md py-4 z-50">
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container flex flex-wrap justify-between items-center px-4">
           <div className="flex items-center">
-            <img src={logo} alt="Logo" className="h-12 w-auto mr-2 pl-2" />
+            <img src={logo} alt="Logo" className="h-10 w-auto" />
           </div>
 
           <div className="lg:hidden">
@@ -76,7 +76,7 @@ function Header({ showNav, hiddenNavItems = [] }) {
           </div>
 
           {showNav && (
-            <nav className="hidden lg:flex items-center space-x-6 mr-2">
+            <nav className="hidden lg:flex absolute top-6 right-4 space-x-6 mr-2">
               {!isNavItemHidden('/Home') && (
                 <Link 
                   to="/Home" 
