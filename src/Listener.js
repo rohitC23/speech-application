@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Header from './Header';
 import Questions from './Questions';
+import { Link } from 'react-router-dom';
 
 function Listener() {
   const [loading, setLoading] = useState(true);
@@ -82,9 +83,11 @@ function Listener() {
       <Header showNav={true} hiddenNavItems={['/Home']}/>
       <div className="flex items-center space-x-4 mb-10">
         <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center">1</div>
-        <p className="text-green-500">Correct the Sentences</p>
+        <p className="text-green-500"><Link 
+                  to="/app" >Correct the Sentences</Link></p>
         <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center">2</div>
-        <p className="text-green-500">Correct the Tenses</p>
+        <p className="text-green-500"><Link 
+                  to="/level-tenses" >Correct the Tenses</Link></p>
         <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center">3</div>
         <p className="text-blue-500">Listening Comprehension</p>
       </div>
@@ -117,7 +120,7 @@ function Listener() {
         ) : (
           <>
             <p className="text-lg font-semibold text-blue-500">
-              {loading &&( 'Preparing your Reading Comprehension exercise... Hang tight!')}
+              {loading &&( 'Loading data, please wait...')}
             </p>
 
             {audioFile && (
