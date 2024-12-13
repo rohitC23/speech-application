@@ -29,7 +29,7 @@ function NextLevel() {
 
     try {
       // Fetch audio file
-      const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
+      const audioResponse = await fetch('https://communication.theknowhub.com/api/generate_tenses', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ function NextLevel() {
       }
 
       // Fetch question
-      const questionResponse = await fetch('http://127.0.0.1:8000/generate_question', {
+      const questionResponse = await fetch('https://communication.theknowhub.com/api/generate_question', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
