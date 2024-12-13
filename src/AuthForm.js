@@ -47,7 +47,7 @@ function AuthForm() {
     setLoading(true); // Set loading to true before sending OTP
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/assessment/otp/password', {
+      const response = await fetch('https://communication.theknowhub.com/api/assessment/otp/password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +78,7 @@ function AuthForm() {
 
   const handleResetPassword = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/assessment/forgot/password', {
+      const response = await fetch('https://communication.theknowhub.com/api/assessment/forgot/password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
