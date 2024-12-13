@@ -17,8 +17,20 @@ function Bonus() {
         navigate("/level-para");
     };
 
+    const level = localStorage.getItem("bonusLevel");
+
     const handleSkip = () => {
-        navigate("/home");
+        switch (level) {
+            case "1":
+                navigate("/level-tenses");
+                break;
+            case "2":
+                navigate("/level-listen");
+                break;
+            default:
+                navigate("/home"); // Fallback route
+                break;
+        }
     };
 
     return (
