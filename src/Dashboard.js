@@ -14,7 +14,7 @@ const Dashboard = () => {
   const fetchScores = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://127.0.0.1:8000/user/get/score', {
+      const response = await fetch('https://communication.theknowhub.com/api/user/get/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
