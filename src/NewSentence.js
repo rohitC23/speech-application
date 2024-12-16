@@ -94,6 +94,7 @@ function NewSentence({ audioFile, question }) {
   const [emoji, setEmoji] = useState('');
   const timeoutRef = useRef(null);
   const [audioTextInput, setAudioTextInput] = useState('');
+  const [errorOccurred, setErrorOccurred] = useState(false);
   const [popup, setPopup] = useState({ message: '', type: '' });
 
   useEffect(() => {
@@ -126,6 +127,7 @@ function NewSentence({ audioFile, question }) {
       setAudioBlob(audioBlob);
 
       try {
+        setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -185,6 +187,7 @@ function NewSentence({ audioFile, question }) {
         setIsLoading(false);
         console.error('Error uploading audio file:', error);
         setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
+        setErrorOccurred(true);
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
@@ -200,6 +203,7 @@ function NewSentence({ audioFile, question }) {
     setIsClicked(true);
 
     try {
+      setErrorOccurred(false);
       setIsLoading(true);
 
       if(globalId === 5){
@@ -270,6 +274,7 @@ function NewSentence({ audioFile, question }) {
       console.error('Error sending text:', error);
       setIsLoading(false);
       setPopup({ message: 'Failed to evaluate the text.', type: 'error' });
+      setErrorOccurred(true);
       setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     }
   };
@@ -302,6 +307,10 @@ function NewSentence({ audioFile, question }) {
     setIsRecording(false);
     mediaRecorderRef.current.stop();
     setIsStopped(true);
+  };
+
+  const handleTryAgain = () => {
+    window.location.reload();
   };
 
   return (
@@ -451,6 +460,18 @@ function NewSentence({ audioFile, question }) {
           Evaluating your answer...
         </p>
       )}
+
+    {errorOccurred && (
+      <div className='flex flex-col items-center'>
+        <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
+        <button
+          onClick={handleTryAgain}
+          className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+        >
+          Try Again
+        </button>
+      </div>
+    )}
 
       {/* Conditionally render Submit component when globalId reaches 5 */}
       {apiResponse && (
