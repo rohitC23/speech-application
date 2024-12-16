@@ -142,7 +142,7 @@ function NewTenses({ audioFile }) {
         formData.append('user_id',user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('http://127.0.0.1:8000/evaluate_sentence', {
+        const response = await fetch('https://communication.theknowhub.com/api/evaluate_sentence', {
           method: 'POST',
           body: formData,
         });
@@ -209,7 +209,7 @@ function NewTenses({ audioFile }) {
       }
 
       const response = await fetch(
-        'http://127.0.0.1:8000/evaluate_incorrect_answer',
+        'https://communication.theknowhub.com/api/evaluate_incorrect_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
