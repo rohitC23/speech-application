@@ -92,6 +92,7 @@ function NewTenses({ audioFile }) {
   const user_id = localStorage.getItem('user_id');
   const [showEmoji, setShowEmoji] = useState(false);
   const [audioTextInput, setAudioTextInput] = useState('');
+  const [errorOccurred, setErrorOccurred] = useState(false);
   const [emoji, setEmoji] = useState('');
   const timeoutRef = useRef(null);
   const [popup, setPopup] = useState({ message: '', type: '' });
@@ -126,6 +127,7 @@ function NewTenses({ audioFile }) {
       setAudioBlob(audioBlob);
 
       try {
+        setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -140,7 +142,7 @@ function NewTenses({ audioFile }) {
         formData.append('user_id',user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://communication.theknowhub.com/api/evaluate_sentence', {
+        const response = await fetch('http://127.0.0.1:8000/evaluate_sentence', {
           method: 'POST',
           body: formData,
         });
@@ -183,6 +185,7 @@ function NewTenses({ audioFile }) {
           
       } catch (error) {
         setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
+        setErrorOccurred(true);
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
@@ -198,6 +201,7 @@ function NewTenses({ audioFile }) {
     setIsClicked(true);
 
     try {
+      setErrorOccurred(false);
       setIsLoading(true);
 
       if(globalId === 5){
@@ -205,7 +209,7 @@ function NewTenses({ audioFile }) {
       }
 
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_incorrect_answer',
+        'http://127.0.0.1:8000/evaluate_incorrect_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -268,6 +272,7 @@ function NewTenses({ audioFile }) {
       console.error('Error sending text:', error);
       setIsLoading(false);
       setPopup({ message: 'Failed to evaluate the text.', type: 'error' });
+      setErrorOccurred(true);
       setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     }
   };
@@ -300,6 +305,10 @@ function NewTenses({ audioFile }) {
     setIsRecording(false);
     mediaRecorderRef.current.stop();
     setIsStopped(true);
+  };
+
+  const handleTryAgain = () => {
+    window.location.reload();
   };
 
   return (
@@ -450,6 +459,18 @@ function NewTenses({ audioFile }) {
           Evaluating your answer...
         </p>
       )}
+
+    {errorOccurred && (
+      <div className='flex flex-col items-center'>
+        <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
+        <button
+          onClick={handleTryAgain}
+          className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+        >
+          Try Again
+        </button>
+      </div>
+    )}
 
       {/* Conditionally render Submit component when globalId reaches 5 */}
       {apiResponse && (
