@@ -6,6 +6,7 @@ function Questions({ questions }) {
   const [popup, setPopup] = useState({ message: '', type: '' });
   const [canContinue, setCanContinue] = useState(false);
   const [answersDisabled, setAnswersDisabled] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState([]);
   const navigate = useNavigate();
   const [totalScore, setTotalScore] = useState(0);
 
@@ -59,6 +60,7 @@ function Questions({ questions }) {
 
       const result = await response.json();
       setTotalScore(result.score);
+      setCorrectAnswers(result.correct_answers);
       localStorage.setItem('totalScore', result.score);
       setPopup({ message: 'Answers submitted successfully!', type: 'success' });
       setCanContinue(true); // Enable the 'Continue' button
@@ -231,6 +233,10 @@ function Questions({ questions }) {
                     <span className="text-gray-800">{option}</span>
                   </label>
                 ))}
+
+            {answersDisabled && (
+                <p className="text-green-500 font-bold mt-2">Correct Answer: {correctAnswers[index]}</p>
+              )}
               </div>
             </div>
           );
