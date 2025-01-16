@@ -3,13 +3,22 @@ import sampleImage from 'url:./assets/sound.png';
 import Header from './Header';
 import Tenses from './Tenses';
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { Link } from 'react-router-dom';
 
 function MainApp() {
   const [hasStarted, setHasStarted] = useState(false); // State to control the initial screen
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file
   const [loading, setLoading] = useState(false); // State to handle loading
   const user_id = localStorage.getItem('user_id');
+  const levelsList = JSON.parse(localStorage.getItem('levelsList'));
   const [popup, setPopup] = useState({ message: '', type: '' });
+  const navigationMap = {
+    "Correct the Sentences": '/app',
+    "Correct the Tenses": '/level-tenses',
+    "Listening Comprehension": '/level-listen',
+    "Reading Comprehension": '/level-para',
+    "Image Description": '/image',
+  };
 
   const handleStartClick = async () => {
     setLoading(true);
@@ -20,7 +29,7 @@ function MainApp() {
 
     try {
       // Trigger the POST API when the Start button is clicked
-      const response = await fetch('https://communication.theknowhub.com/api/generate_sentences', {
+      const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,17 +65,41 @@ function MainApp() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
       <Header showNav={true} hiddenNavItems={['/Home']}/>
-        <div className="flex items-center space-x-4 mb-12">
-          <div className="bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">1</div>
-          <p className="text-blue-500">Correct the Sentences</p>
-          <div className="bg-gray-300 text-white rounded-full w-8 h-8 flex items-center justify-center">
-            <i className="fas fa-lock" style={{ color: '#9CA3AF' }}></i>
-          </div>
-          <p className="text-gray-400">Correct the Tenses</p>
-          <div className="bg-gray-300 w-8 h-8 rounded-full text-gray-400 flex items-center justify-center">
-            <i className="fas fa-lock" style={{ color: '#9CA3AF' }}></i>
-          </div>
-          <p className="text-gray-400">Listening Comprehension</p>
+        <div className="flex items-center space-x-4 mb-10">
+          {levelsList.map((level, index) => {
+            // Get the corresponding route from the navigationMap
+            const route = navigationMap[level];
+            const isActive = level === "Correct the Sentences"; // Mark active based on string
+  
+            return (
+              <React.Fragment key={index}>
+                <div
+                  className={`${
+                    isActive ? 'bg-blue-500' : 'bg-gray-400'
+                  } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+                >
+                  {index + 1}
+                </div>
+                {route ? (
+                  <p
+                    className={`${
+                      isActive ? 'text-blue-500' : 'text-gray-500'
+                    }`}
+                  >
+                    <Link to={route}>{level}</Link>
+                  </p>
+                ) : (
+                  <p
+                    className={`${
+                      isActive ? 'text-blue-500' : 'text-gray-500'
+                    }`}
+                  >
+                    {level}
+                  </p>
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
       {!hasStarted ? (
         
