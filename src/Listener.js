@@ -6,17 +6,25 @@ import { Link } from 'react-router-dom';
 function Listener() {
   const [loading, setLoading] = useState(true);
   const [questions, setQuestions] = useState([]);
+  const levelsList = JSON.parse(localStorage.getItem('levelsList'));
   const [popup, setPopup] = useState({ message: '', type: '' });
   const [isStarted, setIsStarted] = useState(false);
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file URL and name
   const [errorOccurred, setErrorOccurred] = useState(false); // State to track API errors
+  const navigationMap = {
+    "Correct the Sentences": '/app',
+    "Correct the Tenses": '/level-tenses',
+    "Listening Comprehension": '/level-listen',
+    "Reading Comprehension": '/level-para',
+    "Image Description": '/image',
+  };
 
   const fetchAudioAndQuestions = async () => {
     const user_id = localStorage.getItem('user_id'); // Retrieve the user ID from localStorage
     setErrorOccurred(false); // Reset error state before fetching
     try {
       // Fetch audio first
-      const audioResponse = await fetch('https://communication.theknowhub.com/api/listening_comprehension_audio', {
+      const audioResponse = await fetch('http://127.0.0.1:8000/listening_comprehension_audio', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -35,7 +43,7 @@ function Listener() {
         setAudioFile({ url: audioFileURL, name: filename });
 
         // Fetch questions only after audio fetch is successful
-        const questionsResponse = await fetch('https://communication.theknowhub.com/api/listening_comprehension', {
+        const questionsResponse = await fetch('http://127.0.0.1:8000/listening_comprehension', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -82,15 +90,42 @@ function Listener() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
       <Header showNav={true} hiddenNavItems={['/Home']}/>
       <div className="flex items-center space-x-4 mb-10">
-        <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center">1</div>
-        <p className="text-green-500"><Link 
-                  to="/app" >Correct the Sentences</Link></p>
-        <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center">2</div>
-        <p className="text-green-500"><Link 
-                  to="/level-tenses" >Correct the Tenses</Link></p>
-        <div className="bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center">3</div>
-        <p className="text-blue-500">Listening Comprehension</p>
+        {levelsList.map((level, index) => {
+          // Get the corresponding route from the navigationMap
+          const route = navigationMap[level];
+          const isActive = level === "Listening Comprehension"; // Mark active based on string
+
+          return (
+            <React.Fragment key={index}>
+              <div
+                className={`${
+                  isActive ? 'bg-blue-500' : 'bg-gray-400'
+                } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+              >
+                {index + 1}
+              </div>
+              {route ? (
+                <p
+                  className={`${
+                    isActive ? 'text-blue-500' : 'text-gray-500'
+                  }`}
+                >
+                  <Link to={route}>{level}</Link>
+                </p>
+              ) : (
+                <p
+                  className={`${
+                    isActive ? 'text-blue-500' : 'text-gray-500'
+                  }`}
+                >
+                  {level}
+                </p>
+              )}
+            </React.Fragment>
+          );
+        })}
       </div>
+
 
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
         <h2 className="text-2xl font-bold mb-6">Listening Comprehension</h2>
