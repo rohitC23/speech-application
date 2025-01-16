@@ -142,7 +142,7 @@ function NewTenses({ audioFile }) {
         formData.append('user_id',user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://communication.theknowhub.com/api/evaluate_sentence', {
+        const response = await fetch('http://127.0.0.1:8000/evaluate_sentence', {
           method: 'POST',
           body: formData,
         });
@@ -209,7 +209,7 @@ function NewTenses({ audioFile }) {
       }
 
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_incorrect_answer',
+        'http://127.0.0.1:8000/evaluate_incorrect_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -309,6 +309,7 @@ function NewTenses({ audioFile }) {
 
   const handleTryAgain = () => {
     window.location.reload();
+    localStorage.setItem('score', []);
   };
 
   return (
@@ -467,7 +468,7 @@ function NewTenses({ audioFile }) {
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Try Again
+          Back to Home
         </button>
       </div>
     )}
