@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {Line, Bar } from 'react-chartjs-2';
-import { useNavigate } from "react-router-dom";
 import 'chart.js/auto';
 import moment from 'moment';
 import Header from './Header';
@@ -10,11 +9,10 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const userName = localStorage.getItem('user_id');
-  const navigate = useNavigate();
   const fetchScores = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://communication.theknowhub.com/api/user/get/score', {
+      const response = await fetch('http://127.0.0.1:8000/user/get/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -171,9 +169,6 @@ const Dashboard = () => {
   const mostAttemptedLevel =
     mostAttemptedLevelData.attempt > 1 ? mostAttemptedLevelData.level : '--';
 
-  const handleBack = () => {
-    navigate("/home");
-  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-200 p-4 pt-20">
@@ -211,134 +206,201 @@ const Dashboard = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
 
-              <div className="p-4 bg-white rounded shadow">
-                <h2 className="text-xl font-semibold mb-2">Score Improvement by Level</h2>
-                <Line
-                  data={lineChartData}
-                  options={{
-                    plugins: {
-                      legend: {
-                        position: 'top',
-                        onClick: (e, legendItem, legend) => {
-                          const ci = legend.chart;
-                          const index = legendItem.datasetIndex;
-                          const meta = ci.getDatasetMeta(index);
+            <div className="p-4 bg-white rounded shadow">
+    <h2 className="text-xl font-semibold mb-2">Score Improvement by Level</h2>
+    <Line
+      data={lineChartData}
+      options={{
+        plugins: {
+          legend: {
+            position: 'top',
+            onClick: (e, legendItem, legend) => {
+              const ci = legend.chart;
+              const index = legendItem.datasetIndex;
+              const meta = ci.getDatasetMeta(index);
 
-                          // Check if all other datasets are already hidden
-                          const allHidden = ci.data.datasets.every((dataset, i) => 
-                            i === index || ci.getDatasetMeta(i).hidden
-                          );
+              // Check if all other datasets are already hidden
+              const allHidden = ci.data.datasets.every((dataset, i) => 
+                i === index || ci.getDatasetMeta(i).hidden
+              );
 
-                          if (meta.hidden || allHidden) {
-                            // If the selected dataset is hidden or all others are hidden, reset all visibility
-                            ci.data.datasets.forEach((_, i) => {
-                              ci.getDatasetMeta(i).hidden = false; // Show all datasets
-                            });
-                          } else {
-                            // Hide all datasets except the selected one
-                            ci.data.datasets.forEach((_, i) => {
-                              ci.getDatasetMeta(i).hidden = i !== index;
-                            });
-                          }
+              if (meta.hidden || allHidden) {
+                // If the selected dataset is hidden or all others are hidden, reset all visibility
+                ci.data.datasets.forEach((_, i) => {
+                  ci.getDatasetMeta(i).hidden = false; // Show all datasets
+                });
+              } else {
+                // Hide all datasets except the selected one
+                ci.data.datasets.forEach((_, i) => {
+                  ci.getDatasetMeta(i).hidden = i !== index;
+                });
+              }
 
-                          // Update the chart to reflect the changes
-                          ci.update();
-                        },
-                      },
-                    },
-                    responsive: true,
-                    scales: {
-                      x: {
-                        title: {
-                          display: true,
-                        },
-                      },
-                      y: {
-                        beginAtZero: true,
-                        title: {
-                          display: true,
-                          text: 'Score',
-                        },
-                      },
-                    },
-                  }}
-                />
-
-              </div>
+              // Update the chart to reflect the changes
+              ci.update();
+            },
+            labels: {
+              generateLabels: (chart) => {
+                const labelsMap = ['Sentences', 'Tenses', 'Listening', 'Reading', 'Image'];
+                return chart.data.datasets.map((dataset, index) => ({
+                  text: labelsMap[index] || dataset.label, // Custom label mapping
+                  fillStyle: dataset.backgroundColor,
+                  hidden: chart.getDatasetMeta(index).hidden,
+                  lineCap: dataset.borderCapStyle,
+                  lineDash: dataset.borderDash,
+                  lineDashOffset: dataset.borderDashOffset,
+                  lineJoin: dataset.borderJoinStyle,
+                  lineWidth: dataset.borderWidth,
+                  strokeStyle: dataset.borderColor,
+                  pointStyle: dataset.pointStyle,
+                  datasetIndex: index,
+                }));
+              },
+            },
+          },
+          tooltip: {
+            callbacks: {
+              label: (tooltipItem) => {
+                const labelsMap = ['Sentences', 'Tenses', 'Listening', 'Reading', 'Image'];
+                const datasetIndex = tooltipItem.datasetIndex;
+                const customLabel = labelsMap[datasetIndex] || `Dataset ${datasetIndex + 1}`;
+                const value = tooltipItem.raw; // Get the value for the point
+                return `${customLabel}: ${value}`;
+              },
+            },
+          },
+        },
+        responsive: true,
+        scales: {
+          x: {
+            title: {
+              display: true,
+            },
+          },
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Score',
+            },
+          },
+        },
+      }}
+    />
+    </div>
 
               {/* Chart */}
               <div className="p-4 bg-white rounded shadow">
-                <h2 className="text-xl font-semibold mb-2">Attempts by Level and Date</h2>
-                <Bar
-                  data={barChartData}
-                  options={{
-                    plugins: {
-                      legend: {
-                        position: 'top',
-                      },
-                    },
-                    responsive: true,
-                    scales: {
-                      x: {
-                        stacked: false,
-                        title: {
-                          display: true,
-                        },
-                      },
-                      y: {
-                        stacked: false,
-                        beginAtZero: true,
-                        suggestedMax: maxAttempt + 1,
-                        title: {
-                          display: true,
-                          text: 'Number of attempts',
-                        },
-                      },
-                    },
-                  }}
-                />
-              </div>
+  <h2 className="text-xl font-semibold mb-2">Attempts by Level and Date</h2>
+  <Bar
+    data={barChartData}
+    options={{
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: {
+            generateLabels: (chart) => {
+              const labelsMap = ['Sentences', 'Tenses', 'Listening', 'Reading', 'Image'];
+              return chart.data.datasets.map((dataset, index) => ({
+                text: labelsMap[index] || dataset.label, // Custom label mapping
+                fillStyle: dataset.backgroundColor,
+                hidden: chart.getDatasetMeta(index).hidden,
+                lineCap: dataset.borderCapStyle,
+                lineDash: dataset.borderDash,
+                lineDashOffset: dataset.borderDashOffset,
+                lineJoin: dataset.borderJoinStyle,
+                lineWidth: dataset.borderWidth,
+                strokeStyle: dataset.borderColor,
+                pointStyle: dataset.pointStyle,
+                datasetIndex: index,
+              }));
+            },
+          },
+        },
+        tooltip: {
+          callbacks: {
+            label: (tooltipItem) => {
+              const labelsMap = ['Sentences', 'Tenses', 'Listening', 'Reading', 'Image'];
+              const datasetIndex = tooltipItem.datasetIndex;
+              const customLabel = labelsMap[datasetIndex] || `Dataset ${datasetIndex + 1}`;
+              const value = tooltipItem.raw; // Get the value for the bar
+              return `${customLabel}: ${value}`;
+            },
+          },
+        },
+      },
+      responsive: true,
+      scales: {
+        x: {
+          stacked: false,
+          title: {
+            display: true,
+          },
+        },
+        y: {
+          stacked: false,
+          beginAtZero: true,
+          suggestedMax: maxAttempt + 1,
+          title: {
+            display: true,
+            text: 'Number of attempts',
+          },
+        },
+      },
+    }}
+  />
+</div>
 
-            </div>
-            <div className="p-4 bg-white rounded shadow mt-6">
-              <h2 className="text-xl font-semibold mb-2">Duration by Levels</h2>
-              <Line
-                data={areaChartData}
-                options={{
-                  plugins: {
-                    legend: {
-                      display: false,
-                    },
-                  },
-                  responsive: true,
-                  scales: {
-                    x: {
-                      title: {
-                        display: true,
-                      },
-                    },
-                    y: {
-                      beginAtZero: true,
-                      title: {
-                        display: true,
-                        text: 'Total Duration (Minutes)',
-                      },
-                    },
-                  },
-                }}
-              />
-            </div>
+
           </div>
-        )}
+          <div className="p-4 bg-white rounded shadow mt-6">
+  <h2 className="text-xl font-semibold mb-2">Duration by Levels</h2>
+  <Line
+    data={areaChartData}
+    options={{
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          callbacks: {
+            label: (tooltipItem) => {
+              const labelsMap = ['Sentences', 'Tenses', 'Listening', 'Reading', 'Image'];
+              const index = tooltipItem.dataIndex; // Get the index of the hovered item
+              const customLabel = labelsMap[index] || `Level ${index + 1}`; // Map index to custom label
+              const value = tooltipItem.raw; // Get the value for the duration
+              return `${customLabel}: ${value} Total Duration (Minutes)`; // Include both label and units
+            },
+          },
+        },
+      },
+      responsive: true,
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Levels',
+          },
+          ticks: {
+            callback: (value, index) => {
+              const labelsMap = ['Sentences', 'Tenses', 'Listening', 'Reading', 'Image'];
+              return labelsMap[index] || value; // Custom x-axis labels
+            },
+          },
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Total Duration (Minutes)',
+          },
+        },
+      },
+    }}
+  />
+</div>
 
-        {!loading && (
-          <div className='flex mt-8 justify-center'>
-            <button
-              onClick={handleBack}
-              className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
-            >
-              Back to Home
-            </button>
+
           </div>
         )}
 
