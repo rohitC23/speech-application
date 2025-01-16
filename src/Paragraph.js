@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Paragraph({ questions }) {
   const [answers, setAnswers] = useState({}); // To store selected answers
@@ -44,7 +44,7 @@ function Paragraph({ questions }) {
 
     try {
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_reading_comprehension',
+        'http://127.0.0.1:8000/evaluate_reading_comprehension',
         {
           method: 'POST',
           headers: {
@@ -151,7 +151,7 @@ function Paragraph({ questions }) {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/user/insert/score', {
+      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ function Paragraph({ questions }) {
 
     try {
       // Send the POST request
-      const response = await fetch('https://communication.theknowhub.com/api/submit', {
+      const response = await fetch('http://127.0.0.1:8000/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -192,8 +192,29 @@ function Paragraph({ questions }) {
 
       // Check if the response is successful
       if (response.ok) {
-        // If successful, navigate to the score-board
-        navigate('/image');
+        const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
+        const currentLevelIndex = levelsList.indexOf('Reading Comprehension');
+      
+        if (currentLevelIndex !== -1 && currentLevelIndex < levelsList.length - 1) {
+          // Navigate to the next item in the list
+          const nextLevel = levelsList[currentLevelIndex + 1];
+          const navigationMap = {
+            "Correct the Sentences": '/app',
+            "Correct the Tenses": '/level-tenses',
+            "Listening Comprehension": '/level-listen',
+            "Reading Comprehension": '/level-para',
+            "Image Description": '/image',
+          };
+      
+          if (navigationMap[nextLevel]) {
+            navigate(navigationMap[nextLevel]);
+          } else {
+            console.error('No route found for the next level:', nextLevel);
+          }
+        } else {
+          // Navigate to home if no next item exists
+          navigate('/home');
+        }
       } else {
         console.error("Failed to submit: ", response.statusText);
       }
@@ -247,17 +268,7 @@ function Paragraph({ questions }) {
       <div className="mt-4 flex">
         {canContinue && (
           <h2 className="text-lg font-bold mb-4">
-            Fantastic! You scored {totalScore} out of 5! Think you can beat your own score?
-            <a 
-              href="#"
-              onClick={(e) => {
-                e.preventDefault(); // Prevent default anchor behavior
-                window.location.reload(); // Refresh the page
-              }} 
-              className="text-lg text-blue-500 mx-4 underline hover:text-blue-700 focus:outline-none"
-            >
-              Let's try it again!
-            </a>
+            Fantastic! You scored {totalScore} out of 5!
           </h2>
         )}
       </div>
