@@ -130,7 +130,7 @@ function Sentences({ audioFile, question }) {
         formData.append('user_id', user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://communication.theknowhub.com/api/evaluate_tense', {
+        const response = await fetch('http://127.0.0.1:8000/evaluate_tense', {
           method: 'POST',
           body: formData,
         });
@@ -191,7 +191,7 @@ function Sentences({ audioFile, question }) {
       setIsLoading(true);
 
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_tense_answer',
+        'http://127.0.0.1:8000/evaluate_tense_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -287,6 +287,7 @@ function Sentences({ audioFile, question }) {
 
   const handleTryAgain = () => {
     window.location.reload();
+    localStorage.setItem('score', []);
   };
 
   return (
@@ -451,7 +452,7 @@ function Sentences({ audioFile, question }) {
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Try Again
+          Back to Home
         </button>
       </div>
     )}
