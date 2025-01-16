@@ -8,6 +8,7 @@ function Header({ showNav, hiddenNavItems = [] }) {
 
   const handleLogout = () => {
     localStorage.clear();
+    localStorage.setItem('status', 'logged out');
     navigate('/');
   };
 
@@ -93,14 +94,6 @@ function Header({ showNav, hiddenNavItems = [] }) {
                   My Performance
                 </Link>
               )}
-              {!isNavItemHidden('/bonus') && (
-                <Link 
-                  to="/bonus" 
-                  className="bonus-link text-base font-medium"
-                >
-                  Bonus Quest
-                </Link>
-              )}
               {!isNavItemHidden('/signout') && (
                 <Link 
                   to="/" 
@@ -133,15 +126,6 @@ function Header({ showNav, hiddenNavItems = [] }) {
                 onClick={() => setMobileMenuOpen(false)}
               >
                 My Performance
-              </Link>
-            )}
-            {!isNavItemHidden('/bonus') && (
-              <Link 
-                to="/bonus" 
-                className="bonus-link px-4 text-base font-medium"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Bonus Quest
               </Link>
             )}
             {!isNavItemHidden('/signout') && (
