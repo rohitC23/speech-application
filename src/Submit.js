@@ -35,7 +35,7 @@ function Submit() {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/user/insert/score', {
+      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +116,7 @@ function Submit() {
 
     try {
       // Send the POST request
-      const response = await fetch('https://communication.theknowhub.com/api/submit', {
+      const response = await fetch('http://127.0.0.1:8000/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
