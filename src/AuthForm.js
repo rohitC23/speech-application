@@ -19,10 +19,12 @@ function AuthForm() {
   const [otpMessage, setOtpMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false); // State for loading
+  const [showGoogleButton, setShowGoogleButton] = useState(true);
   const navigate = useNavigate();
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
+    setShowGoogleButton(!isLogin);
     setIsForgotPassword(false);
     resetForm();
   };
@@ -36,6 +38,17 @@ function AuthForm() {
     setShowPassword(!showPassword);
   };
 
+  function handleGoogleSignup() {
+    try {
+        // Redirect the user to the backend's /login endpoint for Google OAuth
+        window.location.href = "http://127.0.0.1:8000/login";
+    } catch (error) {
+        console.error("Error during Google signup:", error.message);
+        alert("An error occurred during signup. Please try again later.");
+    }
+}
+
+
   const handleSendOtp = async () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -47,7 +60,7 @@ function AuthForm() {
     setLoading(true); // Set loading to true before sending OTP
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/assessment/otp/password', {
+      const response = await fetch('http://127.0.0.1:8000/assessment/otp/password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -78,7 +91,7 @@ function AuthForm() {
 
   const handleResetPassword = async () => {
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/assessment/forgot/password', {
+      const response = await fetch('http://127.0.0.1:8000/assessment/forgot/password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -127,24 +140,14 @@ function AuthForm() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
+    <div className="flex items-center justify-center min-h-screen p-4 pt-20">
       <Header showNav={false} />
       <div className="bg-white p-8 rounded shadow-md w-96">
-        <div className="flex justify-center mb-6">
-          <button
-            onClick={() => { setIsLogin(true); setIsForgotPassword(false); }}
-            className={`px-4 py-2 rounded-l-lg ${isLogin && !isForgotPassword ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'} transition-colors duration-300`}
-          >
-            Login
-          </button>
-          <button
-            onClick={() => { setIsLogin(false); setIsForgotPassword(false); }}
-            className={`px-4 py-2 rounded-r-lg ${!isLogin && !isForgotPassword ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-600'} transition-colors duration-300`}
-          >
-            Signup
-          </button>
-        </div>
-
+      {!isForgotPassword && (
+        <h1 className="text-2xl font-bold text-center mb-6">
+          {isLogin ? 'Login' : 'Sign Up'}
+        </h1>
+      )}
         {!isForgotPassword && (isLogin ? <Login /> : <Signup />)}
 
         {isForgotPassword && (
@@ -242,7 +245,7 @@ function AuthForm() {
                 <p>
                   Don't have an account?{' '}
                   <span className="text-blue-500 cursor-pointer" onClick={toggleForm}>
-                    Signup now
+                    Signup
                   </span>
                 </p>
               ) : (
@@ -259,6 +262,25 @@ function AuthForm() {
             </>
           )}
         </div>
+
+      {!isForgotPassword && (
+        <>
+        <div className="flex items-center my-4">
+          <hr className="flex-grow border-gray-300" />
+          <span className="px-2 text-gray-500">or</span>
+          <hr className="flex-grow border-gray-300" />
+        </div>
+
+        <button
+          type="button"
+          onClick={handleGoogleSignup}
+          className="w-full bg-white text-black border border-gray-300 py-2 rounded flex items-center justify-center"
+        >
+          <i className="fab fa-google text-red-500 mr-4"></i>
+          {isLogin ? 'Continue with Google' : 'Sign up with Google'}
+        </button>
+        </>
+      )}
       </div>
     </div>
   );
