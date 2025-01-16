@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Header from './Header';
 import Paragraph from './Paragraph';
+import { Link } from 'react-router-dom';
 
 function Generator() {
   const [loading, setLoading] = useState(false); // Initially not loading
@@ -9,6 +10,14 @@ function Generator() {
   const [popup, setPopup] = useState({ message: '', type: '' });
   const [isClicked, setIsClicked] = useState(false);
   const [hasError, setHasError] = useState(false); // State to track if there was an error fetching data
+  const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
+  const navigationMap = {
+    "Correct the Sentences": '/app',
+    "Correct the Tenses": '/level-tenses',
+    "Listening Comprehension": '/level-listen',
+    "Reading Comprehension": '/level-para',
+    "Image Description": '/image',
+  };
 
   // Function to handle button click
   const handleClick = () => {
@@ -31,7 +40,7 @@ function Generator() {
       const fetchData = async () => {
         const user_id = localStorage.getItem('user_id'); // Retrieve the user ID from localStorage
         try {
-          const response = await fetch('https://communication.theknowhub.com/api/reading_comprehension', {
+          const response = await fetch('http://127.0.0.1:8000/reading_comprehension', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -79,6 +88,43 @@ function Generator() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
       <Header showNav={true} hiddenNavItems={['/bonus']}/>
+
+      <div className="flex items-center space-x-4 mb-10">
+        {levelsList.map((level, index) => {
+          // Get the corresponding route from the navigationMap
+          const route = navigationMap[level];
+          const isActive = level === "Reading Comprehension"; // Mark active based on string
+
+          return (
+            <React.Fragment key={index}>
+              <div
+                className={`${
+                  isActive ? 'bg-blue-500' : 'bg-gray-400'
+                } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+              >
+                {index + 1}
+              </div>
+              {route ? (
+                <p
+                  className={`${
+                    isActive ? 'text-blue-500' : 'text-gray-500'
+                  }`}
+                >
+                  <Link to={route}>{level}</Link>
+                </p>
+              ) : (
+                <p
+                  className={`${
+                    isActive ? 'text-blue-500' : 'text-gray-500'
+                  }`}
+                >
+                  {level}
+                </p>
+              )}
+            </React.Fragment>
+          );
+        })}
+      </div>
 
       <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
         <h2 className="text-2xl font-bold mb-4">Reading Comprehension</h2>
