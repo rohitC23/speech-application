@@ -24,7 +24,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/assessment/login', {
+      const response = await fetch('http://127.0.0.1:8000/assessment/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -37,6 +37,15 @@ function Login() {
       if (response.ok) {
         localStorage.setItem('user_id', data.user_id);
         localStorage.setItem('level', data.current_level);
+        
+        // Retrieve the user ID from local storage
+        const userId = localStorage.getItem('user_id');
+
+        // Create the new status message that includes the user ID
+        const statusMessage = `logged in as ${userId}`;
+
+        // Store the new status message back in local storage
+        localStorage.setItem('status', statusMessage);
 
         setMessage('Login successful!');
         setIsSuccess(true);
@@ -49,9 +58,9 @@ function Login() {
           const level = localStorage.getItem("level");
           if (level) {
             if (level === 'Level 0' || level === 'Level 3' || level === 'Level 4' || level === 'Level 5') {
-              navigate('/home');
+              navigate(`/home?user_id=${userId}`);
             } else {
-              navigate('/welcome-back');
+              navigate('/home');
             }
           } else {
             setMessage('Unable to determine user level. Please contact support.');
