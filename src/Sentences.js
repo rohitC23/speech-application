@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import talkImage from 'url:./assets/talk.png';
 import NextSentence from './NextSentence';
 
@@ -386,7 +387,9 @@ function Sentences({ audioFile, question }) {
             {Object.entries(apiResponse).map(([key, value], index) => (
               <div
                 key={index}
-                className="p-4 bg-gray-100 rounded-lg shadow-md"
+                className={`p-4 bg-gray-100 rounded-lg shadow-md ${
+                  key.includes('Reason') ? 'border-2 border-blue-500' : ''
+                }`}
               >
                 <h3 className="font-bold">{key}:</h3>
                 <p className="text-gray-700">{value}</p>
@@ -395,6 +398,7 @@ function Sentences({ audioFile, question }) {
           </div>
         </div>
       )}
+
 
       {/* Emoji animation */}
       {showEmoji && (
@@ -428,15 +432,25 @@ function Sentences({ audioFile, question }) {
 
 
       {!apiResponse && isStopped && isLoading && (
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className="mt-4">
+        <DotLottieReact
+          src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+          loop
+          autoplay
+          style={{ width: '400px', height: '400px' }} // Customize size
+        />
+      </div>
       )}
 
       {!apiResponse && isClicked && isLoading &&(
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className="mt-4">
+        <DotLottieReact
+          src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+          loop
+          autoplay
+          style={{ width: '400px', height: '400px' }} // Customize size
+        />
+      </div>
       )}
 
       {apiResponse && (
