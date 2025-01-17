@@ -11,7 +11,8 @@ npm i react-dom@18.3.1 <br />
 npm i react-router-dom@6.28.0 <br />
 npm i react-table <br />
 npm i react-icons recharts react-chartjs-2 moment chart.js react-select <br />
-npm install @fortawesome/fontawesome-free
+npm install @fortawesome/fontawesome-free <br />
+npm install @lottiefiles/dotlottie-react
 
 
 ### update package.json
