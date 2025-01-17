@@ -110,7 +110,7 @@ function Generator() {
                     isActive ? 'text-blue-500' : 'text-gray-500'
                   }`}
                 >
-                  <Link to={route}>{level}</Link>
+                  {level}
                 </p>
               ) : (
                 <p
