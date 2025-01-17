@@ -277,7 +277,7 @@ function AuthForm() {
           className="w-full bg-white text-black border border-gray-300 py-2 rounded flex items-center justify-center"
         >
           <i className="fab fa-google text-red-500 mr-4"></i>
-          {isLogin ? 'Continue with Google' : 'Sign up with Google'}
+          Continue with Google
         </button>
         </>
       )}
