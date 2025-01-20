@@ -26,6 +26,19 @@ function Home() {
       }
     }, [location.search]);
 
+  const message = location.state?.message;
+
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        const popup = document.getElementById('popup-message');
+        if (popup) popup.style.display = 'none';
+      }, 3000); // Hide the popup after 3 seconds
+
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
   useEffect(() => {
     fetch('http://127.0.0.1:8000/generate_word')
       .then((response) => response.json())
@@ -106,6 +119,14 @@ function Home() {
       <Header showNav={true} hiddenNavItems={['/Home']} />
 
       <section className="flex items-center justify-center h-screen bg-gray-100">
+      {message && (
+        <div
+          id="popup-message"
+          className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded-lg shadow-md text-center"
+        >
+          {message}
+        </div>
+      )}
         <div className="container mx-auto flex flex-col md:flex-row items-center px-4 md:px-8">
           <div className="w-full md:w-1/2 text-center md:text-left mb-8 md:mb-0 md:-mt-10">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-4">
