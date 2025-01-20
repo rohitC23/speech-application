@@ -46,8 +46,8 @@ function Login() {
 
         // Store the new status message back in local storage
         localStorage.setItem('status', statusMessage);
-
-        setMessage('Login successful!');
+        const successMessage = 'Login successful';
+        navigate('/home', { state: { message: successMessage } });
         setIsSuccess(true);
 
         setTimeout(() => {
