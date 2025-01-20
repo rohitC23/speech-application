@@ -67,7 +67,7 @@ function Final() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20 relative">
-            <Header showNav={true} />
+            <Header showNav={true} hiddenNavItems={['/Home']}/>
             <div className="flex items-center space-x-4 mb-10">
             {levelsList.map((level, index) => {
                 // Get the corresponding route from the navigationMap
