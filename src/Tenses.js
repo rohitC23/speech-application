@@ -252,7 +252,7 @@ function Tenses({ audioFile }) {
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
+    <div className="bg-gray-100 shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
       {!isStopped && !isClicked && (
         <>
           <h2 className="text-xl font-bold mb-4">Speak the correct sentence</h2>
@@ -342,21 +342,32 @@ function Tenses({ audioFile }) {
       )}
 
     {!isHidden && apiResponse && (
-      <div className="mt-6 w-full">
-        <div className="grid grid-cols-2 gap-4">
-          {Object.entries(apiResponse).map(([key, value], index) => (
-            <div
-              key={index}
-              className={`p-4 bg-gray-100 rounded-lg shadow-md ${
-                key.includes('Reason') ? 'border-2 border-blue-500' : ''
-              }`}
-            >
+    <div className="mt-6 w-full">
+      {/* Display other key-value pairs side by side */}
+      <div className="grid grid-cols-2 gap-4">
+        {Object.entries(apiResponse).map(([key, value], index) =>
+          !key.includes('Reason') ? (
+            <div key={index} className="p-4 bg-gray-100 rounded-lg shadow-md">
               <h3 className="font-bold">{key}:</h3>
               <p className="text-gray-700">{value}</p>
             </div>
-          ))}
-        </div>
+          ) : null
+        )}
       </div>
+      {/* Display the Reason key-value pair in a single row */}
+      {Object.entries(apiResponse).map(([key, value]) =>
+        key.includes('Reason') ? (
+          <div
+            key={key}
+            className="p-4 bg-gray-100 rounded-lg shadow-md border-2 border-blue-500 mt-8"
+          >
+            <h3 className="font-bold">{key}:</h3>
+            <p className="text-gray-700">{value}</p>
+          </div>
+        ) : null
+      )}
+    </div>
+    
     )}
 
       
