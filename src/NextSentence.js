@@ -1,91 +1,521 @@
-import React, { useState } from 'react';
-import NewSentence from './NewSentence';
+import React, { useState, useRef, useEffect } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import talkImage from 'url:./assets/talk.png';
+import NextSentence from './NextSentence';
+import Finish from './Finish';
 
-function NextSentence({ setIsHidden, id }) {
-  const [hasStarted, setHasStarted] = useState(false);
-  const [audioFile, setAudioFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [question, setQuestion] = useState(null);
+// Global ID variable
+let globalId = 1; // Initialize global ID
+
+// Helper function to convert audio to PCM WAV format
+function convertToWav(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const arrayBuffer = reader.result;
+      const audioContext = new AudioContext();
+      audioContext.decodeAudioData(arrayBuffer, (audioBuffer) => {
+        const wavBuffer = audioBufferToWav(audioBuffer);
+        const wavBlob = new Blob([wavBuffer], { type: 'audio/wav' });
+        resolve(wavBlob);
+      }, reject);
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(blob);
+  });
+}
+
+// Convert audio buffer to WAV format
+function audioBufferToWav(buffer) {
+  const numOfChannels = buffer.numberOfChannels;
+  const length = buffer.length * numOfChannels * 2 + 44;
+  const result = new ArrayBuffer(length);
+  const view = new DataView(result);
+  const channels = [];
+  let offset = 0;
+  let pos = 0;
+
+  // Write WAV header
+  setUint32(0x46464952); // "RIFF"
+  setUint32(length - 8); // file length - 8
+  setUint32(0x45564157); // "WAVE"
+
+  setUint32(0x20746d66); // "fmt " chunk
+  setUint32(16); // length = 16
+  setUint16(1); // PCM (uncompressed)
+  setUint16(numOfChannels);
+  setUint32(buffer.sampleRate);
+  setUint32(buffer.sampleRate * 2 * numOfChannels); // avg. bytes/sec
+  setUint16(numOfChannels * 2); // block-align
+  setUint16(16); // 16-bit (hardcoded in this example)
+
+  setUint32(0x61746164); // "data" - chunk
+  setUint32(length - pos - 4); // chunk length
+
+  // Write interleaved data
+  for (let i = 0; i < numOfChannels; i++) {
+    channels.push(buffer.getChannelData(i));
+  }
+
+  while (pos < length) {
+    for (let i = 0; i < numOfChannels; i++) {
+      const sample = Math.max(-1, Math.min(1, channels[i][offset])); // clamp
+      view.setInt16(pos, sample < 0 ? sample * 0x8000 : sample * 0x7FFF, true); // write 16-bit sample
+      pos += 2;
+    }
+    offset++;
+  }
+
+  return result;
+
+  function setUint16(data) {
+    view.setUint16(pos, data, true);
+    pos += 2;
+  }
+
+  function setUint32(data) {
+    view.setUint32(pos, data, true);
+    pos += 4;
+  }
+}
+
+function NewSentence({ audioFile, question }) {
+  const [isRecording, setIsRecording] = useState(false);
+  const [isStopped, setIsStopped] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
+  const audioRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const [audioURL, setAudioURL] = useState('');
+  const [audioBlob, setAudioBlob] = useState(null);
+  const [apiResponse, setApiResponse] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
   const user_id = localStorage.getItem('user_id');
+  const [showEmoji, setShowEmoji] = useState(false);
+  const [emoji, setEmoji] = useState('');
+  const timeoutRef = useRef(null);
+  const [audioTextInput, setAudioTextInput] = useState('');
+  const [errorOccurred, setErrorOccurred] = useState(false);
+  const [popup, setPopup] = useState({ message: '', type: '' });
 
-  const handleNextClick = async () => {
-    setLoading(true);
-    try {      
-  
-        // API call to get the audio file
-        const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ id: id, user_id: user_id }),
-        });
-  
-        if (audioResponse.ok) {
-          const blob = await audioResponse.blob(); // Extract the audio file as a blob
-          const contentDisposition = audioResponse.headers.get('Content-Disposition');
-          const filename = contentDisposition
-            ? contentDisposition.split('filename=')[1].replace(/['"]/g, '')
-            : 'audio_file.mp3';
-  
-          const audioFileURL = URL.createObjectURL(blob); // Create a URL for the blob
-          setAudioFile({ url: audioFileURL, name: filename }); // Store the file in state
-          setHasStarted(true); // Proceed to the next screen
-          setIsHidden(true);
-        } else {
-          console.error('Failed to fetch audio file');
+  useEffect(() => {
+    const audioElement = audioRef.current;
+    if (audioElement && audioFile) {
+      audioElement.src = audioFile.url;
+      const playPromise = audioElement.play();
+      if (playPromise !== undefined) {
+        playPromise.catch((error) =>
+          console.log('Audio playback prevented or failed:', error)
+        );
+      }
+      setAudioURL('');
+      setApiResponse(null);
+    }
+  }, [audioFile]);
+
+  const startRecording = async () => {
+    setIsRecording(true);
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorderRef.current = new MediaRecorder(stream);
+    mediaRecorderRef.current.start();
+    const audioChunks = [];
+    mediaRecorderRef.current.ondataavailable = (event) => {
+      audioChunks.push(event.data);
+    };
+
+    mediaRecorderRef.current.onstop = async () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      setAudioBlob(audioBlob);
+
+      try {
+        setErrorOccurred(false);
+        setIsLoading(true);
+        const wavBlob = await convertToWav(audioBlob);
+        const audioUrl = URL.createObjectURL(wavBlob);
+        setAudioURL(audioUrl);
+
+        if(globalId === 5){
+          globalId = 1;
         }
 
-        // API call to get the question
-        const questionResponse = await fetch('http://127.0.0.1:8000/generate_question', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ id: id, user_id: user_id }),
-          });
-    
-          if (questionResponse.ok) {
-            const questionData = await questionResponse.json(); // Parse the JSON response
-            setQuestion(questionData.question); // Set question from API response
-          } else {
-            console.error('Failed to fetch question');
+        const formData = new FormData();
+        formData.append('index', globalId);
+        formData.append('user_id',user_id);
+        formData.append('file', wavBlob, 'recording.wav');
+
+        const response = await fetch('http://127.0.0.1:8000/evaluate_tense', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) throw new Error('Network response was not ok');
+
+        const data = await response.json();
+        setApiResponse(data);
+        setIsLoading(false);
+
+        if (data.Score !== undefined) {
+          const currentScores = localStorage.getItem('score');
+          let updatedScores = [];
+        
+          if (currentScores) {
+            try {
+              // Parse the existing scores and ensure it's an array
+              updatedScores = JSON.parse(currentScores);
+        
+              // If parsing fails or result is not an array, reinitialize it as an array
+              if (!Array.isArray(updatedScores)) {
+                updatedScores = [];
+              }
+            } catch (error) {
+              // Handle JSON parsing errors
+              console.error('Error parsing scores from localStorage:', error);
+              updatedScores = [];
+            }
           }
+        
+          // Append the new score to the array
+          updatedScores.push(data.Score);
+        
+          // Store the updated scores back in local storage
+          localStorage.setItem('score', JSON.stringify(updatedScores));
+        }
+        
+
+        // Increment the global ID after a successful API call
+        globalId++;
       } catch (error) {
-      console.error('Error fetching audio file:', error);
-    } finally {
-      setLoading(false);
+        setIsLoading(false);
+        console.error('Error uploading audio file:', error);
+        setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
+        setErrorOccurred(true);
+        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+      }
+    };
+  };
+
+  const handleSendText = async () => {
+    if (!audioTextInput.trim()) {
+      setPopup({ message: 'Please enter a vaild text', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+      return;
+    }
+
+    setIsClicked(true);
+
+    try {
+      setErrorOccurred(false);
+      setIsLoading(true);
+
+      if(globalId === 5){
+        globalId = 1;
+      }
+
+      const response = await fetch(
+        'http://127.0.0.1:8000/evaluate_tense_answer',
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user_answer: audioTextInput,
+            user_id,
+            id: globalId,
+          }),
+        }
+      );
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const data = await response.json();
+      setApiResponse(data);
+      setIsLoading(false);
+
+      // Display emoji based on response (if applicable)
+      if (data.Score === 1) {
+        setEmoji('🎉🎉 🎉🎉 🎉🎉');
+      } else if (data.Score !== undefined) {
+        setEmoji('🥲🥲 🥲🥲 🥲🥲');
+      }
+
+      setShowEmoji(true);
+      timeoutRef.current = setTimeout(() => {
+        setShowEmoji(false);
+      }, 3000);
+
+      if (data.Score !== undefined) {
+        const currentScores = localStorage.getItem('score');
+        let updatedScores = [];
+      
+        if (currentScores) {
+          try {
+            // Parse the existing scores and ensure it's an array
+            updatedScores = JSON.parse(currentScores);
+      
+            // If parsing fails or result is not an array, reinitialize it as an array
+            if (!Array.isArray(updatedScores)) {
+              updatedScores = [];
+            }
+          } catch (error) {
+            // Handle JSON parsing errors
+            setIsLoading(false);
+            console.error('Error parsing scores from localStorage:', error);
+            updatedScores = [];
+          }
+        }
+      
+        // Append the new score to the array
+        updatedScores.push(data.Score);
+      
+        // Store the updated scores back in local storage
+        localStorage.setItem('score', JSON.stringify(updatedScores));
+      }
+
+      globalId++;
+    } catch (error) {
+      console.error('Error sending text:', error);
+      setIsLoading(false);
+      setPopup({ message: 'Failed to evaluate the text.', type: 'error' });
+      setErrorOccurred(true);
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     }
   };
 
+  useEffect(() => {
+    if (apiResponse?.Score === 1) {
+      setEmoji('🎉🎉 🎉🎉 🎉🎉');
+    } else if (apiResponse?.Score !== undefined) {
+      setEmoji('🥲🥲 🥲🥲 🥲🥲');
+    } else {
+      setShowEmoji(false);
+      return;
+    }
+
+    // Show emoji and hide it after 3 seconds
+    setShowEmoji(true);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current); // Clear the previous timeout
+    }
+    timeoutRef.current = setTimeout(() => {
+      setShowEmoji(false); // Hide after 3 seconds
+    }, 3000);
+    
+    // Cleanup the timeout when the component unmounts or apiResponse changes
+    return () => clearTimeout(timeoutRef.current);
+
+  }, [apiResponse]);
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    mediaRecorderRef.current.stop();
+    setIsStopped(true);
+  };
+
+  const handleTryAgain = () => {
+    window.location.reload();
+    localStorage.setItem('score', []);
+  };
+
   return (
-    <div>
-      {!hasStarted ? (
-        <div>
+    <div className="flex flex-col justify-center items-center">
+      {!isStopped && !isClicked && (
+        <>
+          <h2 className="text-xl font-bold mb-4">Speak the correct sentence</h2>
+          <p className="text-md mb-6">NOTE: {question}</p>
+          <img
+            src={talkImage}
+            alt="Speak"
+            className="mb-6 w-[100px] h-[100px] mx-auto rounded-lg"
+          />
+          <audio ref={audioRef} controls className="mb-4 w-full">
+            <source src={audioFile?.url} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio>
           <div className="mb-8 w-full"></div>
 
-          {loading ? (
-            <p className="text-lg font-semibold text-blue-500">
-              Redirecting to the next audio, Please wait...
-            </p>
-          ) : (
+          {isRecording && (
+            <div className="flex items-center mb-4">
+              <div className="w-3 h-3 rounded-full mr-2 bg-blue-500"></div>
+              <p className="font-bold text-red-600">Recording...</p>
+            </div>
+          )}
+
+          <div className="flex justify-between w-full max-w-[400px]">
             <button
-              onClick={handleNextClick}
-              className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+              onClick={startRecording}
+              className={`px-6 py-2 rounded-lg font-semibold ${
+                isRecording
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-green-500 hover:bg-green-600 text-white'
+              }`}
+              disabled={isRecording}
             >
-              Next
+              Start Recording
             </button>
+            <button
+              onClick={stopRecording}
+              className={`px-6 py-2 rounded-lg font-semibold ${
+                !isRecording
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-red-500 hover:bg-red-600 text-white'
+              }`}
+              disabled={!isRecording}
+            >
+              Stop Recording
+            </button>
+          </div>
+        </>
+      )}
+
+      {!isStopped && !isClicked && (
+        <>  
+          <div className="w-full mt-8">
+          <p className="text-md mb-4 text-center">or</p>
+            <div className="relative flex items-center">
+              <input
+                type="text"
+                placeholder="Enter your answer here"
+                className="w-full border border-gray-300 rounded-full py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={audioTextInput}
+                onChange={(e) => setAudioTextInput(e.target.value)}
+              />
+              <button
+                onClick={handleSendText}
+                className="absolute right-2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 focus:outline-none"
+              >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 512 512"
+                className="w-5 h-5"
+              >
+              <path fill="#ffffff"
+                d="M498.1 5.6c10.1 7 15.4 19.1 13.5 31.2l-64 416c-1.5 9.7-7.4 18.2-16 23s-18.9 5.4-28 1.6L284 427.7l-68.5 74.1c-8.9 9.7-22.9 12.9-35.2 8.1S160 493.2 160 480l0-83.6c0-4 1.5-7.8 4.2-10.8L331.8 202.8c5.8-6.3 5.6-16-.4-22s-15.7-6.4-22-.7L106 360.8 17.7 316.6C7.1 311.3 .3 300.7 0 288.9s5.9-22.8 16.1-28.7l448-256c10.7-6.1 23.9-5.5 34 1.4z"
+                transform="scale(0.8, 0.8) translate(0, 50)"
+              />
+              </svg>
+              </button>
+            </div>
+          </div>
+          </>
+      )}
+
+      {!isHidden && audioURL && (
+        <div className="mt-6 w-full">
+          <h2 className="text-lg font-semibold mb-2">Your Recorded Audio:</h2>
+          <audio controls src={audioURL} className="w-full"></audio>
+        </div>
+      )}
+
+      {!isHidden && apiResponse && (
+        <div className="mt-6 w-full">
+          <div className="grid grid-cols-2 gap-4">
+            {Object.entries(apiResponse).map(([key, value], index) => (
+              <div
+                key={index}
+                className={`p-4 bg-gray-100 rounded-lg shadow-md ${
+                  key.includes('Reason') ? 'border-2 border-blue-500' : ''
+                }`}
+              >
+                <h3 className="font-bold">{key}:</h3>
+                <p className="text-gray-700">{value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+
+      {/* Emoji animation */}
+      {showEmoji && (
+        <div className="absolute top-20 animate-slide-up text-6xl">
+          {emoji}
+        </div>
+      )}
+
+      {/* CSS for the slide-up animation */}
+      <style>
+        {`
+          @keyframes slide-up {
+            0% {
+              transform: translateY(50px);
+              opacity: 0;
+            }
+            50% {
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(-50px);
+              opacity: 0;
+            }
+          }
+
+          .animate-slide-up {
+            animation: slide-up 3s ease-in-out;
+          }
+        `}
+      </style>
+
+      {!apiResponse && isStopped && isLoading && (
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+        </div>
+      )}
+
+      {!apiResponse && isClicked && isLoading &&(
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+        </div>
+      )}
+
+    {errorOccurred && (
+      <div className='flex flex-col items-center'>
+        <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
+        <button
+          onClick={handleTryAgain}
+          className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+        >
+          Back to Home
+        </button>
+      </div>
+    )}
+
+      {/* Conditionally render Submit component when globalId reaches 5 */}
+      {apiResponse && (
+        <div className="w-full">
+          {globalId < 5 ? (
+            <NextSentence setIsHidden={setIsHidden} id={globalId} />
+          ) : (
+            <>
+              <Finish />
+            </>
           )}
         </div>
-      ) : (
-        audioFile ? (
-          <NewSentence audioFile={audioFile} question={question}/>
-        ) : (
-          <p className="text-lg font-semibold text-blue-500">Loading audio...</p>
-        )
+      )}
+
+      {popup.message && (
+        <div
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
+            popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          }`}
+        >
+          {popup.message}
+        </div>
       )}
     </div>
   );
 }
 
-export default NextSentence;
+export default NewSentence;
