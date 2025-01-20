@@ -407,20 +407,30 @@ function NewSentence({ audioFile, question }) {
 
       {!isHidden && apiResponse && (
         <div className="mt-6 w-full">
-          <div className="grid grid-cols-2 gap-4">
-            {Object.entries(apiResponse).map(([key, value], index) => (
-              <div
-                key={index}
-                className={`p-4 bg-gray-100 rounded-lg shadow-md ${
-                  key.includes('Reason') ? 'border-2 border-blue-500' : ''
-                }`}
-              >
+        {/* Display other key-value pairs side by side */}
+        <div className="grid grid-cols-2 gap-4">
+          {Object.entries(apiResponse).map(([key, value], index) =>
+            !key.includes('Reason') ? (
+              <div key={index} className="p-4 bg-gray-100 rounded-lg shadow-md">
                 <h3 className="font-bold">{key}:</h3>
                 <p className="text-gray-700">{value}</p>
               </div>
-            ))}
-          </div>
+            ) : null
+          )}
         </div>
+        {/* Display the Reason key-value pair in a single row */}
+        {Object.entries(apiResponse).map(([key, value]) =>
+          key.includes('Reason') ? (
+            <div
+              key={key}
+              className="p-4 bg-gray-100 rounded-lg shadow-md border-2 border-blue-500 mt-8"
+            >
+              <h3 className="font-bold">{key}:</h3>
+              <p className="text-gray-700">{value}</p>
+            </div>
+          ) : null
+        )}
+      </div>
       )}
 
 
@@ -455,25 +465,29 @@ function NewSentence({ audioFile, question }) {
       </style>
 
       {!apiResponse && isStopped && isLoading && (
-        <div className="mt-4">
-        <DotLottieReact
-          src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
-          loop
-          autoplay
-          style={{ width: '400px', height: '400px' }} // Customize size
-        />
-      </div>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+        </div>
       )}
 
       {!apiResponse && isClicked && isLoading &&(
-        <div className="mt-4">
-        <DotLottieReact
-          src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
-          loop
-          autoplay
-          style={{ width: '400px', height: '400px' }} // Customize size
-        />
-      </div>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+        </div>
       )}
 
     {errorOccurred && (
