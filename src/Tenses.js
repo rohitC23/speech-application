@@ -391,25 +391,29 @@ function Tenses({ audioFile }) {
       </style>
 
       {!apiResponse && isStopped && isLoading && (
-        <div className="mt-4">
-        <DotLottieReact
-          src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
-          loop
-          autoplay
-          style={{ width: '400px', height: '400px' }} // Customize size
-        />
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
       </div>
       )}
 
 
       {!apiResponse && isClicked && isLoading &&(
-        <div className="mt-4">
-        <DotLottieReact
-          src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
-          loop
-          autoplay
-          style={{ width: '400px', height: '400px' }} // Customize size
-        />
+      <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+        <div>
+          <DotLottieReact
+            src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+            loop
+            autoplay
+            style={{ width: '500px', height: '500px' }} // Customize size
+          />
+        </div>
       </div>
       )}
 
