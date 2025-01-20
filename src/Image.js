@@ -316,7 +316,7 @@ function Image() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/bonus']}/>
+      <Header showNav={true} hiddenNavItems={['/Home', '/bonus']}/>
 
       <div className="flex items-center space-x-4 mb-10">
   {levelsList.map((level, index) => {
@@ -356,7 +356,7 @@ function Image() {
 </div>
 
 
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
+      <div className="bg-gray-100 shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
         {!isStopped && (
           <>
             <h2 className="text-xl font-bold mb-4">Describe the image in your own words</h2>
@@ -427,9 +427,16 @@ function Image() {
         )}
 
         {!apiResponse && isStopped && isLoading && (
-          <p className="text-lg font-semibold text-blue-500 mt-4">
-            Evaluating your answer...
-          </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+        </div>
         )}
 
         {apiResponse && (
