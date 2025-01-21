@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import talkImage from 'url:./assets/talk.png';
 import NextButton from './NextButton'; 
+import { useNavigate } from 'react-router-dom';
 
 function convertToWav(blob) {
   return new Promise((resolve, reject) => {
@@ -83,6 +84,7 @@ function Tenses({ audioFile }) {
   const [isLoading, setIsLoading] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const navigate = useNavigate();
   const [showEmoji, setShowEmoji] = useState(false);
   const [emoji, setEmoji] = useState('');
   const [audioTextInput, setAudioTextInput] = useState('');
@@ -247,7 +249,7 @@ function Tenses({ audioFile }) {
   };
 
   const handleTryAgain = () => {
-    window.location.reload();
+    navigate('/home');
     localStorage.setItem('score', []);
   };
 
