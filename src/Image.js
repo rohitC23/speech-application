@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Header from './Header';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -106,6 +107,7 @@ function Image() {
   const [apiResponse, setApiResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
+  const [errorOccurred, setErrorOccurred] = useState(false);
   const [popup, setPopup] = useState({ message: '', type: '' });
   const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
   const navigate = useNavigate();
@@ -134,6 +136,7 @@ function Image() {
       setAudioBlob(audioBlob);
 
       try {
+        setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -162,6 +165,7 @@ function Image() {
         setIsHidden(false);  // Unhide the audio and API response after processing
 
       } catch (error) {
+        setErrorOccurred(true);
         setIsLoading(false);
         setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
@@ -173,6 +177,11 @@ function Image() {
     setIsRecording(false);
     mediaRecorderRef.current.stop();
     setIsStopped(true);
+  };
+
+  const handleTryAgain = () => {
+    navigate('/home');
+    localStorage.setItem('score', []);
   };
 
   function formatApiResponse(responseText) {
@@ -450,6 +459,18 @@ function Image() {
             </button>
         </div>
         )}
+
+    {errorOccurred && (
+      <div className='flex flex-col items-center'>
+        <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
+        <button
+          onClick={handleTryAgain}
+          className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+        >
+          Back to Home
+        </button>
+      </div>
+    )}
 
       {popup.message && (
         <div
