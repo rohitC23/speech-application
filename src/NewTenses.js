@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { useNavigate } from 'react-router-dom';
 import talkImage from 'url:./assets/talk.png';
 import NextButton from './NextButton';
 import Submit from './Submit';
@@ -82,6 +84,7 @@ function NewTenses({ audioFile }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isStopped, setIsStopped] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
+  const navigate = useNavigate();
   const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [audioURL, setAudioURL] = useState('');
@@ -142,7 +145,7 @@ function NewTenses({ audioFile }) {
         formData.append('user_id',user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://communication.theknowhub.com/api/evaluate_sentence', {
+        const response = await fetch('http://127.0.0.1:8000/evaluate_sentence', {
           method: 'POST',
           body: formData,
         });
@@ -209,7 +212,7 @@ function NewTenses({ audioFile }) {
       }
 
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_incorrect_answer',
+        'http://127.0.0.1:8000/evaluate_incorrect_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -308,7 +311,8 @@ function NewTenses({ audioFile }) {
   };
 
   const handleTryAgain = () => {
-    window.location.reload();
+    navigate('/home');
+    localStorage.setItem('score', []);
   };
 
   return (
@@ -403,19 +407,33 @@ function NewTenses({ audioFile }) {
 
       {!isHidden && apiResponse && (
         <div className="mt-6 w-full">
+          {/* Display other key-value pairs side by side */}
           <div className="grid grid-cols-2 gap-4">
-            {Object.entries(apiResponse).map(([key, value], index) => (
+            {Object.entries(apiResponse).map(([key, value], index) =>
+              !key.includes('Reason') ? (
+                <div key={index} className="p-4 bg-gray-100 rounded-lg shadow-md">
+                  <h3 className="font-bold">{key}:</h3>
+                  <p className="text-gray-700">{value}</p>
+                </div>
+              ) : null
+            )}
+          </div>
+          {/* Display the Reason key-value pair in a single row */}
+          {Object.entries(apiResponse).map(([key, value]) =>
+            key.includes('Reason') ? (
               <div
-                key={index}
-                className="p-4 bg-gray-100 rounded-lg shadow-md"
+                key={key}
+                className="p-4 bg-gray-100 rounded-lg shadow-md border-2 border-blue-500 mt-8"
               >
                 <h3 className="font-bold">{key}:</h3>
                 <p className="text-gray-700">{value}</p>
               </div>
-            ))}
-          </div>
+            ) : null
+          )}
         </div>
+      
       )}
+
 
       {/* Emoji animation */}
       {showEmoji && (
@@ -449,15 +467,29 @@ function NewTenses({ audioFile }) {
 
 
       {!apiResponse && isStopped && isLoading &&(
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+        </div>
       )}
 
       {!apiResponse && isLoading && isClicked &&(
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+        </div>
       )}
 
     {errorOccurred && (
@@ -467,7 +499,7 @@ function NewTenses({ audioFile }) {
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Try Again
+          Back to Home
         </button>
       </div>
     )}
