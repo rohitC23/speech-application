@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import talkImage from 'url:./assets/talk.png';
 import NextButton from './NextButton'; 
+import { useNavigate } from 'react-router-dom';
 
 function convertToWav(blob) {
   return new Promise((resolve, reject) => {
@@ -82,6 +84,7 @@ function Tenses({ audioFile }) {
   const [isLoading, setIsLoading] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const navigate = useNavigate();
   const [showEmoji, setShowEmoji] = useState(false);
   const [emoji, setEmoji] = useState('');
   const [audioTextInput, setAudioTextInput] = useState('');
@@ -130,7 +133,7 @@ function Tenses({ audioFile }) {
         formData.append('user_id', user_id);
         formData.append('file', wavBlob, 'recording.wav');
   
-        const response = await fetch('https://communication.theknowhub.com/api/evaluate_sentence', {
+        const response = await fetch('http://127.0.0.1:8000/evaluate_sentence', {
           method: 'POST',
           body: formData,
         });
@@ -170,7 +173,7 @@ function Tenses({ audioFile }) {
       setIsLoading(true);
   
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_incorrect_answer',
+        'http://127.0.0.1:8000/evaluate_incorrect_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -246,11 +249,12 @@ function Tenses({ audioFile }) {
   };
 
   const handleTryAgain = () => {
-    window.location.reload();
+    navigate('/home');
+    localStorage.setItem('score', []);
   };
 
   return (
-    <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
+    <div className="bg-gray-100 shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
       {!isStopped && !isClicked && (
         <>
           <h2 className="text-xl font-bold mb-4">Speak the correct sentence</h2>
@@ -339,21 +343,35 @@ function Tenses({ audioFile }) {
         </div>
       )}
 
-      {!isHidden && apiResponse && (
-        <div className="mt-6 w-full">
-          <div className="grid grid-cols-2 gap-4">
-            {Object.entries(apiResponse).map(([key, value], index) => (
-              <div
-                key={index}
-                className="p-4 bg-gray-100 rounded-lg shadow-md"
-              >
-                <h3 className="font-bold">{key}:</h3>
-                <p className="text-gray-700">{value}</p>
-              </div>
-            ))}
+    {!isHidden && apiResponse && (
+    <div className="mt-6 w-full">
+      {/* Display other key-value pairs side by side */}
+      <div className="grid grid-cols-2 gap-4">
+        {Object.entries(apiResponse).map(([key, value], index) =>
+          !key.includes('Reason') ? (
+            <div key={index} className="p-4 bg-gray-100 rounded-lg shadow-md">
+              <h3 className="font-bold">{key}:</h3>
+              <p className="text-gray-700">{value}</p>
+            </div>
+          ) : null
+        )}
+      </div>
+      {/* Display the Reason key-value pair in a single row */}
+      {Object.entries(apiResponse).map(([key, value]) =>
+        key.includes('Reason') ? (
+          <div
+            key={key}
+            className="p-4 bg-gray-100 rounded-lg shadow-md border-2 border-blue-500 mt-8"
+          >
+            <h3 className="font-bold">{key}:</h3>
+            <p className="text-gray-700">{value}</p>
           </div>
-        </div>
+        ) : null
       )}
+    </div>
+    
+    )}
+
       
       {/* Emoji animation */}
       {showEmoji && (
@@ -386,15 +404,30 @@ function Tenses({ audioFile }) {
       </style>
 
       {!apiResponse && isStopped && isLoading && (
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+      </div>
       )}
 
+
       {!apiResponse && isClicked && isLoading &&(
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+      <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+        <div>
+          <DotLottieReact
+            src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+            loop
+            autoplay
+            style={{ width: '500px', height: '500px' }} // Customize size
+          />
+        </div>
+      </div>
       )}
 
     {errorOccurred && (
@@ -404,7 +437,7 @@ function Tenses({ audioFile }) {
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Try Again
+          Back to Home
         </button>
       </div>
     )}
