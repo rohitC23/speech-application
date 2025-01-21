@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import talkImage from 'url:./assets/talk.png';
 import NextSentence from './NextSentence';
+import { useNavigate } from 'react-router-dom';
 
 function convertToWav(blob) {
   return new Promise((resolve, reject) => {
@@ -82,6 +83,7 @@ function Sentences({ audioFile, question }) {
   const [apiResponse, setApiResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const navigate = useNavigate();
   const user_id = localStorage.getItem('user_id');
   const timeoutRef = useRef(null);
   const [showEmoji, setShowEmoji] = useState(false);
@@ -287,7 +289,7 @@ function Sentences({ audioFile, question }) {
   };
 
   const handleTryAgain = () => {
-    window.location.reload();
+    navigate('/home');
     localStorage.setItem('score', []);
   };
 
