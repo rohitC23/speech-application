@@ -3,6 +3,7 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import talkImage from 'url:./assets/talk.png';
 import NextSentence from './NextSentence';
 import Finish from './Finish';
+import { useNavigate } from 'react-router-dom';
 
 // Global ID variable
 let globalId = 1; // Initialize global ID
@@ -90,6 +91,7 @@ function NewSentence({ audioFile, question }) {
   const [apiResponse, setApiResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
+  const navigate = useNavigate();
   const user_id = localStorage.getItem('user_id');
   const [showEmoji, setShowEmoji] = useState(false);
   const [emoji, setEmoji] = useState('');
@@ -311,7 +313,7 @@ function NewSentence({ audioFile, question }) {
   };
 
   const handleTryAgain = () => {
-    window.location.reload();
+    navigate('/home');
     localStorage.setItem('score', []);
   };
 
