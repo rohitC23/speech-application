@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Header from './Header';
 import { useNavigate } from 'react-router-dom';
-
+import { Link } from 'react-router-dom';
 import animalImage from './assets/images/Animal.jpg';
 import adventureImage from './assets/images/Adventure.jpg';
 import astronomyImage from './assets/images/Astronomy.jpg';
@@ -106,9 +106,17 @@ function Image() {
   const [apiResponse, setApiResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(true);
+  const [errorOccurred, setErrorOccurred] = useState(false);
   const [popup, setPopup] = useState({ message: '', type: '' });
+  const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
   const navigate = useNavigate();
-
+  const navigationMap = {
+    "Correct the Sentences": '/app',
+    "Correct the Tenses": '/level-tenses',
+    "Listening Comprehension": '/level-listen',
+    "Reading Comprehension": '/level-para',
+    "Image Description": '/image',
+  };
   const startRecording = async () => {
     const now = new Date();
     let currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -127,6 +135,7 @@ function Image() {
       setAudioBlob(audioBlob);
 
       try {
+        setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -138,7 +147,7 @@ function Image() {
         formData.append('image_filename', imageFilename);
         formData.append('audio', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://communication.theknowhub.com/api/image_evaluation', {
+        const response = await fetch('http://127.0.0.1:8000/image_evaluation', {
           method: 'POST',
           body: formData,
         });
@@ -155,6 +164,7 @@ function Image() {
         setIsHidden(false);  // Unhide the audio and API response after processing
 
       } catch (error) {
+        setErrorOccurred(true);
         setIsLoading(false);
         setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
@@ -166,6 +176,11 @@ function Image() {
     setIsRecording(false);
     mediaRecorderRef.current.stop();
     setIsStopped(true);
+  };
+
+  const handleTryAgain = () => {
+    window.location.reload();
+    localStorage.setItem('score', []);
   };
 
   function formatApiResponse(responseText) {
@@ -205,7 +220,7 @@ function Image() {
     };
 
     try {
-      const response = await fetch('https://communication.theknowhub.com/api/user/insert/score', {
+      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -227,6 +242,7 @@ function Image() {
   const handleContinueClick = async () => {
     // Retrieve initial 'duration' from local storage
     const initialDuration = localStorage.getItem('duration');
+    const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
 
     // Get the current time as 'stop duration'
     const now = new Date();
@@ -274,18 +290,28 @@ function Image() {
     // Call submitScore after ensuring totalDuration is set
     await submitScore();
 
-    const level = localStorage.getItem("bonusLevel");
     
-    switch (level) {
-      case "1":
-          navigate("/level-tenses");
-          break;
-      case "2":
-          navigate("/level-listen");
-          break;
-      default:
-          navigate("/home"); // Fallback route
-          break;
+    const currentLevelIndex = levelsList.indexOf('Image Description');
+  
+    if (currentLevelIndex !== -1 && currentLevelIndex < levelsList.length - 1) {
+      // Navigate to the next item in the list
+      const nextLevel = levelsList[currentLevelIndex + 1];
+      const navigationMap = {
+        "Correct the Sentences": '/app',
+        "Correct the Tenses": '/level-tenses',
+        "Listening Comprehension": '/level-listen',
+        "Reading Comprehension": '/level-para',
+        "Image Description": '/image',
+      };
+  
+      if (navigationMap[nextLevel]) {
+        navigate(navigationMap[nextLevel]);
+      } else {
+        console.error('No route found for the next level:', nextLevel);
+      }
+    } else {
+      // Navigate to home if no next item exists
+      navigate('/home');
     }
   };
 
@@ -298,8 +324,47 @@ function Image() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/bonus']}/>
-      <div className="bg-white shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
+      <Header showNav={true} hiddenNavItems={['/Home', '/bonus']}/>
+
+      <div className="flex items-center space-x-4 mb-10">
+  {levelsList.map((level, index) => {
+    // Get the corresponding route from the navigationMap
+    const route = navigationMap[level];
+    const isActive = level === "Image Description"; // Mark active based on string
+
+    return (
+      <React.Fragment key={index}>
+        <div
+          className={`${
+            isActive ? 'bg-blue-500' : 'bg-gray-400'
+          } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+        >
+          {index + 1}
+        </div>
+        {route ? (
+          <p
+            className={`${
+              isActive ? 'text-blue-500' : 'text-gray-500'
+            }`}
+          >
+            {level}
+          </p>
+        ) : (
+          <p
+            className={`${
+              isActive ? 'text-blue-500' : 'text-gray-500'
+            }`}
+          >
+            {level}
+          </p>
+        )}
+      </React.Fragment>
+    );
+  })}
+</div>
+
+
+      <div className="bg-gray-100 shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
         {!isStopped && (
           <>
             <h2 className="text-xl font-bold mb-4">Describe the image in your own words</h2>
@@ -370,9 +435,16 @@ function Image() {
         )}
 
         {!apiResponse && isStopped && isLoading && (
-          <p className="text-lg font-semibold text-blue-500 mt-4">
-            Evaluating your answer...
-          </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+        </div>
         )}
 
         {apiResponse && (
@@ -382,10 +454,22 @@ function Image() {
               onClick={handleContinueClick}
               className="px-8 py-3 bg-blue-500 hover:bg-green-600 text-white font-semibold rounded-lg text-lg"
             >
-              Back
+              Continue
             </button>
         </div>
         )}
+
+    {errorOccurred && (
+      <div className='flex flex-col items-center'>
+        <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
+        <button
+          onClick={handleTryAgain}
+          className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+        >
+          Back to Home
+        </button>
+      </div>
+    )}
 
       {popup.message && (
         <div
