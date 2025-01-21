@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+import { useNavigate } from 'react-router-dom';
 import talkImage from 'url:./assets/talk.png';
 import NextButton from './NextButton';
 import Submit from './Submit';
@@ -83,6 +84,7 @@ function NewTenses({ audioFile }) {
   const [isRecording, setIsRecording] = useState(false);
   const [isStopped, setIsStopped] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
+  const navigate = useNavigate();
   const audioRef = useRef(null);
   const mediaRecorderRef = useRef(null);
   const [audioURL, setAudioURL] = useState('');
@@ -309,7 +311,7 @@ function NewTenses({ audioFile }) {
   };
 
   const handleTryAgain = () => {
-    window.location.reload();
+    navigate('/home');
     localStorage.setItem('score', []);
   };
 
