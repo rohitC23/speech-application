@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import Header from './Header';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
@@ -179,7 +180,7 @@ function Image() {
   };
 
   const handleTryAgain = () => {
-    window.location.reload();
+    navigate('/home');
     localStorage.setItem('score', []);
   };
 
