@@ -21,6 +21,8 @@ import mysteryImage from './assets/images/Mystery.jpg';
 import politicsImage from './assets/images/Politics.jpg';
 import revengeImage from './assets/images/Revenge.jpg';
 import sportsImage from './assets/images/Sports.png';
+import active from 'url:./assets/Vector.png';
+import inactive from 'url:./assets/Icon.png';
 
 
 const images = [animalImage, adventureImage, astronomyImage, beachImage, betrayalImage, discoveryImage, educationImage, environmentImage, fightImage, friendshipImage, historyImage,
@@ -335,31 +337,43 @@ function Image() {
 
     return (
       <React.Fragment key={index}>
-        <div
-          className={`${
-            isActive ? 'bg-blue-500' : 'bg-gray-400'
-          } text-white rounded-full w-8 h-8 flex items-center justify-center`}
-        >
-          {index + 1}
-        </div>
-        {route ? (
-          <p
-            className={`${
-              isActive ? 'text-blue-500' : 'text-gray-500'
-            }`}
-          >
-            {level}
-          </p>
-        ) : (
-          <p
-            className={`${
-              isActive ? 'text-blue-500' : 'text-gray-500'
-            }`}
-          >
-            {level}
-          </p>
-        )}
-      </React.Fragment>
+                                              <div
+                                                style={isActive ? { borderColor: '#586FCC' } : { }}
+                                                className={`${
+                                                  isActive ? 'border-500' : 'border-gray-500'
+                                                } border-t-4 flex items-center space-x-2 w-96`}
+                                                >
+                                              <div>
+                                                <img src={isActive ? active : inactive} alt="Prompt"/>
+                                              </div>
+                                              {/* <div
+                                                className={`${
+                                                  isActive ? 'bg-blue-500' : 'bg-gray-400'
+                                                } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+                                              >
+                                                {index + 1}
+                                              </div> */}
+                                              {route ? (
+                                                <div
+                                                  style={isActive ? { color: '#586FCC' } : { }}
+                                                  className={`${
+                                                    isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                                                  }`}
+                                                >
+                                                 {level}
+                                                </div>
+                                              ) : (
+                                                <div
+                                                  style={isActive ? { color: '#586FCC' } : { }}
+                                                  className={`${
+                                                    isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                                                  }`}
+                                                >
+                                                  {level}
+                                                </div>
+                                              )}
+                                              </div>
+                                            </React.Fragment>
     );
   })}
 </div>

@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import sampleImage from 'url:./assets/sound.png';
+import sampleImage from 'url:./assets/Buttons.png';
+import active from 'url:./assets/Vector.png';
+import inactive from 'url:./assets/Icon.png';
 import Header from './Header';
 import Tenses from './Tenses';
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -63,7 +65,7 @@ function MainApp() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
+    <div className="flex flex-col items-center justify-center min-h-screen  bg-gray-100 p-4 pt-20">
       <Header showNav={true} hiddenNavItems={['/Home']}/>
         <div className="flex items-center space-x-4 mb-10">
           {levelsList.map((level, index) => {
@@ -74,29 +76,41 @@ function MainApp() {
             return (
               <React.Fragment key={index}>
                 <div
+                  style={isActive ? { borderColor: '#586FCC' } : { }}
+                  className={`${
+                    isActive ? 'border-500' : 'border-gray-500'
+                  } border-t-4 flex items-center space-x-2 w-96`}
+                  >
+                <div>
+                  <img src={isActive ? active : inactive} alt="Prompt"/>
+                </div>
+                {/* <div
                   className={`${
                     isActive ? 'bg-blue-500' : 'bg-gray-400'
                   } text-white rounded-full w-8 h-8 flex items-center justify-center`}
                 >
                   {index + 1}
-                </div>
+                </div> */}
                 {route ? (
-                  <p
+                  <div
+                    style={isActive ? { color: '#586FCC' } : { }}
                     className={`${
-                      isActive ? 'text-blue-500' : 'text-gray-500'
+                      isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
                     }`}
                   >
                    {level}
-                  </p>
+                  </div>
                 ) : (
-                  <p
+                  <div
+                    style={isActive ? { color: '#586FCC' } : { }}
                     className={`${
-                      isActive ? 'text-blue-500' : 'text-gray-500'
+                      isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
                     }`}
                   >
                     {level}
-                  </p>
+                  </div>
                 )}
+                </div>
               </React.Fragment>
             );
           })}
@@ -104,7 +118,7 @@ function MainApp() {
       {!hasStarted ? (
         
         // Initial screen with instructions, image, info box, separator, and start button
-        <div className="bg-gray-100 shadow-md rounded-lg p-8 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
+        <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
           <h2 className="text-2xl font-bold mb-6">Correct the Sentences</h2>
 
           {/* Centered Image */}
@@ -112,20 +126,20 @@ function MainApp() {
           <p className="text-md">Pay close attention to the incorrect sentence, then take the time to</p>
           <p className="text-md mb-6">thoughtfully revise and correct it.</p>
           {/* Time and questions in a single box with a separator */}
-          <div className="border px-4 py-2 text-center rounded-md shadow-sm flex justify-between items-center mb-8 w-full max-w-[400px]">
-            <div className="flex-1">
-              <p className="font-semibold">Time Per Sentence</p>
-              <p>30 seconds</p>
+          <div style={{ border: '1px solid #40508D', borderRadius: '16px' }} className="px-5 py-5 text-center shadow-sm justify-between items-center mb-8">
+            <div className='flex py-2 justify-center'>
+              <p className="font-semibold">Time Per Sentence</p>:
+              <p style={{ color: '#586FCC' }} className='pl-2'>30 seconds</p>
             </div>
-            <div className="border-l h-full mx-2"></div> {/* Separator line */}
-            <div className="flex-1">
-              <p className="font-semibold">Sentences</p>
-              <p>5</p>
+            {/* <div className="h-full mx-2"></div> Separator line */}
+            <div className='flex py-2 justify-center'>
+              <p className="font-semibold">Sentences</p>:
+              <p style={{ color: '#586FCC' }} className='pl-2'>5</p>
             </div>
           </div>
 
           {/* Gray line separator */}
-          <div className="border-t border-gray-300 mb-8 w-full"></div>
+          {/* <div className="border-t border-gray-300 mb-8 w-full"></div> */}
 
           {/* Conditionally show loading text or Start button */}
           {loading ? (
@@ -133,7 +147,8 @@ function MainApp() {
           ) : (
             <button
               onClick={handleStartClick}
-              className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+              style={{ backgroundColor: '#586FCC' }}
+              className="px-8 py-3 hover:bg-blue-600 text-white font-semibold rounded-full text-lg w-48"
             >
               Start
             </button>

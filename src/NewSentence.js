@@ -1,9 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import talkImage from 'url:./assets/talk.png';
+import send from 'url:./assets/Button.png';
 import NextSentence from './NextSentence';
 import Finish from './Finish';
-import { useNavigate } from 'react-router-dom';
 
 // Global ID variable
 let globalId = 1; // Initialize global ID
@@ -91,7 +90,6 @@ function NewSentence({ audioFile, question }) {
   const [apiResponse, setApiResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isHidden, setIsHidden] = useState(false);
-  const navigate = useNavigate();
   const user_id = localStorage.getItem('user_id');
   const [showEmoji, setShowEmoji] = useState(false);
   const [emoji, setEmoji] = useState('');
@@ -145,7 +143,7 @@ function NewSentence({ audioFile, question }) {
         formData.append('user_id',user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('http://127.0.0.1:8000/evaluate_tense', {
+        const response = await fetch('https://communication.theknowhub.com/api/evaluate_tense', {
           method: 'POST',
           body: formData,
         });
@@ -214,7 +212,7 @@ function NewSentence({ audioFile, question }) {
       }
 
       const response = await fetch(
-        'http://127.0.0.1:8000/evaluate_tense_answer',
+        'https://communication.theknowhub.com/api/evaluate_tense_answer',
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -313,8 +311,7 @@ function NewSentence({ audioFile, question }) {
   };
 
   const handleTryAgain = () => {
-    navigate('/home');
-    localStorage.setItem('score', []);
+    window.location.reload();
   };
 
   return (
@@ -376,15 +373,17 @@ function NewSentence({ audioFile, question }) {
               <input
                 type="text"
                 placeholder="Enter your answer here"
-                className="w-full border border-gray-300 rounded-full py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{ borderLeft: 'none', borderRight: 'none'}}
+                className="w-full border border-gray-300 bg-gray-100 py-4 px-4 text-gray-700 focus:outline-none"
                 value={audioTextInput}
                 onChange={(e) => setAudioTextInput(e.target.value)}
               />
-              <button
+              {/* <button
                 onClick={handleSendText}
                 className="absolute right-2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 focus:outline-none"
-              >
-              <svg
+              > */}
+                <img className="absolute right-2 text-white p-2" src={send} onClick={handleSendText} />
+              {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
                 className="w-5 h-5"
@@ -394,7 +393,7 @@ function NewSentence({ audioFile, question }) {
                 transform="scale(0.8, 0.8) translate(0, 50)"
               />
               </svg>
-              </button>
+              </button> */}
             </div>
           </div>
           </>
@@ -409,32 +408,19 @@ function NewSentence({ audioFile, question }) {
 
       {!isHidden && apiResponse && (
         <div className="mt-6 w-full">
-        {/* Display other key-value pairs side by side */}
-        <div className="grid grid-cols-2 gap-4">
-          {Object.entries(apiResponse).map(([key, value], index) =>
-            !key.includes('Reason') ? (
-              <div key={index} className="p-4 bg-gray-100 rounded-lg shadow-md">
+          <div className="grid grid-cols-2 gap-4">
+            {Object.entries(apiResponse).map(([key, value], index) => (
+              <div
+                key={index}
+                className="p-4 bg-gray-100 rounded-lg shadow-md"
+              >
                 <h3 className="font-bold">{key}:</h3>
                 <p className="text-gray-700">{value}</p>
               </div>
-            ) : null
-          )}
+            ))}
+          </div>
         </div>
-        {/* Display the Reason key-value pair in a single row */}
-        {Object.entries(apiResponse).map(([key, value]) =>
-          key.includes('Reason') ? (
-            <div
-              key={key}
-              className="p-4 bg-gray-100 rounded-lg shadow-md border-2 border-blue-500 mt-8"
-            >
-              <h3 className="font-bold">{key}:</h3>
-              <p className="text-gray-700">{value}</p>
-            </div>
-          ) : null
-        )}
-      </div>
       )}
-
 
       {/* Emoji animation */}
       {showEmoji && (
@@ -467,29 +453,15 @@ function NewSentence({ audioFile, question }) {
       </style>
 
       {!apiResponse && isStopped && isLoading && (
-        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
-          <div>
-            <DotLottieReact
-              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
-              loop
-              autoplay
-              style={{ width: '500px', height: '500px' }} // Customize size
-            />
-          </div>
-        </div>
+        <p className="text-lg font-semibold text-blue-500 mt-4">
+          Evaluating your answer...
+        </p>
       )}
 
       {!apiResponse && isClicked && isLoading &&(
-        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
-          <div>
-            <DotLottieReact
-              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
-              loop
-              autoplay
-              style={{ width: '500px', height: '500px' }} // Customize size
-            />
-          </div>
-        </div>
+        <p className="text-lg font-semibold text-blue-500 mt-4">
+          Evaluating your answer...
+        </p>
       )}
 
     {errorOccurred && (
@@ -499,7 +471,7 @@ function NewSentence({ audioFile, question }) {
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Back to Home
+          Try Again
         </button>
       </div>
     )}
