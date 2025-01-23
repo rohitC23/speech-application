@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
+import active from 'url:./assets/Vector.png';
+import inactive from 'url:./assets/Icon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import backgroundImage from "url:./assets/exam.jpg";
 
@@ -77,29 +79,41 @@ function Final() {
                 return (
                 <React.Fragment key={index}>
                     <div
-                    className={`${
-                        isActive ? 'bg-blue-500' : 'bg-gray-400'
-                    } text-white rounded-full w-8 h-8 flex items-center justify-center`}
-                    >
-                    {index + 1}
+                        style={isActive ? { borderColor: '#586FCC' } : { }}
+                        className={`${
+                        isActive ? 'border-500' : 'border-gray-500'
+                        } border-t-4 flex items-center space-x-2 w-96`}
+                        >
+                    <div>
+                        <img src={isActive ? active : inactive} alt="Prompt"/>
                     </div>
+                    {/* <div
+                        className={`${
+                        isActive ? 'bg-blue-500' : 'bg-gray-400'
+                        } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+                    >
+                        {index + 1}
+                    </div> */}
                     {route ? (
-                    <p
+                        <div
+                        style={isActive ? { color: '#586FCC' } : { }}
                         className={`${
-                        isActive ? 'text-blue-500' : 'text-gray-500'
+                            isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
                         }`}
-                    >
+                        >
                         {level}
-                    </p>
+                        </div>
                     ) : (
-                    <p
+                        <div
+                        style={isActive ? { color: '#586FCC' } : { }}
                         className={`${
-                        isActive ? 'text-blue-500' : 'text-gray-500'
+                            isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
                         }`}
-                    >
+                        >
                         {level}
-                    </p>
+                        </div>
                     )}
+                    </div>
                 </React.Fragment>
                 );
             })}

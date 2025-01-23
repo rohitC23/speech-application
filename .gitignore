@@ -1,0 +1,13 @@
+# See http://help.github.com/ignore-files/ for more about ignoring files.
+
+# package files
+/package-lock.json
+
+# parcel-bundler
+/.parcel-cache
+
+# Compiled output
+/dist
+
+# Node
+/node_modules

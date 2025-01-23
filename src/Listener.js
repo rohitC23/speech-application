@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import Header from './Header';
 import Questions from './Questions';
+import active from 'url:./assets/Vector.png';
+import inactive from 'url:./assets/Icon.png';
 import { Link } from 'react-router-dom';
 
 function Listener() {
@@ -97,37 +99,49 @@ function Listener() {
 
           return (
             <React.Fragment key={index}>
-              <div
-                className={`${
-                  isActive ? 'bg-blue-500' : 'bg-gray-400'
-                } text-white rounded-full w-8 h-8 flex items-center justify-center`}
-              >
-                {index + 1}
-              </div>
-              {route ? (
-                <p
-                  className={`${
-                    isActive ? 'text-blue-500' : 'text-gray-500'
-                  }`}
-                >
-                 {level}
-                </p>
-              ) : (
-                <p
-                  className={`${
-                    isActive ? 'text-blue-500' : 'text-gray-500'
-                  }`}
-                >
-                  {level}
-                </p>
-              )}
-            </React.Fragment>
+                                        <div
+                                          style={isActive ? { borderColor: '#586FCC' } : { }}
+                                          className={`${
+                                            isActive ? 'border-500' : 'border-gray-500'
+                                          } border-t-4 flex items-center space-x-2 w-96`}
+                                          >
+                                        <div>
+                                          <img src={isActive ? active : inactive} alt="Prompt"/>
+                                        </div>
+                                        {/* <div
+                                          className={`${
+                                            isActive ? 'bg-blue-500' : 'bg-gray-400'
+                                          } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+                                        >
+                                          {index + 1}
+                                        </div> */}
+                                        {route ? (
+                                          <div
+                                            style={isActive ? { color: '#586FCC' } : { }}
+                                            className={`${
+                                              isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                                            }`}
+                                          >
+                                           {level}
+                                          </div>
+                                        ) : (
+                                          <div
+                                            style={isActive ? { color: '#586FCC' } : { }}
+                                            className={`${
+                                              isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                                            }`}
+                                          >
+                                            {level}
+                                          </div>
+                                        )}
+                                        </div>
+                                      </React.Fragment>
           );
         })}
       </div>
 
 
-      <div className="bg-gray-100 shadow-md rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
+      <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
         <h2 className="text-2xl font-bold mb-6">Listening Comprehension</h2>
         
         {!audioFile && (

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Header from "./Header";
+import active from 'url:./assets/Vector.png';
+import inactive from 'url:./assets/Icon.png';
 import { Link, useNavigate } from 'react-router-dom';
 import backgroundImage from "url:./assets/exam.jpg";
 function ScoreBoard() {
@@ -62,7 +64,7 @@ function ScoreBoard() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20 relative">
+        <div className="flex flex-col items-center justify-center min-h-screen  bg-gray-100 p-4 pt-20">
             <Header showNav={true} hiddenNavItems={['/Home']}/>
             <div className="flex items-center space-x-4 mb-10">
                 {levelsList.map((level, index) => {
@@ -72,30 +74,42 @@ function ScoreBoard() {
         
                 return (
                     <React.Fragment key={index}>
-                    <div
-                        className={`${
-                        isActive ? 'bg-blue-500' : 'bg-gray-400'
-                        } text-white rounded-full w-8 h-8 flex items-center justify-center`}
-                    >
-                        {index + 1}
-                    </div>
-                    {route ? (
-                        <p
-                        className={`${
-                            isActive ? 'text-blue-500' : 'text-gray-500'
-                        }`}
+                        <div
+                            style={isActive ? { borderColor: '#586FCC' } : { }}
+                            className={`${
+                            isActive ? 'border-500' : 'border-gray-500'
+                            } border-t-4 flex items-center space-x-2 w-96`}
+                            >
+                        <div>
+                            <img src={isActive ? active : inactive} alt="Prompt"/>
+                        </div>
+                        {/* <div
+                            className={`${
+                            isActive ? 'bg-blue-500' : 'bg-gray-400'
+                            } text-white rounded-full w-8 h-8 flex items-center justify-center`}
                         >
-                        {level}
-                        </p>
-                    ) : (
-                        <p
-                        className={`${
-                            isActive ? 'text-blue-500' : 'text-gray-500'
-                        }`}
-                        >
-                        {level}
-                        </p>
-                    )}
+                            {index + 1}
+                        </div> */}
+                        {route ? (
+                            <div
+                            style={isActive ? { color: '#586FCC' } : { }}
+                            className={`${
+                                isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                            }`}
+                            >
+                            {level}
+                            </div>
+                        ) : (
+                            <div
+                            style={isActive ? { color: '#586FCC' } : { }}
+                            className={`${
+                                isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                            }`}
+                            >
+                            {level}
+                            </div>
+                        )}
+                        </div>
                     </React.Fragment>
                 );
                 })}
