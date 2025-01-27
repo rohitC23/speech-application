@@ -99,43 +99,43 @@ function Listener() {
 
           return (
             <React.Fragment key={index}>
-                                        <div
-                                          style={isActive ? { borderColor: '#586FCC' } : { }}
-                                          className={`${
-                                            isActive ? 'border-500' : 'border-gray-500'
-                                          } border-t-4 flex items-center space-x-2 w-96`}
-                                          >
-                                        <div>
-                                          <img src={isActive ? active : inactive} alt="Prompt"/>
-                                        </div>
-                                        {/* <div
-                                          className={`${
-                                            isActive ? 'bg-blue-500' : 'bg-gray-400'
-                                          } text-white rounded-full w-8 h-8 flex items-center justify-center`}
-                                        >
-                                          {index + 1}
-                                        </div> */}
-                                        {route ? (
-                                          <div
-                                            style={isActive ? { color: '#586FCC' } : { }}
-                                            className={`${
-                                              isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
-                                            }`}
-                                          >
-                                           {level}
-                                          </div>
-                                        ) : (
-                                          <div
-                                            style={isActive ? { color: '#586FCC' } : { }}
-                                            className={`${
-                                              isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
-                                            }`}
-                                          >
-                                            {level}
-                                          </div>
-                                        )}
-                                        </div>
-                                      </React.Fragment>
+              <div
+                style={isActive ? { borderColor: '#586FCC' } : { }}
+                className={`${
+                  isActive ? 'border-500' : 'border-gray-500'
+                } border-t-4 flex items-center space-x-2 w-96`}
+                >
+              <div>
+                <img src={isActive ? active : inactive} alt="Prompt"/>
+              </div>
+              {/* <div
+                className={`${
+                  isActive ? 'bg-blue-500' : 'bg-gray-400'
+                } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+              >
+                {index + 1}
+              </div> */}
+              {route ? (
+                <div
+                  style={isActive ? { color: '#586FCC' } : { }}
+                  className={`${
+                    isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                  }`}
+                >
+                  {level}
+                </div>
+              ) : (
+                <div
+                  style={isActive ? { color: '#586FCC' } : { }}
+                  className={`${
+                    isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                  }`}
+                >
+                  {level}
+                </div>
+              )}
+              </div>
+            </React.Fragment>
           );
         })}
       </div>

@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import talkImage from 'url:./assets/talk.png';
+import audioPlay from 'url:./assets/Buttons (1).png';
+import recordAudio from 'url:./assets/Button (1).png';
+import stopAudio from 'url:./assets/Button (2).png';
+import audioWave from 'url:./assets/sound__1_-0021-removebg-preview.png';
+import audioWavegif from 'url:./assets/sound-unscreen.gif';
 import send from 'url:./assets/Button.png'
 import NextButton from './NextButton'; 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AudioPlay from './audioPlay';
 
 function convertToWav(blob) {
   return new Promise((resolve, reject) => {
@@ -78,7 +84,12 @@ function Tenses({ audioFile }) {
   const [isStopped, setIsStopped] = useState(false);
   const [isClicked, setIsClicked] = useState(false);
   const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlayed, setIsPlayed] = useState(true);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [recordingTime , setRecordingTime] = useState(0);
   const mediaRecorderRef = useRef(null);
+  const recordingTimerRef = useRef(null);
   const [audioURL, setAudioURL] = useState('');
   const [audioBlob, setAudioBlob] = useState(null);
   const [apiResponse, setApiResponse] = useState(null);
@@ -94,22 +105,40 @@ function Tenses({ audioFile }) {
   const timeoutRef = useRef(null);
 
   useEffect(() => {
-    const audioElement = audioRef.current;
-    if (audioElement && audioFile) {
-      audioElement.src = audioFile.url;
-      const playPromise = audioElement.play();
-      if (playPromise !== undefined) {
-        playPromise.catch((error) =>
-          console.log('Audio playback prevented or failed:', error)
-        );
-      }
+    const audio = audioRef.current;
+    const updateCurrentTime = () => {
+      setCurrentTime(audio.currentTime);
+    };
+
+    if (audio) {
+      audio.addEventListener('timeupdate', updateCurrentTime);
+    }
+
+    if (audio && audioFile) {
+      audio.src = audioFile.url;
+      // const playPromise = audioElement.play();
+      // if (playPromise !== undefined) {
+      //   playPromise.catch((error) =>
+      //     console.log('Audio playback prevented or failed:', error)
+      //   );
+      // }
       setAudioURL('');
       setApiResponse(null);
     }
-  }, [audioFile]);
+
+    return () => {
+      if (audio) {
+        audio.removeEventListener('timeupdate', updateCurrentTime);
+      }
+    };
+  }, []);
 
   const startRecording = async () => {
     setIsRecording(true);
+    console.log('new')
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     mediaRecorderRef.current = new MediaRecorder(stream);
     mediaRecorderRef.current.start();
@@ -117,7 +146,10 @@ function Tenses({ audioFile }) {
     mediaRecorderRef.current.ondataavailable = (event) => {
       audioChunks.push(event.data);
     };
-  
+    setRecordingTime(0); // Reset recording time
+    recordingTimerRef.current = setInterval(() => {
+      setRecordingTime((prevTime) => prevTime + 1); // Increment time every second
+    }, 1000);
     mediaRecorderRef.current.onstop = async () => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       setAudioBlob(audioBlob);
@@ -245,6 +277,7 @@ function Tenses({ audioFile }) {
 
   const stopRecording = () => {
     setIsRecording(false);
+    console.log('mediaRecorderRef.current', mediaRecorderRef.current);
     mediaRecorderRef.current.stop();
     setIsStopped(true);
   };
@@ -254,31 +287,111 @@ function Tenses({ audioFile }) {
     localStorage.setItem('score', []);
   };
 
+  const playAudio = () => {
+    if (audioRef.current) {
+      setIsPlaying(true);
+      setIsPlayed(true);
+      audioRef.current.play();
+    }
+  };
+
+  const onAudioEnd = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+    }
+    setCurrentTime(0);
+    setIsPlayed(false);
+  };
+
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+    return `${minutes}:${formattedSeconds}`;
+  };
+
   return (
     <div className="bg-gray-100 rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
       {!isStopped && !isClicked && (
         <>
-          <h2 className="text-xl font-bold mb-4">Speak the correct sentence</h2>
-          <p className="text-md mb-6">Hear the prompt, then say the right sentence or type the right sentence</p>
-          <img
-            src={talkImage}
+          <h2 className="text-2xl font-bold mb-10">
+            Speak or type the correct sentence
+          </h2>
+          { !isPlaying && <img
+            src={audioPlay}
+            onClick={playAudio}
             alt="Speak"
-            className="mb-6 w-[100px] h-[100px] mx-auto rounded-lg"
-          />
-          <audio ref={audioRef} controls className="mb-4 w-full">
-            <source src={audioFile?.url} type="audio/mpeg" />
-            Your browser does not support the audio element.
+            className="mb-6 w-[100px] h-[100px] mx-auto rounded-lg cursor-pointer"
+          /> }
+          {
+            isRecording && (<div>
+              <div className="text-md mb-4 text-center">
+                <div className='flex'>
+                  <div className='my-9' style={{ width: '35px' }}>
+                    {formatTime(recordingTime)}
+                  </div>
+                  <div className='px-4'>
+                    <img src={audioWavegif} style={{ height: '100px', width: '175px' }} />
+                  </div>
+                  <div>
+                    <img onClick={stopRecording} className='pt-3 cursor-pointer' src={stopAudio} />
+                  </div>
+                </div>
+                <a className="font-bold text-red-600">Recording...</a>
+              </div>
+            </div>)
+          }
+          {
+            isPlaying && !isRecording && (<div>
+              <div className="text-md mb-4 text-center">
+                <div className='flex'>
+                  <div className='my-9' style={{ width: '35px' }}>
+                    {formatTime(currentTime)}
+                  </div>
+                  <div className='flex columns-10 text-center'>
+                    
+                    <div className='px-4'>{ isPlayed ? <img src={audioWavegif} style={{ height: '100px', width: '175px' }} /> : <img src={audioWave} style={{ height: '100px', width: '175px' }} /> }</div>
+                    <div className='pt-3 cursor-pointer'><img onClick={startRecording} src={recordAudio} /></div>
+                  </div>
+                  {/* <div>
+                    { isRecording && (<div>
+                      {formatTime(recordingTime)} Recording...
+                      <img onClick={stopRecording} src={stopAudio} /> </div>) }
+                    
+                  </div> */}
+                </div>
+                <a
+                  style={{ 
+                    cursor: 'pointer',
+                    textDecoration: 'underline',
+                    color: '#586FCC', 
+                  }}
+                  onClick={playAudio}>Replay Again</a>
+              </div>
+            </div>)
+          }
+          <p className="text-md mb-6">Respond accurately to the prompt by speaking into the microphone or typing your answer.</p>
+          <audio
+            ref={audioRef}
+            hidden
+            onEnded={onAudioEnd} 
+            controls 
+            className="mb-4 w-full" 
+            src={audioFile?.url}>
           </audio>
-          <div className="mb-8 w-full"></div>
+            {/* <source src={audioFile?.url} type="audio/mpeg" />
+            Your browser does not support the audio element.
+          </audio> */}
+          <div className="w-full"></div>
 
-          {isRecording && (
+          {/* {isRecording && (
             <div className="flex items-center mb-4">
               <div className="w-3 h-3 rounded-full mr-2 bg-blue-500"></div>
               <p className="font-bold text-red-600">Recording...</p>
             </div>
-          )}
+          )} */}
 
-          <div className="flex justify-between w-full max-w-[400px]">
+          {/* <div className="flex justify-between w-full max-w-[400px]">
             <button
               onClick={startRecording}
               className={`px-6 py-2 rounded-lg font-semibold ${
@@ -301,13 +414,13 @@ function Tenses({ audioFile }) {
             >
               Stop Recording
             </button>
-          </div>
+          </div> */}
         </>
       )}
 
       {!isStopped && !isClicked && (
         <>  
-          <div className="w-full mt-8">
+          <div className="w-full">
           <p className="text-md mb-4 text-center">or</p>
             <div className="relative flex items-center">
               <input
@@ -322,7 +435,7 @@ function Tenses({ audioFile }) {
                 onClick={handleSendText}
                 className="absolute right-2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 focus:outline-none"
               > */}
-              <img className="absolute right-2 text-white p-2" src={send} onClick={handleSendText} />
+              <img className="absolute right-2 text-white p-2 cursor-pointer" src={send} onClick={handleSendText} />
               {/* <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512"
@@ -339,10 +452,11 @@ function Tenses({ audioFile }) {
           </>
       )}
 
-      {!isHidden && audioURL && (
+      {!isHidden && apiResponse && audioURL && (
         <div className="mt-6 w-full">
           <h2 className="text-lg font-semibold mb-2">Your Recorded Audio:</h2>
-          <audio controls src={audioURL} className="w-full"></audio>
+          <AudioPlay audioFile={audioURL}></AudioPlay>
+          {/* <audio controls src={audioURL} className="w-full"></audio> */}
         </div>
       )}
 
