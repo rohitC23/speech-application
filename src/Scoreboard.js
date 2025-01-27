@@ -65,7 +65,7 @@ function ScoreBoard() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen  bg-gray-100 p-4 pt-20">
-            <Header showNav={true} hiddenNavItems={['/Home']}/>
+            <Header showNav={true} />
             <div className="flex items-center space-x-4 mb-10">
                 {levelsList.map((level, index) => {
                 // Get the corresponding route from the navigationMap

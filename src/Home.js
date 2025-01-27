@@ -11,7 +11,7 @@ function Home() {
   const [audio] = useState(new Audio());
   const [apiResponse, setApiResponse] = useState(null); // To store API response
   const navigate = useNavigate();
-
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const location = useLocation();
 
     useEffect(() => {
@@ -40,13 +40,13 @@ function Home() {
   }, [message]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/generate_word')
+    fetch(`${aiEndpoint}/generate_word`)
       .then((response) => response.json())
       .then((data) => {
         const today = Object.keys(data)[0];
         setWordData(data[today]);
 
-        fetch('http://127.0.0.1:8000/generate_word_audio', {
+        fetch(`${aiEndpoint}/generate_word_audio`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
         })
@@ -83,7 +83,7 @@ function Home() {
   const handleBeginClick = async () => {
     try {
       const userId = localStorage.getItem('user_id');
-      const response = await fetch('http://127.0.0.1:8000/levels_list', {
+      const response = await fetch(`${aiEndpoint}/levels_list`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId }),
@@ -122,7 +122,7 @@ function Home() {
       {message && (
         <div
           id="popup-message"
-          className="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white p-4 rounded-lg shadow-md text-center"
+          className="fixed top-20 flex left-3/4 items-center bg-green-500 justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg"
         >
           {message}
         </div>

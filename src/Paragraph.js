@@ -9,7 +9,7 @@ function Paragraph({ questions }) {
   const [correctAnswers, setCorrectAnswers] = useState([]);
   const [answersDisabled, setAnswersDisabled] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
-
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const handleOptionChange = (questionId, option) => {
     setAnswers((prevAnswers) => ({
       ...prevAnswers,
@@ -44,7 +44,7 @@ function Paragraph({ questions }) {
 
     try {
       const response = await fetch(
-        'http://127.0.0.1:8000/evaluate_reading_comprehension',
+        `${aiEndpoint}/evaluate_reading_comprehension`,
         {
           method: 'POST',
           headers: {
@@ -151,7 +151,7 @@ function Paragraph({ questions }) {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
+      const response = await fetch(`${aiEndpoint}/user/insert/score`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -182,7 +182,7 @@ function Paragraph({ questions }) {
 
     try {
       // Send the POST request
-      const response = await fetch('http://127.0.0.1:8000/submit', {
+      const response = await fetch(`${aiEndpoint}/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -13,6 +13,7 @@ function Generator() {
   const [isClicked, setIsClicked] = useState(false);
   const [hasError, setHasError] = useState(false); // State to track if there was an error fetching data
   const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
     "Correct the Tenses": '/level-tenses',
@@ -42,7 +43,7 @@ function Generator() {
       const fetchData = async () => {
         const user_id = localStorage.getItem('user_id'); // Retrieve the user ID from localStorage
         try {
-          const response = await fetch('http://127.0.0.1:8000/reading_comprehension', {
+          const response = await fetch(`${aiEndpoint}/reading_comprehension`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -89,7 +90,7 @@ function Generator() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/bonus']}/>
+      <Header showNav={true} />
 
       <div className="flex items-center space-x-4 mb-10">
         {levelsList.map((level, index) => {

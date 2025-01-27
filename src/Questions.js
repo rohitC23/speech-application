@@ -9,6 +9,7 @@ function Questions({ questions }) {
   const [correctAnswers, setCorrectAnswers] = useState([]);
   const navigate = useNavigate();
   const [totalScore, setTotalScore] = useState(0);
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
 
   const handleOptionChange = (questionId, option) => {
     setAnswers((prevAnswers) => ({
@@ -44,7 +45,7 @@ function Questions({ questions }) {
 
     try {
       const response = await fetch(
-        'http://127.0.0.1:8000/evaluate_listening_comprehension',
+        `${aiEndpoint}/evaluate_listening_comprehension`,
         {
           method: 'POST',
           headers: {
@@ -150,7 +151,7 @@ function Questions({ questions }) {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
+      const response = await fetch(`${aiEndpoint}/user/insert/score`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -181,7 +182,7 @@ function Questions({ questions }) {
 
     try {
       // Send the POST request
-      const response = await fetch('http://127.0.0.1:8000/submit', {
+      const response = await fetch(`${aiEndpoint}/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

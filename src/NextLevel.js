@@ -13,6 +13,7 @@ function NextLevel() {
   const [popup, setPopup] = useState({ message: '', type: '' }); // State for popup message
   const user_id = localStorage.getItem('user_id');
   const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
     "Correct the Tenses": '/level-tenses',
@@ -39,7 +40,7 @@ function NextLevel() {
 
     try {
       // Fetch audio file
-      const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
+      const audioResponse = await fetch(`${aiEndpoint}/generate_tenses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +64,7 @@ function NextLevel() {
       }
 
       // Fetch question
-      const questionResponse = await fetch('http://127.0.0.1:8000/generate_question', {
+      const questionResponse = await fetch(`${aiEndpoint}/generate_question`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +89,7 @@ function NextLevel() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/Home']}/>
+      <Header showNav={true} />
       <div className="flex items-center space-x-4 mb-10">
         {levelsList.map((level, index) => {
           // Get the corresponding route from the navigationMap

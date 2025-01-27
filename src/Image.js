@@ -119,6 +119,7 @@ function Image() {
   const [popup, setPopup] = useState({ message: '', type: '' });
   const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
   const navigate = useNavigate();
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
     "Correct the Tenses": '/level-tenses',
@@ -159,7 +160,7 @@ function Image() {
         formData.append('image_filename', imageFilename);
         formData.append('audio', wavBlob, 'recording.wav');
 
-        const response = await fetch('http://127.0.0.1:8000/image_evaluation', {
+        const response = await fetch(`${aiEndpoint}/image_evaluation`, {
           method: 'POST',
           body: formData,
         });
@@ -232,7 +233,7 @@ function Image() {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
+      const response = await fetch(`${aiEndpoint}/user/insert/score`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -343,7 +344,7 @@ function Image() {
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/Home', '/bonus']}/>
+      <Header showNav={true} />
 
       <div className="flex items-center space-x-4 mb-10">
   {levelsList.map((level, index) => {

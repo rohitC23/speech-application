@@ -13,6 +13,7 @@ function AuthForm() {
   const [emailError, setEmailError] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [otpTime, setOtpTime] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [encodedOtp, setEncodedOtp] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -21,6 +22,7 @@ function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false); // State for loading
   const [showGoogleButton, setShowGoogleButton] = useState(true);
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigate = useNavigate();
 
   const toggleForm = () => {
@@ -42,7 +44,7 @@ function AuthForm() {
   function handleGoogleSignup() {
     try {
         // Redirect the user to the backend's /login endpoint for Google OAuth
-        window.location.href = "http://127.0.0.1:8000/login";
+        window.location.href = `${aiEndpoint}/login`;
     } catch (error) {
         console.error("Error during Google signup:", error.message);
         alert("An error occurred during signup. Please try again later.");
@@ -61,7 +63,7 @@ function AuthForm() {
     setLoading(true); // Set loading to true before sending OTP
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/assessment/otp/password', {
+      const response = await fetch(`${aiEndpoint}/assessment/otp/password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +76,7 @@ function AuthForm() {
         setEncodedOtp(data.encoded_otp);
         setOtpSent(true);
         setOtpMessage(data.Success);
-
+        setOtpTime(data.otptime);
         setTimeout(() => {
           setOtpMessage('');
         }, 2000);
@@ -92,7 +94,7 @@ function AuthForm() {
 
   const handleResetPassword = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/assessment/forgot/password', {
+      const response = await fetch(`${aiEndpoint}/assessment/forgot/password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,6 +102,7 @@ function AuthForm() {
         body: JSON.stringify({
           usermail: email,
           userotp: otp,
+          otptime : otpTime,
           encoded_otp: encodedOtp,
           new_password: newPassword,
         }),

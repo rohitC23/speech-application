@@ -13,6 +13,7 @@ function Listener() {
   const [isStarted, setIsStarted] = useState(false);
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file URL and name
   const [errorOccurred, setErrorOccurred] = useState(false); // State to track API errors
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
     "Correct the Tenses": '/level-tenses',
@@ -26,7 +27,7 @@ function Listener() {
     setErrorOccurred(false); // Reset error state before fetching
     try {
       // Fetch audio first
-      const audioResponse = await fetch('http://127.0.0.1:8000/listening_comprehension_audio', {
+      const audioResponse = await fetch(`${aiEndpoint}/listening_comprehension_audio`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ function Listener() {
         setAudioFile({ url: audioFileURL, name: filename });
 
         // Fetch questions only after audio fetch is successful
-        const questionsResponse = await fetch('http://127.0.0.1:8000/listening_comprehension', {
+        const questionsResponse = await fetch(`${aiEndpoint}/listening_comprehension`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ function Listener() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/Home']}/>
+      <Header showNav={true} />
       <div className="flex items-center space-x-4 mb-10">
         {levelsList.map((level, index) => {
           // Get the corresponding route from the navigationMap

@@ -31,7 +31,7 @@ function MainApp() {
 
     try {
       // Trigger the POST API when the Start button is clicked
-      const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
+      const response = await fetch('https://communication.theknowhub.com/api/generate_sentences', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +66,7 @@ function MainApp() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen  bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/Home']}/>
+      <Header showNav={true} />
         <div className="flex items-center space-x-4 mb-10">
           {levelsList.map((level, index) => {
             // Get the corresponding route from the navigationMap
@@ -127,13 +127,13 @@ function MainApp() {
           <p className="text-md mb-6">thoughtfully revise and correct it.</p>
           {/* Time and questions in a single box with a separator */}
           <div style={{ border: '1px solid #40508D', borderRadius: '16px' }} className="px-5 py-5 text-center shadow-sm justify-between items-center mb-8">
-            <div className='flex py-2 justify-center'>
+            {/* <div className='flex py-2 justify-center'>
               <p className="font-semibold">Time Per Sentence</p>:
-              <p style={{ color: '#586FCC' }} className='pl-2'>30 seconds</p>
-            </div>
+              <p style={{ color: '#586FCC' }} className='pl-2'>30 seconds</p> */}
+            {/* </div> */}
             {/* <div className="h-full mx-2"></div> Separator line */}
             <div className='flex py-2 justify-center'>
-              <p className="font-semibold">Sentences</p>:
+              <p className="font-semibold">Number of Sentences</p>:
               <p style={{ color: '#586FCC' }} className='pl-2'>5</p>
             </div>
           </div>

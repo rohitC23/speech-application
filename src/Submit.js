@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Submit() {
   const navigate = useNavigate();
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const scoreArray = JSON.parse(localStorage.getItem('score')) || [];
   const sum = scoreArray.reduce((acc, score) => acc + score, 0);
 
@@ -35,7 +36,7 @@ function Submit() {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
+      const response = await fetch(`${aiEndpoint}/user/insert/score`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -116,7 +117,7 @@ function Submit() {
 
     try {
       // Send the POST request
-      const response = await fetch('http://127.0.0.1:8000/submit', {
+      const response = await fetch(`${aiEndpoint}/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
