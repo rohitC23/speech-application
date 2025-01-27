@@ -23,6 +23,10 @@ import revengeImage from './assets/images/Revenge.jpg';
 import sportsImage from './assets/images/Sports.png';
 import active from 'url:./assets/Vector.png';
 import inactive from 'url:./assets/Icon.png';
+import audioWavegif from 'url:./assets/sound-unscreen.gif';
+import recordAudio from 'url:./assets/Button (1).png';
+import stopAudio from 'url:./assets/Button (2).png';
+import AudioPlay from './audioPlay';
 
 
 const images = [animalImage, adventureImage, astronomyImage, beachImage, betrayalImage, discoveryImage, educationImage, environmentImage, fightImage, friendshipImage, historyImage,
@@ -103,7 +107,9 @@ function Image() {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isStopped, setIsStopped] = useState(false);
+  const [recordingTime , setRecordingTime] = useState(0);
   const mediaRecorderRef = useRef(null);
+  const recordingTimerRef = useRef(null);
   const [audioURL, setAudioURL] = useState('');
   const [audioBlob, setAudioBlob] = useState(null);
   const [apiResponse, setApiResponse] = useState(null);
@@ -132,7 +138,10 @@ function Image() {
     mediaRecorderRef.current.ondataavailable = (event) => {
       audioChunks.push(event.data);
     };
-
+    setRecordingTime(0); // Reset recording time
+    recordingTimerRef.current = setInterval(() => {
+      setRecordingTime((prevTime) => prevTime + 1); // Increment time every second
+    }, 1000);
     mediaRecorderRef.current.onstop = async () => {
       const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
       setAudioBlob(audioBlob);
@@ -325,6 +334,13 @@ function Image() {
     setSelectedImage(randomImage);
   }, []);
 
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+    return `${minutes}:${formattedSeconds}`;
+  };
+  
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
       <Header showNav={true} hiddenNavItems={['/Home', '/bonus']}/>
@@ -337,62 +353,87 @@ function Image() {
 
     return (
       <React.Fragment key={index}>
-                                              <div
-                                                style={isActive ? { borderColor: '#586FCC' } : { }}
-                                                className={`${
-                                                  isActive ? 'border-500' : 'border-gray-500'
-                                                } border-t-4 flex items-center space-x-2 w-96`}
-                                                >
-                                              <div>
-                                                <img src={isActive ? active : inactive} alt="Prompt"/>
-                                              </div>
-                                              {/* <div
-                                                className={`${
-                                                  isActive ? 'bg-blue-500' : 'bg-gray-400'
-                                                } text-white rounded-full w-8 h-8 flex items-center justify-center`}
-                                              >
-                                                {index + 1}
-                                              </div> */}
-                                              {route ? (
-                                                <div
-                                                  style={isActive ? { color: '#586FCC' } : { }}
-                                                  className={`${
-                                                    isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
-                                                  }`}
-                                                >
-                                                 {level}
-                                                </div>
-                                              ) : (
-                                                <div
-                                                  style={isActive ? { color: '#586FCC' } : { }}
-                                                  className={`${
-                                                    isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
-                                                  }`}
-                                                >
-                                                  {level}
-                                                </div>
-                                              )}
-                                              </div>
-                                            </React.Fragment>
+        <div
+          style={isActive ? { borderColor: '#586FCC' } : { }}
+          className={`${
+            isActive ? 'border-500' : 'border-gray-500'
+          } border-t-4 flex items-center space-x-2 w-96`}
+          >
+        <div>
+          <img src={isActive ? active : inactive} alt="Prompt"/>
+        </div>
+        {/* <div
+          className={`${
+            isActive ? 'bg-blue-500' : 'bg-gray-400'
+          } text-white rounded-full w-8 h-8 flex items-center justify-center`}
+        >
+          {index + 1}
+        </div> */}
+        {route ? (
+          <div
+            style={isActive ? { color: '#586FCC' } : { }}
+            className={`${
+              isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+            }`}
+          >
+            {level}
+          </div>
+        ) : (
+          <div
+            style={isActive ? { color: '#586FCC' } : { }}
+            className={`${
+              isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+            }`}
+          >
+            {level}
+          </div>
+        )}
+        </div>
+      </React.Fragment>
     );
   })}
 </div>
 
 
-      <div className="bg-gray-100 shadow-md rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
+      <div className="bg-gray-100 rounded-lg p-6 w-full max-w-[900px] h-[550px] flex flex-col justify-center items-center">
         {!isStopped && (
           <>
             <h2 className="text-xl font-bold mb-4">Describe the image in your own words</h2>
             <img src={selectedImage} alt="Prompt" className="mb-6 w-[550px] h-[350px] mx-auto rounded-lg" />
 
-            {isRecording && (
+            {/* {isRecording && (
               <div className="flex items-center mb-4">
                 <div className="w-3 h-3 rounded-full mr-2 bg-blue-500"></div>
                 <p className="font-bold text-red-600">Recording...</p>
               </div>
-            )}
+            )} */}
 
-            <div className="flex justify-between w-full max-w-[400px]">
+            {
+              isRecording && (<div>
+                <div className="text-md mb-4 text-center">
+                  <div className='flex'>
+                    <div className='my-9' style={{ width: '35px' }}>
+                      {formatTime(recordingTime)}
+                    </div>
+                    <div className='px-4'>
+                      <img src={audioWavegif} style={{ height: '100px', width: '175px' }} />
+                    </div>
+                    <div>
+                      <img onClick={stopRecording} className='pt-3 cursor-pointer' src={stopAudio} />
+                    </div>
+                  </div>
+                  <a className="font-bold text-red-600">Recording...</a>
+                </div>
+              </div>)
+            }
+            {
+              !isRecording && 
+                <div className='pt-3 cursor-pointer'>
+                  <img onClick={startRecording} src={recordAudio} />
+                </div>
+            }
+
+            {/* <div className="flex justify-between w-full max-w-[400px]">
               <button
                 onClick={startRecording}
                 className={`px-6 py-2 rounded-lg font-semibold ${
@@ -415,7 +456,7 @@ function Image() {
               >
                 Stop Recording
               </button>
-            </div>
+            </div> */}
           </>
         )}
 
@@ -424,6 +465,7 @@ function Image() {
           <>
             <div className="mt-6 w-full">
               <h2 className="text-lg font-semibold mb-2">Your Recorded Audio:</h2>
+              <AudioPlay audioFile={audioURL}></AudioPlay>
               <audio controls src={audioURL} className="w-full"></audio>
             </div>
 
