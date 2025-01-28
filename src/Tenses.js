@@ -284,7 +284,13 @@ function Tenses({ audioFile }) {
   };
 
   const handleTryAgain = () => {
-    navigate('/home');
+    // navigate('/home');
+    mediaRecorderRef.current = null;
+    setAudioTextInput('');
+    setIsStopped(false);
+    setIsClicked(false);
+    setIsPlaying(false);
+    setErrorOccurred(false);
     localStorage.setItem('score', []);
   };
 
@@ -555,7 +561,7 @@ function Tenses({ audioFile }) {
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Back to Home
+          Try Again
         </button>
       </div>
     )}

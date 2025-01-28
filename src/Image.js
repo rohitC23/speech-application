@@ -192,7 +192,10 @@ function Image() {
   };
 
   const handleTryAgain = () => {
-    navigate('/home');
+    // navigate('/image');
+    setIsRecording(false);
+    setIsStopped(false);
+    setErrorOccurred(false);
     localStorage.setItem('score', []);
   };
 
@@ -524,7 +527,7 @@ function Image() {
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Back to Home
+          Try Again
         </button>
       </div>
     )}
