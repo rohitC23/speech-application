@@ -134,9 +134,19 @@ function Tenses({ audioFile }) {
     };
   }, []);
 
+  const reloadAudio = () => {
+    const audio = audioRef.current;
+    const updateCurrentTime = () => {
+      setCurrentTime(audio.currentTime);
+    };
+    if (audio) {
+      audio.addEventListener('timeupdate', updateCurrentTime);
+      audio.load();
+    }
+  }
+
   const startRecording = async () => {
     setIsRecording(true);
-    console.log('new')
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -284,12 +294,19 @@ function Tenses({ audioFile }) {
   };
 
   const handleTryAgain = () => {
-    navigate('/home');
+    // navigate('/home');
+    setAudioURL('');
+    setAudioTextInput('');
+    setIsStopped(false);
+    setIsClicked(false);
+    setIsPlaying(false);
+    setErrorOccurred(false);
     localStorage.setItem('score', []);
   };
 
   const playAudio = () => {
     if (audioRef.current) {
+      reloadAudio();
       setIsPlaying(true);
       setIsPlayed(true);
       audioRef.current.play();
@@ -555,7 +572,7 @@ function Tenses({ audioFile }) {
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Back to Home
+          Try Again
         </button>
       </div>
     )}
