@@ -134,9 +134,19 @@ function Tenses({ audioFile }) {
     };
   }, []);
 
+  const reloadAudio = () => {
+    const audio = audioRef.current;
+    const updateCurrentTime = () => {
+      setCurrentTime(audio.currentTime);
+    };
+    if (audio) {
+      audio.addEventListener('timeupdate', updateCurrentTime);
+      audio.load();
+    }
+  }
+
   const startRecording = async () => {
     setIsRecording(true);
-    console.log('new')
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -285,7 +295,7 @@ function Tenses({ audioFile }) {
 
   const handleTryAgain = () => {
     // navigate('/home');
-    mediaRecorderRef.current = null;
+    setAudioURL('');
     setAudioTextInput('');
     setIsStopped(false);
     setIsClicked(false);
@@ -296,6 +306,7 @@ function Tenses({ audioFile }) {
 
   const playAudio = () => {
     if (audioRef.current) {
+      reloadAudio();
       setIsPlaying(true);
       setIsPlayed(true);
       audioRef.current.play();
