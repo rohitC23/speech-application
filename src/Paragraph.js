@@ -224,7 +224,7 @@ function Paragraph({ questions }) {
   };
 
   return (
-    <div className="w-full max-w-[900px] h-[410px] flex flex-col">
+    <div className="w-full max-w-[1240px] h-[410px] flex flex-col">
       <h2 className="text-xl font-bold mb-6">Answer the Questions</h2>
 
       {/* Questions Container with Vertical Scrolling */}

@@ -142,7 +142,7 @@ function Listener() {
       </div>
 
 
-      <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
+      <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[1240px] h-auto flex flex-col justify-content-left">
         <h2 className="text-2xl font-bold mb-6">Listening Comprehension</h2>
         
         {!audioFile && (
