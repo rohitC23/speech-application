@@ -13,6 +13,7 @@ function MainApp() {
   const [loading, setLoading] = useState(false); // State to handle loading
   const user_id = localStorage.getItem('user_id');
   const levelsList = JSON.parse(localStorage.getItem('levelsList'));
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const [popup, setPopup] = useState({ message: '', type: '' });
   const navigationMap = {
     "Correct the Sentences": '/app',
@@ -31,7 +32,7 @@ function MainApp() {
 
     try {
       // Trigger the POST API when the Start button is clicked
-      const response = await fetch('https://communication.theknowhub.com/api/generate_sentences', {
+      const response = await fetch(`${aiEndpoint}/generate_sentences`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

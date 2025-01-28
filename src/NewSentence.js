@@ -108,7 +108,8 @@ function NewSentence({ audioFile, question }) {
   const [audioTextInput, setAudioTextInput] = useState('');
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [popup, setPopup] = useState({ message: '', type: '' });
-
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
+  
   useEffect(() => {
     const audio = audioRef.current;
     const updateCurrentTime = () => {
@@ -171,7 +172,7 @@ function NewSentence({ audioFile, question }) {
         formData.append('user_id',user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://communication.theknowhub.com/api/evaluate_tense', {
+        const response = await fetch(`${aiEndpoint}/evaluate_tense`, {
           method: 'POST',
           body: formData,
         });
@@ -240,7 +241,7 @@ function NewSentence({ audioFile, question }) {
       }
 
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_tense_answer',
+        `${aiEndpoint}/evaluate_tense_answer`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
