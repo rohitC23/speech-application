@@ -3,7 +3,7 @@ import Header from './Header';
 import Questions from './Questions';
 import active from 'url:./assets/Vector.png';
 import inactive from 'url:./assets/Icon.png';
-import { Link } from 'react-router-dom';
+import CustomAudioPlayer from './audioClipPlay';
 
 function Listener() {
   const [loading, setLoading] = useState(true);
@@ -176,9 +176,10 @@ function Listener() {
             {audioFile && (
               <div className="mb-6 w-full">
                 <p className="text-md mb-4 text-center">Listen to the audio carefully then answer the questions</p>
-                <audio controls src={audioFile.url} className="w-full">
+                {/* <audio controls src={audioFile.url} className="w-full">
                   Your browser does not support the audio element.
-                </audio>
+                </audio> */}
+                <CustomAudioPlayer audioSrc={audioFile.url}></CustomAudioPlayer>
               </div>
             )}
 

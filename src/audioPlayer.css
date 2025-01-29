@@ -1,0 +1,40 @@
+/* Style the track */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(to right, #586fcc 0%, #586fcc 0%, #808080 0%, #808080 100%);
+    border-radius: 5px;
+    outline: none;
+    transition: background 0.2s;
+  }
+  
+  /* Style the thumb (dot) */
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: rgb(88, 111, 204);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: rgb(88, 111, 204);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  
+  /* On hover, make the dot bigger */
+  input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+  
+  input[type="range"]::-moz-range-thumb:hover {
+    transform: scale(1.2);
+  }

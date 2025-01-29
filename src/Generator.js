@@ -3,7 +3,6 @@ import Header from './Header';
 import Paragraph from './Paragraph';
 import active from 'url:./assets/Vector.png';
 import inactive from 'url:./assets/Icon.png';
-import { Link } from 'react-router-dom';
 
 function Generator() {
   const [loading, setLoading] = useState(false); // Initially not loading
