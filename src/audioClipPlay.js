@@ -50,7 +50,7 @@ const CustomAudioPlayer = ({ audioSrc }) => {
     const progress = (currentTime / duration) * 100;
     const progressBar = document.querySelector(".progress-range");
     if (progressBar) {
-      progressBar.style.background = `linear-gradient(to right, #586fcc ${progress}%, #808080 ${progress}%)`;
+      progressBar.style.background = `linear-gradient(to right, #586fcc ${progress}%, #586FCC61 ${progress}%)`;
     }
   };
 
