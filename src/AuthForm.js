@@ -22,11 +22,13 @@ function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false); // State for loading
   const [showGoogleButton, setShowGoogleButton] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
   const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigate = useNavigate();
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
+    setIsSignUp(!isSignUp);
     setShowGoogleButton(!isLogin);
     setIsForgotPassword(false);
     resetForm();
@@ -157,7 +159,7 @@ function AuthForm() {
 
       <div className="flex-1 flex justify-center">
         <div className="bg-white p-8 rounded shadow-md w-96">
-        {!isForgotPassword && (
+
           <div className="flex items-center justify-center">
           <img 
             src={logo} 
@@ -165,7 +167,7 @@ function AuthForm() {
             className="h-12 w-auto mx-auto mb-4" 
           />
         </div>
-        )}
+
           {!isForgotPassword && (isLogin ? <Login /> : <Signup />)}
 
           {isForgotPassword && (
@@ -274,9 +276,15 @@ function AuthForm() {
                     </span>
                   </p>
                 )}
-                <p className="text-blue-500 cursor-pointer mt-2" onClick={handleForgotPasswordClick}>
-                  Forgot Password?
-                </p>
+                {!isSignUp && (
+                  <p
+                    className="text-blue-500 cursor-pointer mt-2"
+                    onClick={handleForgotPasswordClick}
+                  >
+                    Forgot Password?
+                  </p>
+                )}
+
               </>
             )}
           </div>

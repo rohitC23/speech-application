@@ -17,6 +17,7 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
+
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
   };
@@ -25,7 +26,6 @@ function Signup() {
     e.preventDefault();
 
     if (!otpSent) {
-      // Send OTP logic
       setLoading(true);
       try {
         const response = await fetch(`${aiEndpoint}/assessment/signup`, {
@@ -58,7 +58,6 @@ function Signup() {
         setLoading(false);
       }
     } else {
-      // Signup logic
       try {
         const fullName = `${firstName} ${lastName}`;
         const response = await fetch(
@@ -207,9 +206,15 @@ function Signup() {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 flex justify-center items-center"
           >
-            {otpSent ? "Submit" : loading ? "Sending OTP..." : "Sign Up"}
+            {loading ? (
+              <i className="fas fa-spinner fa-spin text-white"></i>
+            ) : otpSent ? (
+              "Submit"
+            ) : (
+              "Sign Up"
+            )}
           </button>
         </form>
 
