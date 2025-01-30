@@ -9,6 +9,8 @@ function Paragraph({ questions }) {
   const [correctAnswers, setCorrectAnswers] = useState([]);
   const [answersDisabled, setAnswersDisabled] = useState(false);
   const [totalScore, setTotalScore] = useState(0);
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+
   const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const handleOptionChange = (questionId, option) => {
     setAnswers((prevAnswers) => ({
@@ -64,6 +66,7 @@ function Paragraph({ questions }) {
       localStorage.setItem('totalScore', result.score);
       setPopup({ message: 'Answers submitted successfully!', type: 'success' });
       setCanContinue(true); // Enable the 'Continue' button
+      setSubmitDisabled(true);
       setAnswersDisabled(true);
     } catch (error) {
       setPopup({ message: error.message || 'Something went wrong', type: 'error' });
@@ -275,12 +278,16 @@ function Paragraph({ questions }) {
 
       {/* Buttons Section */}
       <div className="mt-6 flex justify-between items-center w-full">
-        <button
-          onClick={handleSubmit}
-          className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg text-lg"
-        >
-          Submit Answers
-        </button>
+      <button
+        onClick={handleSubmit}
+        disabled={submitDisabled} // Disable the button if submitDisabled is true
+        className={`px-8 py-3 font-semibold text-white bg-blue-500 rounded-lg text-lg ${
+          submitDisabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
+      >
+        Submit Answers
+      </button>
+
         <button
           className={`px-8 py-3 font-semibold rounded-lg text-lg ${
             canContinue
