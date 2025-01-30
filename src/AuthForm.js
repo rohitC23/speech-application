@@ -254,6 +254,15 @@ function AuthForm() {
                     )}
                   </button>
                 )}
+                
+                <div className="mt-4 text-center">
+                  <p>
+                    Having Trouble? Back to{' '}
+                    <span className="text-blue-500 cursor-pointer" onClick={toggleForm}>
+                      Login
+                    </span>
+                  </p>
+                </div>
               </form>
             </div>
           )}
