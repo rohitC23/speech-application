@@ -28,6 +28,7 @@ function Signup() {
     if (!otpSent) {
       setLoading(true);
       try {
+        const fullName = `${firstName} ${lastName}`;
         const response = await fetch(`${aiEndpoint}/assessment/signup`, {
           method: "POST",
           headers: {
@@ -35,6 +36,8 @@ function Signup() {
           },
           body: JSON.stringify({
             usermail: email,
+            password,
+            full_name: fullName
           }),
         });
 
