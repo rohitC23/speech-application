@@ -222,7 +222,7 @@ function NewTenses({ audioFile }) {
           globalId++;
           
       } catch (error) {
-        setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
+        setPopup({ message: 'No Audio Captured, Please retry', type: 'error' });
         // setErrorOccurred(true);
         setIsClicked(false);
         setIsStopped(false);

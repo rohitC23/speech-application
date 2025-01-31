@@ -217,7 +217,7 @@ function NewSentence({ audioFile, question }) {
       } catch (error) {
         setIsLoading(false);
         console.error('Error uploading audio file:', error);
-        setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
+        setPopup({ message: 'No Audio Captured, Please retry', type: 'error' });
         // setErrorOccurred(true);
         setIsClicked(false);
         setIsStopped(false);

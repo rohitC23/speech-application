@@ -200,7 +200,7 @@ function Sentences({ audioFile, question }) {
 
       } catch (error) {
         setIsLoading(false);
-        setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
+        setPopup({ message: 'No Audio Captured, Please retry', type: 'error' });
         setIsClicked(false);
         setIsStopped(false);
         // setErrorOccurred(true);
