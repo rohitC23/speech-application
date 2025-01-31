@@ -445,14 +445,17 @@ function Tenses({ audioFile }) {
           <div className="w-full">
           <p className="text-md mb-4 text-center">or</p>
             <div className="relative flex items-center">
-              <input
-                type="text"
-                placeholder="Enter your answer here"
-                style={{ borderLeft: 'none', borderRight: 'none'}}
-                className="w-full border border-gray-300 bg-gray-100 py-4 px-4 text-gray-700 focus:outline-none"
-                value={audioTextInput}
-                onChange={(e) => setAudioTextInput(e.target.value)}
-              />
+            <input
+              type="text"
+              placeholder="Enter your answer here"
+              style={{ borderLeft: 'none', borderRight: 'none' }}
+              className={`w-full border border-gray-300 bg-gray-100 py-4 px-4 text-gray-700 focus:outline-none ${
+                isPlaying ? "" : "opacity-50 cursor-not-allowed"
+              }`}
+              value={audioTextInput}
+              onChange={(e) => setAudioTextInput(e.target.value)}
+              disabled={!isPlaying} // Disable input until audio starts playing
+            />
               {/* <button
                 onClick={handleSendText}
                 className="absolute right-2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 focus:outline-none"
