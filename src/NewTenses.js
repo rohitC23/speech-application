@@ -165,7 +165,7 @@ function NewTenses({ audioFile }) {
       setAudioBlob(audioBlob);
 
       try {
-        setErrorOccurred(false);
+        // setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -223,7 +223,9 @@ function NewTenses({ audioFile }) {
           
       } catch (error) {
         setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
-        setErrorOccurred(true);
+        // setErrorOccurred(true);
+        setIsClicked(false);
+        setIsStopped(false);
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
@@ -239,7 +241,7 @@ function NewTenses({ audioFile }) {
     setIsClicked(true);
 
     try {
-      setErrorOccurred(false);
+      // setErrorOccurred(false);
       setIsLoading(true);
 
       if(globalId === 5){
@@ -310,7 +312,9 @@ function NewTenses({ audioFile }) {
       console.error('Error sending text:', error);
       setIsLoading(false);
       setPopup({ message: 'Failed to evaluate the text.', type: 'error' });
-      setErrorOccurred(true);
+      // setErrorOccurred(true);
+      setIsClicked(false);
+      setIsStopped(false);
       setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     }
   };
@@ -352,7 +356,7 @@ function NewTenses({ audioFile }) {
     setIsStopped(false);
     setIsClicked(false);
     setIsPlaying(false);
-    setErrorOccurred(false);
+    // setErrorOccurred(false);
     localStorage.setItem('score', []);
   };
 
@@ -616,7 +620,7 @@ function NewTenses({ audioFile }) {
         </div>
       )}
 
-    {errorOccurred && (
+    {/* {errorOccurred && (
       <div className='flex flex-col items-center'>
         <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
         <button
@@ -626,7 +630,7 @@ function NewTenses({ audioFile }) {
           Try Again
         </button>
       </div>
-    )}
+    )} */}
 
       {/* Conditionally render Submit component when globalId reaches 5 */}
       {apiResponse && (

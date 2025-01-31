@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import talkImage from 'url:./assets/talk.png';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import send from 'url:./assets/Button.png';
 import audioPlay from 'url:./assets/Buttons (1).png';
 import recordAudio from 'url:./assets/Button (1).png';
@@ -148,7 +149,7 @@ function Sentences({ audioFile, question }) {
       setAudioBlob(audioBlob);
 
       try {
-        setErrorOccurred(false);
+        // setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -200,7 +201,9 @@ function Sentences({ audioFile, question }) {
       } catch (error) {
         setIsLoading(false);
         setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
-        setErrorOccurred(true);
+        setIsClicked(false);
+        setIsStopped(false);
+        // setErrorOccurred(true);
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
@@ -216,7 +219,7 @@ function Sentences({ audioFile, question }) {
     setIsClicked(true);
 
     try {
-      setErrorOccurred(false);
+      // setErrorOccurred(false);
       setIsLoading(true);
 
       const response = await fetch(
@@ -279,7 +282,9 @@ function Sentences({ audioFile, question }) {
     } catch (error) {
       setIsLoading(false);
       setPopup({ message: 'Failed to evaluate the text.', type: 'error' });
-      setErrorOccurred(true);
+      // setErrorOccurred(true);
+      setIsClicked(false);
+      setIsStopped(false);
       setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     }
   };
@@ -552,15 +557,29 @@ function Sentences({ audioFile, question }) {
 
 
       {!apiResponse && isStopped && isLoading && (
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+          <div>
+            <DotLottieReact
+              src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+              loop
+              autoplay
+              style={{ width: '500px', height: '500px' }} // Customize size
+            />
+          </div>
+      </div>
       )}
 
       {!apiResponse && isClicked && isLoading &&(
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+        <div>
+          <DotLottieReact
+            src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+            loop
+            autoplay
+            style={{ width: '500px', height: '500px' }} // Customize size
+          />
+        </div>
+    </div>
       )}
 
       {apiResponse && (
@@ -569,17 +588,6 @@ function Sentences({ audioFile, question }) {
         </div>
       )}
 
-    {errorOccurred && (
-      <div className='flex flex-col items-center'>
-        <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
-        <button
-          onClick={handleTryAgain}
-          className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
-        >
-          Try Again
-        </button>
-      </div>
-    )}
 
       {popup.message && (
         <div

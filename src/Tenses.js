@@ -166,7 +166,7 @@ function Tenses({ audioFile }) {
       setAudioBlob(audioBlob);
   
       try {
-        setErrorOccurred(false);
+        // setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -197,7 +197,9 @@ function Tenses({ audioFile }) {
       } catch (error) {
         setIsLoading(false);
         setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
-        setErrorOccurred(true);
+        setIsClicked(false);
+        setIsStopped(false);
+        // setErrorOccurred(true);
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
@@ -213,7 +215,7 @@ function Tenses({ audioFile }) {
     setIsClicked(true);
   
     try {
-      setErrorOccurred(false);
+      // setErrorOccurred(false);
       setIsLoading(true);
   
       const response = await fetch(
@@ -257,7 +259,9 @@ function Tenses({ audioFile }) {
       console.error('Error sending text:', error);
       setIsLoading(false);
       setPopup({ message: 'Failed to evaluate the text.', type: 'error' });
-      setErrorOccurred(true);
+      setIsClicked(false);
+      setIsStopped(false);
+      // setErrorOccurred(true);
       setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     }
   };
@@ -300,7 +304,7 @@ function Tenses({ audioFile }) {
     setIsStopped(false);
     setIsClicked(false);
     setIsPlaying(false);
-    setErrorOccurred(false);
+    // setErrorOccurred(false);
     localStorage.setItem('score', []);
   };
 
@@ -565,7 +569,7 @@ function Tenses({ audioFile }) {
       </div>
       )}
 
-    {errorOccurred && (
+    {/* {errorOccurred && (
       <div className='flex flex-col items-center'>
         <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
         <button
@@ -575,7 +579,7 @@ function Tenses({ audioFile }) {
           Try Again
         </button>
       </div>
-    )}
+    )} */}
 
       {apiResponse && (
         <div className="w-full">
