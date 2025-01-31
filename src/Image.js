@@ -522,7 +522,7 @@ function Image() {
 
     {errorOccurred && (
       <div className='flex flex-col items-center'>
-        <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
+        <p className="text-lg font-semibold text-red-500 mb-8">No audio captured Please 'Try Again'</p>
         <button
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
