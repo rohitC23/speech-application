@@ -285,7 +285,7 @@ function AuthForm() {
                     </span>
                   </p>
                 )}
-                {!isSignUp && (
+                {isLogin && (
                   <p
                     className="text-blue-500 cursor-pointer mt-2"
                     onClick={handleForgotPasswordClick}
