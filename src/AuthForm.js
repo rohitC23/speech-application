@@ -84,7 +84,7 @@ function AuthForm() {
         }, 2000);
       } else {
         const errorData = await response.json();
-        setOtpMessage(errorData.error || 'Failed to send OTP. Please try again.');
+        setOtpMessage(errorData.detail || 'Failed to send OTP. Please try again.');
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
@@ -173,7 +173,9 @@ function AuthForm() {
           {isForgotPassword && (
             <div>
               <h2 className="text-xl font-semibold text-center mb-4">Forgot Password</h2>
-              <form>
+              <form onSubmit={(e) => {
+                e.preventDefault(); // Prevent page refresh on form submission
+              }}>
                 <div className="mb-4">
                   <label htmlFor="email" className="block text-gray-700">Email</label>
                   <input
