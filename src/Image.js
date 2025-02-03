@@ -127,6 +127,7 @@ function Image() {
     "Reading Comprehension": '/level-para',
     "Image Description": '/image',
   };
+
   const startRecording = async () => {
     const now = new Date();
     let currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -189,6 +190,18 @@ function Image() {
     setIsRecording(false);
     mediaRecorderRef.current.stop();
     setIsStopped(true);
+  };
+
+  const handleMicrophonePermission = async () => {
+    try {
+      // Request microphone access
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // If permission is granted, start recording
+      startRecording();
+    } catch (error) {
+      setPopup({ message: 'Allow microphone access to start recording.', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+    }
   };
 
   const handleTryAgain = () => {
@@ -433,7 +446,7 @@ function Image() {
             {
               !isRecording && 
                 <div className='pt-3 cursor-pointer'>
-                  <img onClick={startRecording} src={recordAudio} />
+                  <img onClick={handleMicrophonePermission} src={recordAudio} />
                 </div>
             }
 
@@ -534,7 +547,7 @@ function Image() {
 
       {popup.message && (
         <div
-          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center max-w-md min-w-[200px] h-20 px-4 py-3 rounded-lg text-white shadow-lg break-words ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >

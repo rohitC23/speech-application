@@ -204,6 +204,18 @@ function Tenses({ audioFile }) {
       }
     };
   };
+
+  const handleMicrophonePermission = async () => {
+    try {
+      // Request microphone access
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // If permission is granted, start recording
+      startRecording();
+    } catch (error) {
+      setPopup({ message: 'Allow microphone access to start recording.', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+    }
+  };
   
   const handleSendText = async () => {
     if (!audioTextInput.trim()) {
@@ -373,7 +385,7 @@ function Tenses({ audioFile }) {
                   <div className='flex columns-10 text-center'>
                     
                     <div className='px-4'>{ isPlayed ? <img src={audioWavegif} style={{ height: '100px', width: '175px' }} /> : <img src={audioWave} style={{ height: '100px', width: '175px' }} /> }</div>
-                    <div className='pt-3 cursor-pointer'><img onClick={startRecording} src={recordAudio} /></div>
+                    <div className='pt-3 cursor-pointer'><img onClick={handleMicrophonePermission} src={recordAudio} /></div>
                   </div>
                   {/* <div>
                     { isRecording && (<div>
@@ -592,7 +604,7 @@ function Tenses({ audioFile }) {
 
       {popup.message && (
         <div
-          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center max-w-md min-w-[200px] h-20 px-4 py-3 rounded-lg text-white shadow-lg break-words ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >
