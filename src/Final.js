@@ -43,7 +43,7 @@ function Final() {
     const handleContinue = async () => {
         localStorage.setItem('score', []);
         const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
-        const currentLevelIndex = levelsList.indexOf('Correct the Tenses');
+        const currentLevelIndex = levelsList.indexOf('Convert the Tenses');
       
         if (currentLevelIndex !== -1 && currentLevelIndex < levelsList.length - 1) {
           // Navigate to the next item in the list
