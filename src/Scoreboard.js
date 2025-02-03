@@ -11,7 +11,7 @@ function ScoreBoard() {
     const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
     const navigationMap = {
         "Correct the Sentences": '/app',
-        "Correct the Tenses": '/level-tenses',
+        "Convert the Tenses": '/level-tenses',
         "Listening Comprehension": '/level-listen',
         "Reading Comprehension": '/level-para',
         "Image Description": '/image',
@@ -46,7 +46,7 @@ function ScoreBoard() {
           const nextLevel = levelsList[currentLevelIndex + 1];
           const navigationMap = {
             "Correct the Sentences": '/app',
-            "Correct the Tenses": '/level-tenses',
+            "Convert the Tenses": '/level-tenses',
             "Listening Comprehension": '/level-listen',
             "Reading Comprehension": '/level-para',
             "Image Description": '/image',

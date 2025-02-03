@@ -122,7 +122,7 @@ function Image() {
   const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
-    "Correct the Tenses": '/level-tenses',
+    "Convert the Tenses": '/level-tenses',
     "Listening Comprehension": '/level-listen',
     "Reading Comprehension": '/level-para',
     "Image Description": '/image',
@@ -314,7 +314,7 @@ function Image() {
       const nextLevel = levelsList[currentLevelIndex + 1];
       const navigationMap = {
         "Correct the Sentences": '/app',
-        "Correct the Tenses": '/level-tenses',
+        "Convert the Tenses": '/level-tenses',
         "Listening Comprehension": '/level-listen',
         "Reading Comprehension": '/level-para',
         "Image Description": '/image',

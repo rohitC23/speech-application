@@ -12,7 +12,7 @@ function Final() {
     const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
     const navigationMap = {
         "Correct the Sentences": '/app',
-        "Correct the Tenses": '/level-tenses',
+        "Convert the Tenses": '/level-tenses',
         "Listening Comprehension": '/level-listen',
         "Reading Comprehension": '/level-para',
         "Image Description": '/image',
@@ -50,7 +50,7 @@ function Final() {
           const nextLevel = levelsList[currentLevelIndex + 1];
           const navigationMap = {
             "Correct the Sentences": '/app',
-            "Correct the Tenses": '/level-tenses',
+            "Convert the Tenses": '/level-tenses',
             "Listening Comprehension": '/level-listen',
             "Reading Comprehension": '/level-para',
             "Image Description": '/image',
@@ -74,7 +74,7 @@ function Final() {
             {levelsList.map((level, index) => {
                 // Get the corresponding route from the navigationMap
                 const route = navigationMap[level];
-                const isActive = level === "Correct the Tenses"; // Mark active based on string
+                const isActive = level === "Convert the Tenses"; // Mark active based on string
 
                 return (
                 <React.Fragment key={index}>

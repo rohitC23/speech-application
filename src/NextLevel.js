@@ -16,7 +16,7 @@ function NextLevel() {
   const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
-    "Correct the Tenses": '/level-tenses',
+    "Convert the Tenses": '/level-tenses',
     "Listening Comprehension": '/level-listen',
     "Reading Comprehension": '/level-para',
     "Image Description": '/image',
@@ -94,7 +94,7 @@ function NextLevel() {
         {levelsList.map((level, index) => {
           // Get the corresponding route from the navigationMap
           const route = navigationMap[level];
-          const isActive = level === "Correct the Tenses"; // Mark active based on string
+          const isActive = level === "Convert the Tenses"; // Mark active based on string
 
           return (
             <React.Fragment key={index}>
