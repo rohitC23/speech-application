@@ -117,7 +117,7 @@ function Finish() {
       });
 
       if (response.ok) {
-        navigate('/score-board');
+        navigate('/end');
       } else {
         console.error("Failed to submit: ", response.statusText);
       }
