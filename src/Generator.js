@@ -160,7 +160,7 @@ function Generator() {
         {!isClicked && (
           <button
             onClick={handleClick}
-            className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+            className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg mx-auto"
           >
             Start
           </button>

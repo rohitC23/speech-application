@@ -24,7 +24,7 @@ function NextLevel() {
 
   const handleStartClick = async () => {
     if (!difficultyLevel) {
-      setPopup({ message: 'Please select a difficulty level!', type: 'error' });
+      setPopup({ message: 'Please select a level!', type: 'error' });
       setTimeout(() => setPopup({ message: '', type: '' }), 3000); // Clear popup after 3 seconds
       return;
     }

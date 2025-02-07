@@ -196,7 +196,7 @@ function Tenses({ audioFile }) {
         }
       } catch (error) {
         setIsLoading(false);
-        setPopup({ message: 'No Audio Captured, Please retry', type: 'error' });
+        setPopup({ message: 'No Audio captured. Please try again', type: 'error' });
         setIsClicked(false);
         setIsStopped(false);
         // setErrorOccurred(true);

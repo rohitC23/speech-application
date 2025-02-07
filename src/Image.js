@@ -180,8 +180,8 @@ function Image() {
       } catch (error) {
         setErrorOccurred(true);
         setIsLoading(false);
-        setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
-        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+        //setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
+        //setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
   };
