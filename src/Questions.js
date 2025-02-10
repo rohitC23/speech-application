@@ -9,6 +9,9 @@ function Questions({ questions }) {
   const [correctAnswers, setCorrectAnswers] = useState([]);
   const navigate = useNavigate();
   const [totalScore, setTotalScore] = useState(0);
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+
 
   const handleOptionChange = (questionId, option) => {
     setAnswers((prevAnswers) => ({
@@ -44,7 +47,7 @@ function Questions({ questions }) {
 
     try {
       const response = await fetch(
-        'http://127.0.0.1:8000/evaluate_listening_comprehension',
+        `${aiEndpoint}/evaluate_listening_comprehension`,
         {
           method: 'POST',
           headers: {
@@ -64,6 +67,7 @@ function Questions({ questions }) {
       localStorage.setItem('totalScore', result.score);
       setPopup({ message: 'Answers submitted successfully!', type: 'success' });
       setCanContinue(true); // Enable the 'Continue' button
+      setSubmitDisabled(true);
       setAnswersDisabled(true);
     } catch (error) {
       setPopup({ message: error.message || 'Something went wrong', type: 'error' });
@@ -150,7 +154,7 @@ function Questions({ questions }) {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
+      const response = await fetch(`${aiEndpoint}/user/insert/score`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -181,7 +185,7 @@ function Questions({ questions }) {
 
     try {
       // Send the POST request
-      const response = await fetch('http://127.0.0.1:8000/submit', {
+      const response = await fetch(`${aiEndpoint}/submit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -199,7 +203,7 @@ function Questions({ questions }) {
           const nextLevel = levelsList[currentLevelIndex + 1];
           const navigationMap = {
             "Correct the Sentences": '/app',
-            "Correct the Tenses": '/level-tenses',
+            "Convert the Tenses": '/level-tenses',
             "Listening Comprehension": '/level-listen',
             "Reading Comprehension": '/level-para',
             "Image Description": '/image',
@@ -223,7 +227,7 @@ function Questions({ questions }) {
   };
 
   return (
-    <div className="w-full max-w-[900px] h-[350px] flex flex-col">
+    <div className="w-full max-w-[1240px] h-[350px] flex flex-col">
       <h2 className="text-xl font-bold mb-6">Answer the Questions</h2>
 
       {/* Questions Container with Vertical Scrolling */}
@@ -274,12 +278,16 @@ function Questions({ questions }) {
 
       {/* Buttons Section */}
       <div className="mt-6 flex justify-between items-center w-full">
-        <button
-          onClick={handleSubmit}
-          className="px-8 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg text-lg"
-        >
-          Submit Answers
-        </button>
+      <button
+        onClick={handleSubmit}
+        disabled={submitDisabled} // Disable the button if submitDisabled is true
+        className={`px-8 py-3 font-semibold text-white bg-blue-500 rounded-lg text-lg ${
+          submitDisabled ? 'opacity-50 cursor-not-allowed' : ''
+        }`}
+      >
+        Submit Answers
+      </button>
+
         <button
           className={`px-8 py-3 font-semibold rounded-lg text-lg ${
             canContinue

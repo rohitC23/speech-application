@@ -13,6 +13,7 @@ function AuthForm() {
   const [emailError, setEmailError] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
+  const [otpTime, setOtpTime] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [encodedOtp, setEncodedOtp] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
@@ -21,10 +22,13 @@ function AuthForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false); // State for loading
   const [showGoogleButton, setShowGoogleButton] = useState(true);
+  const [isSignUp, setIsSignUp] = useState(false);
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigate = useNavigate();
 
   const toggleForm = () => {
     setIsLogin(!isLogin);
+    setIsSignUp(!isSignUp);
     setShowGoogleButton(!isLogin);
     setIsForgotPassword(false);
     resetForm();
@@ -42,7 +46,7 @@ function AuthForm() {
   function handleGoogleSignup() {
     try {
         // Redirect the user to the backend's /login endpoint for Google OAuth
-        window.location.href = "http://127.0.0.1:8000/login";
+        window.location.href = `${aiEndpoint}/login`;
     } catch (error) {
         console.error("Error during Google signup:", error.message);
         alert("An error occurred during signup. Please try again later.");
@@ -61,7 +65,7 @@ function AuthForm() {
     setLoading(true); // Set loading to true before sending OTP
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/assessment/otp/password', {
+      const response = await fetch(`${aiEndpoint}/assessment/otp/password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -74,13 +78,13 @@ function AuthForm() {
         setEncodedOtp(data.encoded_otp);
         setOtpSent(true);
         setOtpMessage(data.Success);
-
+        setOtpTime(data.otptime);
         setTimeout(() => {
           setOtpMessage('');
         }, 2000);
       } else {
         const errorData = await response.json();
-        setOtpMessage(errorData.error || 'Failed to send OTP. Please try again.');
+        setOtpMessage(errorData.detail || 'Failed to send OTP. Please try again.');
       }
     } catch (error) {
       console.error('Error sending OTP:', error);
@@ -92,7 +96,7 @@ function AuthForm() {
 
   const handleResetPassword = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/assessment/forgot/password', {
+      const response = await fetch(`${aiEndpoint}/assessment/forgot/password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,6 +104,7 @@ function AuthForm() {
         body: JSON.stringify({
           usermail: email,
           userotp: otp,
+          otptime : otpTime,
           encoded_otp: encodedOtp,
           new_password: newPassword,
         }),
@@ -154,7 +159,7 @@ function AuthForm() {
 
       <div className="flex-1 flex justify-center">
         <div className="bg-white p-8 rounded shadow-md w-96">
-        {!isForgotPassword && (
+
           <div className="flex items-center justify-center">
           <img 
             src={logo} 
@@ -162,13 +167,15 @@ function AuthForm() {
             className="h-12 w-auto mx-auto mb-4" 
           />
         </div>
-        )}
+
           {!isForgotPassword && (isLogin ? <Login /> : <Signup />)}
 
           {isForgotPassword && (
             <div>
               <h2 className="text-xl font-semibold text-center mb-4">Forgot Password</h2>
-              <form>
+              <form onSubmit={(e) => {
+                e.preventDefault(); // Prevent page refresh on form submission
+              }}>
                 <div className="mb-4">
                   <label htmlFor="email" className="block text-gray-700">Email</label>
                   <input
@@ -249,6 +256,15 @@ function AuthForm() {
                     )}
                   </button>
                 )}
+                
+                <div className="mt-4 text-center">
+                  <p>
+                    Having Trouble? Back to{' '}
+                    <span className="text-blue-500 cursor-pointer" onClick={toggleForm}>
+                      Login
+                    </span>
+                  </p>
+                </div>
               </form>
             </div>
           )}
@@ -271,9 +287,15 @@ function AuthForm() {
                     </span>
                   </p>
                 )}
-                <p className="text-blue-500 cursor-pointer mt-2" onClick={handleForgotPasswordClick}>
-                  Forgot Password?
-                </p>
+                {isLogin && (
+                  <p
+                    className="text-blue-500 cursor-pointer mt-2"
+                    onClick={handleForgotPasswordClick}
+                  >
+                    Forgot Password?
+                  </p>
+                )}
+
               </>
             )}
           </div>

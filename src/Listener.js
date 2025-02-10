@@ -3,7 +3,7 @@ import Header from './Header';
 import Questions from './Questions';
 import active from 'url:./assets/Vector.png';
 import inactive from 'url:./assets/Icon.png';
-import { Link } from 'react-router-dom';
+import CustomAudioPlayer from './audioClipPlay';
 
 function Listener() {
   const [loading, setLoading] = useState(true);
@@ -13,9 +13,10 @@ function Listener() {
   const [isStarted, setIsStarted] = useState(false);
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file URL and name
   const [errorOccurred, setErrorOccurred] = useState(false); // State to track API errors
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
-    "Correct the Tenses": '/level-tenses',
+    "Convert the Tenses": '/level-tenses',
     "Listening Comprehension": '/level-listen',
     "Reading Comprehension": '/level-para',
     "Image Description": '/image',
@@ -26,7 +27,7 @@ function Listener() {
     setErrorOccurred(false); // Reset error state before fetching
     try {
       // Fetch audio first
-      const audioResponse = await fetch('http://127.0.0.1:8000/listening_comprehension_audio', {
+      const audioResponse = await fetch(`${aiEndpoint}/listening_comprehension_audio`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +46,7 @@ function Listener() {
         setAudioFile({ url: audioFileURL, name: filename });
 
         // Fetch questions only after audio fetch is successful
-        const questionsResponse = await fetch('http://127.0.0.1:8000/listening_comprehension', {
+        const questionsResponse = await fetch(`${aiEndpoint}/listening_comprehension`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -90,7 +91,7 @@ function Listener() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/Home']}/>
+      <Header showNav={true} />
       <div className="flex items-center space-x-4 mb-10">
         {levelsList.map((level, index) => {
           // Get the corresponding route from the navigationMap
@@ -141,7 +142,7 @@ function Listener() {
       </div>
 
 
-      <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
+      <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[1240px] h-auto flex flex-col justify-content-left">
         <h2 className="text-2xl font-bold mb-6">Listening Comprehension</h2>
         
         {!audioFile && (
@@ -162,7 +163,7 @@ function Listener() {
         {!isStarted ? (
           <button
             onClick={startListening}
-            className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+            className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg mx-auto"
           >
             Start
           </button>
@@ -175,9 +176,10 @@ function Listener() {
             {audioFile && (
               <div className="mb-6 w-full">
                 <p className="text-md mb-4 text-center">Listen to the audio carefully then answer the questions</p>
-                <audio controls src={audioFile.url} className="w-full">
+                {/* <audio controls src={audioFile.url} className="w-full">
                   Your browser does not support the audio element.
-                </audio>
+                </audio> */}
+                <CustomAudioPlayer audioSrc={audioFile.url}></CustomAudioPlayer>
               </div>
             )}
 

@@ -9,7 +9,8 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
-
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
+  console.log(aiEndpoint);
   const handlePasswordToggle = () => {
     setShowPassword(!showPassword);
   };
@@ -24,7 +25,7 @@ function Login() {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/assessment/login', {
+      const response = await fetch(`${aiEndpoint}/assessment/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

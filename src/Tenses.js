@@ -103,6 +103,7 @@ function Tenses({ audioFile }) {
   const user_id = localStorage.getItem('user_id');
   const [popup, setPopup] = useState({ message: '', type: '' });
   const timeoutRef = useRef(null);
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -133,9 +134,19 @@ function Tenses({ audioFile }) {
     };
   }, []);
 
+  const reloadAudio = () => {
+    const audio = audioRef.current;
+    const updateCurrentTime = () => {
+      setCurrentTime(audio.currentTime);
+    };
+    if (audio) {
+      audio.addEventListener('timeupdate', updateCurrentTime);
+      audio.load();
+    }
+  }
+
   const startRecording = async () => {
     setIsRecording(true);
-    console.log('new')
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -155,7 +166,7 @@ function Tenses({ audioFile }) {
       setAudioBlob(audioBlob);
   
       try {
-        setErrorOccurred(false);
+        // setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -166,7 +177,7 @@ function Tenses({ audioFile }) {
         formData.append('user_id', user_id);
         formData.append('file', wavBlob, 'recording.wav');
   
-        const response = await fetch('http://127.0.0.1:8000/evaluate_sentence', {
+        const response = await fetch(`${aiEndpoint}/evaluate_sentence`, {
           method: 'POST',
           body: formData,
         });
@@ -185,11 +196,25 @@ function Tenses({ audioFile }) {
         }
       } catch (error) {
         setIsLoading(false);
-        setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
-        setErrorOccurred(true);
+        setPopup({ message: 'No Audio captured. Please try again', type: 'error' });
+        setIsClicked(false);
+        setIsStopped(false);
+        // setErrorOccurred(true);
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
+  };
+
+  const handleMicrophonePermission = async () => {
+    try {
+      // Request microphone access
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // If permission is granted, start recording
+      startRecording();
+    } catch (error) {
+      setPopup({ message: 'Allow microphone access to start recording.', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+    }
   };
   
   const handleSendText = async () => {
@@ -202,11 +227,11 @@ function Tenses({ audioFile }) {
     setIsClicked(true);
   
     try {
-      setErrorOccurred(false);
+      // setErrorOccurred(false);
       setIsLoading(true);
   
       const response = await fetch(
-        'http://127.0.0.1:8000/evaluate_incorrect_answer',
+        `${aiEndpoint}/evaluate_incorrect_answer`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -246,7 +271,9 @@ function Tenses({ audioFile }) {
       console.error('Error sending text:', error);
       setIsLoading(false);
       setPopup({ message: 'Failed to evaluate the text.', type: 'error' });
-      setErrorOccurred(true);
+      setIsClicked(false);
+      setIsStopped(false);
+      // setErrorOccurred(true);
       setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     }
   };
@@ -283,12 +310,19 @@ function Tenses({ audioFile }) {
   };
 
   const handleTryAgain = () => {
-    navigate('/home');
+    // navigate('/home');
+    setAudioURL('');
+    setAudioTextInput('');
+    setIsStopped(false);
+    setIsClicked(false);
+    setIsPlaying(false);
+    // setErrorOccurred(false);
     localStorage.setItem('score', []);
   };
 
   const playAudio = () => {
     if (audioRef.current) {
+      reloadAudio();
       setIsPlaying(true);
       setIsPlayed(true);
       audioRef.current.play();
@@ -351,7 +385,7 @@ function Tenses({ audioFile }) {
                   <div className='flex columns-10 text-center'>
                     
                     <div className='px-4'>{ isPlayed ? <img src={audioWavegif} style={{ height: '100px', width: '175px' }} /> : <img src={audioWave} style={{ height: '100px', width: '175px' }} /> }</div>
-                    <div className='pt-3 cursor-pointer'><img onClick={startRecording} src={recordAudio} /></div>
+                    <div className='pt-3 cursor-pointer'><img onClick={handleMicrophonePermission} src={recordAudio} /></div>
                   </div>
                   {/* <div>
                     { isRecording && (<div>
@@ -423,14 +457,17 @@ function Tenses({ audioFile }) {
           <div className="w-full">
           <p className="text-md mb-4 text-center">or</p>
             <div className="relative flex items-center">
-              <input
-                type="text"
-                placeholder="Enter your answer here"
-                style={{ borderLeft: 'none', borderRight: 'none'}}
-                className="w-full border border-gray-300 bg-gray-100 py-4 px-4 text-gray-700 focus:outline-none"
-                value={audioTextInput}
-                onChange={(e) => setAudioTextInput(e.target.value)}
-              />
+            <input
+              type="text"
+              placeholder="Enter your answer here"
+              style={{ borderLeft: 'none', borderRight: 'none' }}
+              className={`w-full border border-gray-300 bg-gray-100 py-4 px-4 text-gray-700 focus:outline-none ${
+                isPlaying ? "" : "opacity-50 cursor-not-allowed"
+              }`}
+              value={audioTextInput}
+              onChange={(e) => setAudioTextInput(e.target.value)}
+              disabled={!isPlaying} // Disable input until audio starts playing
+            />
               {/* <button
                 onClick={handleSendText}
                 className="absolute right-2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 focus:outline-none"
@@ -547,17 +584,17 @@ function Tenses({ audioFile }) {
       </div>
       )}
 
-    {errorOccurred && (
+    {/* {errorOccurred && (
       <div className='flex flex-col items-center'>
         <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
         <button
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Back to Home
+          Try Again
         </button>
       </div>
-    )}
+    )} */}
 
       {apiResponse && (
         <div className="w-full">
@@ -567,7 +604,7 @@ function Tenses({ audioFile }) {
 
       {popup.message && (
         <div
-          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center max-w-md min-w-[200px] h-20 px-4 py-3 rounded-lg text-white shadow-lg break-words ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >

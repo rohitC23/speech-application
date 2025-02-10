@@ -11,7 +11,7 @@ function ScoreBoard() {
     const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
     const navigationMap = {
         "Correct the Sentences": '/app',
-        "Correct the Tenses": '/level-tenses',
+        "Convert the Tenses": '/level-tenses',
         "Listening Comprehension": '/level-listen',
         "Reading Comprehension": '/level-para',
         "Image Description": '/image',
@@ -46,7 +46,7 @@ function ScoreBoard() {
           const nextLevel = levelsList[currentLevelIndex + 1];
           const navigationMap = {
             "Correct the Sentences": '/app',
-            "Correct the Tenses": '/level-tenses',
+            "Convert the Tenses": '/level-tenses',
             "Listening Comprehension": '/level-listen',
             "Reading Comprehension": '/level-para',
             "Image Description": '/image',
@@ -65,7 +65,7 @@ function ScoreBoard() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen  bg-gray-100 p-4 pt-20">
-            <Header showNav={true} hiddenNavItems={['/Home']}/>
+            <Header showNav={true} />
             <div className="flex items-center space-x-4 mb-10">
                 {levelsList.map((level, index) => {
                 // Get the corresponding route from the navigationMap
