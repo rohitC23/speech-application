@@ -14,6 +14,10 @@ function Listener() {
   const [audioFile, setAudioFile] = useState(null); // State to store the audio file URL and name
   const [errorOccurred, setErrorOccurred] = useState(false); // State to track API errors
   const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
+
+  const [speed, setSpeed] = useState(1);
+
+
   const navigationMap = {
     "Correct the Sentences": '/app',
     "Convert the Tenses": '/level-tenses',
@@ -101,40 +105,37 @@ function Listener() {
           return (
             <React.Fragment key={index}>
               <div
-                style={isActive ? { borderColor: '#586FCC' } : { }}
-                className={`${
-                  isActive ? 'border-500' : 'border-gray-500'
-                } border-t-4 flex items-center space-x-2 w-96`}
-                >
-              <div>
-                <img src={isActive ? active : inactive} alt="Prompt"/>
-              </div>
-              {/* <div
+                style={isActive ? { borderColor: '#586FCC' } : {}}
+                className={`${isActive ? 'border-500' : 'border-gray-500'
+                  } border-t-4 flex items-center space-x-2 w-96`}
+              >
+                <div>
+                  <img src={isActive ? active : inactive} alt="Prompt" />
+                </div>
+                {/* <div
                 className={`${
                   isActive ? 'bg-blue-500' : 'bg-gray-400'
                 } text-white rounded-full w-8 h-8 flex items-center justify-center`}
               >
                 {index + 1}
               </div> */}
-              {route ? (
-                <div
-                  style={isActive ? { color: '#586FCC' } : { }}
-                  className={`${
-                    isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
-                  }`}
-                >
-                  {level}
-                </div>
-              ) : (
-                <div
-                  style={isActive ? { color: '#586FCC' } : { }}
-                  className={`${
-                    isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
-                  }`}
-                >
-                  {level}
-                </div>
-              )}
+                {route ? (
+                  <div
+                    style={isActive ? { color: '#586FCC' } : {}}
+                    className={`${isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                      }`}
+                  >
+                    {level}
+                  </div>
+                ) : (
+                  <div
+                    style={isActive ? { color: '#586FCC' } : {}}
+                    className={`${isActive ? 'text-500 w-auto' : 'text-gray-500 w-auto'
+                      }`}
+                  >
+                    {level}
+                  </div>
+                )}
               </div>
             </React.Fragment>
           );
@@ -144,9 +145,9 @@ function Listener() {
 
       <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[1240px] h-auto flex flex-col justify-content-left">
         <h2 className="text-2xl font-bold mb-6">Listening Comprehension</h2>
-        
+
         {!audioFile && (
-          <div> 
+          <div>
             <p className="text-md mb-6">Prepare yourself to listen to an audio clip and answer the related questions.</p>
             <p className="text-lg mb-2 font-bold">Instructions</p>
             <ul className="list-disc list-inside mb-6">
@@ -170,17 +171,33 @@ function Listener() {
         ) : (
           <>
             <p className="text-lg font-semibold text-blue-500">
-              {loading &&( 'Preparing your Listening Comprehension exercise... Hang tight!')}
+              {loading && ('Preparing your Listening Comprehension exercise... Hang tight!')}
             </p>
 
             {audioFile && (
               <div className="mb-6 w-full">
+                
                 <p className="text-md mb-4 text-center">Listen to the audio carefully then answer the questions</p>
-                {/* <audio controls src={audioFile.url} className="w-full">
-                  Your browser does not support the audio element.
-                </audio> */}
-                <CustomAudioPlayer audioSrc={audioFile.url}></CustomAudioPlayer>
+               
+                {/* Pass speed to CustomAudioPlayer */}
+                 <div className='flex justify-center items-center'>
+                    <select
+                  style={{ margin: '10px' }}
+                  id="speedSelect"
+                  className="px-2 py-1 border rounded"
+                  //  value={speed} 
+                  onChange={(e) => setSpeed(Number(e.target.value))}
+                >
+                  <option value="0.5">0.5x</option>
+                  <option value="1.0">1.0x</option>
+                  <option value="1.5">1.5x</option>
+                  <option value="2.0">2.0x</option>
+                </select>
+
+                 
+                <CustomAudioPlayer audioSrc={audioFile.url} playbackSpeed={speed} />
               </div>
+               </div>
             )}
 
             {/* Show questions if no error occurred */}
@@ -200,9 +217,8 @@ function Listener() {
 
       {popup.message && (
         <div
-          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
-            popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-          }`}
+          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`}
         >
           {popup.message}
         </div>
