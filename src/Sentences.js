@@ -102,6 +102,10 @@ function Sentences({ audioFile, question }) {
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [popup, setPopup] = useState({ message: '', type: '' });
   const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
+
+   const [speed, setSpeed] = useState(1);
+
+
   useEffect(() => {
     const audio = audioRef.current;
     const updateCurrentTime = () => {
@@ -339,6 +343,7 @@ function Sentences({ audioFile, question }) {
     if (audioRef.current) {
       setIsPlaying(true);
       setIsPlayed(true);
+      audioRef.current.playbackRate = speed;
       audioRef.current.play();
     }
   };
@@ -366,6 +371,9 @@ function Sentences({ audioFile, question }) {
             Speak or type the correct sentence
           </h2>
           <p className="text-md mb-6">NOTE: {question}</p>
+
+          
+
           { !isPlaying && <img
             src={audioPlay}
             onClick={playAudio}
@@ -394,9 +402,27 @@ function Sentences({ audioFile, question }) {
             isPlaying && !isRecording && (<div>
               <div className="text-md mb-4 text-center">
                 <div className='flex'>
+
+                   <div className='flex justify-center items-center'>
+                    <select
+                  style={{ margin: '10px' }}
+                  id="speedSelect"
+                  className="px-2 py-1 border rounded"
+                  //  value={speed} 
+                  onChange={(e) => setSpeed(Number(e.target.value))}
+                >
+                  <option value="0.5">0.5x</option>
+                  <option value="1.0">1.0x</option>
+                  <option value="1.5">1.5x</option>
+                  <option value="2.0">2.0x</option>
+                </select>
+
+                  </div>
+
                   <div className='my-9' style={{ width: '35px' }}>
                     {formatTime(currentTime)}
                   </div>
+                  
                   <div className='flex columns-10 text-center'>
                     
                     <div className='px-4'>{ isPlayed ? <img src={audioWavegif} style={{ height: '100px', width: '175px' }} /> : <img src={audioWave} style={{ height: '100px', width: '175px' }} /> }</div>
