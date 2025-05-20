@@ -104,6 +104,10 @@ function audioBufferToWav(buffer) {
 
 
 function Image() {
+
+  const [imageName, setImageName] = useState("");
+
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [isStopped, setIsStopped] = useState(false);
@@ -349,6 +353,10 @@ function Image() {
     // Choose a random image on component mount
     const randomImage = images[Math.floor(Math.random() * images.length)];
     setSelectedImage(randomImage);
+      setImageName(randomImage.name); // Store the image name
+    console.log(imageName, "image selected")
+
+    // console.log(images, "imageeee")
   }, []);
 
   const formatTime = (time) => {
@@ -416,6 +424,7 @@ function Image() {
         {!isStopped && (
           <>
             <h2 className="text-xl font-bold mb-4">Describe the image in your own words</h2>
+            <p>Describe about {imageName}</p>
             <img src={selectedImage} alt="Prompt" className="mb-6 w-[550px] h-[350px] mx-auto rounded-lg" />
 
             {/* {isRecording && (
