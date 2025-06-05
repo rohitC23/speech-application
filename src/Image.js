@@ -119,13 +119,15 @@ function Image() {
   const [popup, setPopup] = useState({ message: '', type: '' });
   const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
   const navigate = useNavigate();
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
-    "Correct the Tenses": '/level-tenses',
+    "Convert the Tenses": '/level-tenses',
     "Listening Comprehension": '/level-listen',
     "Reading Comprehension": '/level-para',
     "Image Description": '/image',
   };
+
   const startRecording = async () => {
     const now = new Date();
     let currentTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -159,7 +161,7 @@ function Image() {
         formData.append('image_filename', imageFilename);
         formData.append('audio', wavBlob, 'recording.wav');
 
-        const response = await fetch('http://127.0.0.1:8000/image_evaluation', {
+        const response = await fetch(`${aiEndpoint}/image_evaluation`, {
           method: 'POST',
           body: formData,
         });
@@ -178,8 +180,8 @@ function Image() {
       } catch (error) {
         setErrorOccurred(true);
         setIsLoading(false);
-        setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
-        setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+        //setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
+        //setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
   };
@@ -190,8 +192,23 @@ function Image() {
     setIsStopped(true);
   };
 
+  const handleMicrophonePermission = async () => {
+    try {
+      // Request microphone access
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // If permission is granted, start recording
+      startRecording();
+    } catch (error) {
+      setPopup({ message: 'Allow microphone access to start recording.', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+    }
+  };
+
   const handleTryAgain = () => {
-    navigate('/home');
+    // navigate('/image');
+    setIsRecording(false);
+    setIsStopped(false);
+    setErrorOccurred(false);
     localStorage.setItem('score', []);
   };
 
@@ -232,7 +249,7 @@ function Image() {
     };
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/user/insert/score', {
+      const response = await fetch(`${aiEndpoint}/user/insert/score`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -310,7 +327,7 @@ function Image() {
       const nextLevel = levelsList[currentLevelIndex + 1];
       const navigationMap = {
         "Correct the Sentences": '/app',
-        "Correct the Tenses": '/level-tenses',
+        "Convert the Tenses": '/level-tenses',
         "Listening Comprehension": '/level-listen',
         "Reading Comprehension": '/level-para',
         "Image Description": '/image',
@@ -343,7 +360,7 @@ function Image() {
   
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/Home', '/bonus']}/>
+      <Header showNav={true} />
 
       <div className="flex items-center space-x-4 mb-10">
   {levelsList.map((level, index) => {
@@ -429,7 +446,7 @@ function Image() {
             {
               !isRecording && 
                 <div className='pt-3 cursor-pointer'>
-                  <img onClick={startRecording} src={recordAudio} />
+                  <img onClick={handleMicrophonePermission} src={recordAudio} />
                 </div>
             }
 
@@ -518,19 +535,19 @@ function Image() {
 
     {errorOccurred && (
       <div className='flex flex-col items-center'>
-        <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
+        <p className="text-lg font-semibold text-red-500 mb-8">No audio captured Please 'Try Again'</p>
         <button
           onClick={handleTryAgain}
           className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
         >
-          Back to Home
+          Try Again
         </button>
       </div>
     )}
 
       {popup.message && (
         <div
-          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center max-w-md min-w-[200px] h-20 px-4 py-3 rounded-lg text-white shadow-lg break-words ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >

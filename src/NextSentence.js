@@ -7,13 +7,13 @@ function NextSentence({ setIsHidden, id }) {
   const [loading, setLoading] = useState(false);
   const [question, setQuestion] = useState(null);
   const user_id = localStorage.getItem('user_id');
-
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const handleNextClick = async () => {
     setLoading(true);
     try {      
   
         // API call to get the audio file
-        const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
+        const audioResponse = await fetch(`${aiEndpoint}/generate_tenses`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -37,7 +37,7 @@ function NextSentence({ setIsHidden, id }) {
         }
 
         // API call to get the question
-        const questionResponse = await fetch('http://127.0.0.1:8000/generate_question', {
+        const questionResponse = await fetch(`${aiEndpoint}/generate_question`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

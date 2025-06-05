@@ -12,7 +12,7 @@ function Final() {
     const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
     const navigationMap = {
         "Correct the Sentences": '/app',
-        "Correct the Tenses": '/level-tenses',
+        "Convert the Tenses": '/level-tenses',
         "Listening Comprehension": '/level-listen',
         "Reading Comprehension": '/level-para',
         "Image Description": '/image',
@@ -43,14 +43,14 @@ function Final() {
     const handleContinue = async () => {
         localStorage.setItem('score', []);
         const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
-        const currentLevelIndex = levelsList.indexOf('Correct the Tenses');
+        const currentLevelIndex = levelsList.indexOf('Convert the Tenses');
       
         if (currentLevelIndex !== -1 && currentLevelIndex < levelsList.length - 1) {
           // Navigate to the next item in the list
           const nextLevel = levelsList[currentLevelIndex + 1];
           const navigationMap = {
             "Correct the Sentences": '/app',
-            "Correct the Tenses": '/level-tenses',
+            "Convert the Tenses": '/level-tenses',
             "Listening Comprehension": '/level-listen',
             "Reading Comprehension": '/level-para',
             "Image Description": '/image',
@@ -69,12 +69,12 @@ function Final() {
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20 relative">
-            <Header showNav={true} hiddenNavItems={['/Home']}/>
+            <Header showNav={true}/>
             <div className="flex items-center space-x-4 mb-10">
             {levelsList.map((level, index) => {
                 // Get the corresponding route from the navigationMap
                 const route = navigationMap[level];
-                const isActive = level === "Correct the Tenses"; // Mark active based on string
+                const isActive = level === "Convert the Tenses"; // Mark active based on string
 
                 return (
                 <React.Fragment key={index}>

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import talkImage from 'url:./assets/talk.png';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import send from 'url:./assets/Button.png';
 import audioPlay from 'url:./assets/Buttons (1).png';
 import recordAudio from 'url:./assets/Button (1).png';
@@ -9,6 +10,8 @@ import audioWavegif from 'url:./assets/sound-unscreen.gif';
 import NextSentence from './NextSentence';
 import Finish from './Finish';
 import AudioPlay from './audioPlay';
+import { Play, Pause, ChevronDown } from "lucide-react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
 // Global ID variable
 let globalId = 1; // Initialize global ID
@@ -108,35 +111,43 @@ function NewSentence({ audioFile, question }) {
   const [audioTextInput, setAudioTextInput] = useState('');
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [popup, setPopup] = useState({ message: '', type: '' });
-
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
+  
   useEffect(() => {
+  const audio = audioRef.current;
+  const updateCurrentTime = () => {
+    setCurrentTime(audio.currentTime);
+  };
+
+  if (audio) {
+    audio.addEventListener('timeupdate', updateCurrentTime);
+    audio.playbackRate = playbackSpeed; // Set initial speed
+  }
+
+  if (audio && audioFile) {
+    audio.src = audioFile.url;
+    setAudioURL('');
+    setApiResponse(null);
+  }
+
+  return () => {
+    if (audio) {
+      audio.removeEventListener('timeupdate', updateCurrentTime);
+    }
+  };
+}, [audioFile, playbackSpeed]);
+
+  const reloadAudio = () => {
     const audio = audioRef.current;
     const updateCurrentTime = () => {
       setCurrentTime(audio.currentTime);
     };
-
     if (audio) {
       audio.addEventListener('timeupdate', updateCurrentTime);
+      audio.load();
     }
-
-    if (audio && audioFile) {
-      audio.src = audioFile.url;
-      // const playPromise = audioElement.play();
-      // if (playPromise !== undefined) {
-      //   playPromise.catch((error) =>
-      //     console.log('Audio playback prevented or failed:', error)
-      //   );
-      // }
-      setAudioURL('');
-      setApiResponse(null);
-    }
-
-    return () => {
-      if (audio) {
-        audio.removeEventListener('timeupdate', updateCurrentTime);
-      }
-    };
-  }, []);
+  }
 
   const startRecording = async () => {
     setIsRecording(true);
@@ -156,7 +167,7 @@ function NewSentence({ audioFile, question }) {
       setAudioBlob(audioBlob);
 
       try {
-        setErrorOccurred(false);
+        // setErrorOccurred(false);
         setIsLoading(true);
         const wavBlob = await convertToWav(audioBlob);
         const audioUrl = URL.createObjectURL(wavBlob);
@@ -171,7 +182,7 @@ function NewSentence({ audioFile, question }) {
         formData.append('user_id',user_id);
         formData.append('file', wavBlob, 'recording.wav');
 
-        const response = await fetch('https://communication.theknowhub.com/api/evaluate_tense', {
+        const response = await fetch(`${aiEndpoint}/evaluate_tense`, {
           method: 'POST',
           body: formData,
         });
@@ -215,11 +226,25 @@ function NewSentence({ audioFile, question }) {
       } catch (error) {
         setIsLoading(false);
         console.error('Error uploading audio file:', error);
-        setPopup({ message: 'Failed to evaluate the audio.', type: 'error' });
-        setErrorOccurred(true);
+        setPopup({ message: 'No Audio captured. Please try again', type: 'error' });
+        // setErrorOccurred(true);
+        setIsClicked(false);
+        setIsStopped(false);
         setTimeout(() => setPopup({ message: '', type: '' }), 3000);
       }
     };
+  };
+
+  const handleMicrophonePermission = async () => {
+    try {
+      // Request microphone access
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // If permission is granted, start recording
+      startRecording();
+    } catch (error) {
+      setPopup({ message: 'Allow microphone access to start recording.', type: 'error' });
+      setTimeout(() => setPopup({ message: '', type: '' }), 3000);
+    }
   };
 
   const handleSendText = async () => {
@@ -232,7 +257,7 @@ function NewSentence({ audioFile, question }) {
     setIsClicked(true);
 
     try {
-      setErrorOccurred(false);
+      // setErrorOccurred(false);
       setIsLoading(true);
 
       if(globalId === 5){
@@ -240,7 +265,7 @@ function NewSentence({ audioFile, question }) {
       }
 
       const response = await fetch(
-        'https://communication.theknowhub.com/api/evaluate_tense_answer',
+        `${aiEndpoint}/evaluate_tense_answer`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -303,7 +328,9 @@ function NewSentence({ audioFile, question }) {
       console.error('Error sending text:', error);
       setIsLoading(false);
       setPopup({ message: 'Failed to evaluate the text.', type: 'error' });
-      setErrorOccurred(true);
+      // setErrorOccurred(true);
+      setIsClicked(false);
+      setIsStopped(false);
       setTimeout(() => setPopup({ message: '', type: '' }), 3000);
     }
   };
@@ -344,8 +371,10 @@ function NewSentence({ audioFile, question }) {
 
   const playAudio = () => {
     if (audioRef.current) {
+      reloadAudio();
       setIsPlaying(true);
       setIsPlayed(true);
+      audioRef.current.playbackRate = playbackSpeed;
       audioRef.current.play();
     }
   };
@@ -407,7 +436,7 @@ function NewSentence({ audioFile, question }) {
                   <div className='flex columns-10 text-center'>
                     
                     <div className='px-4'>{ isPlayed ? <img src={audioWavegif} style={{ height: '100px', width: '175px' }} /> : <img src={audioWave} style={{ height: '100px', width: '175px' }} /> }</div>
-                    <div className='pt-3 cursor-pointer'><img onClick={startRecording} src={recordAudio} /></div>
+                    <div className='pt-3 cursor-pointer'><img onClick={handleMicrophonePermission} src={recordAudio} /></div>
                   </div>
                   {/* <div>
                     { isRecording && (<div>
@@ -416,13 +445,45 @@ function NewSentence({ audioFile, question }) {
                     
                   </div> */}
                 </div>
-                <a
-                  style={{ 
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    color: '#586FCC', 
-                  }}
-                  onClick={playAudio}>Replay Again</a>
+                <div className="flex items-center gap-4 justify-center mt-2">
+                  <a
+                    style={{
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      color: "#586FCC",
+                    }}
+                    onClick={playAudio}
+                  >
+                    Replay Again
+                  </a>
+
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button
+                        className="inline-flex items-center px-3 py-1 bg-gray-200 text-sm font-medium text-gray-800 rounded-md hover:bg-gray-300 transition"
+                      >
+                        {playbackSpeed}x <ChevronDown className="ml-1 w-4 h-4" />
+                      </button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content
+                      className="bg-white shadow-lg rounded-md py-1"
+                      sideOffset={5}
+                      style={{ height: '90px', overflowY: 'auto', overflowX: 'hidden' }}
+                    >
+                      {[0.5, 1.0, 1.25, 1.5, 2.0].map((speed) => (
+                        <DropdownMenu.Item
+                          key={speed}
+                          onSelect={() => setPlaybackSpeed(speed)}
+                          className={`px-4 py-1 text-sm cursor-pointer hover:bg-gray-100 ${
+                            speed === playbackSpeed ? "font-semibold text-blue-600" : ""
+                          }`}
+                        >
+                          {speed}x
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                </div>
               </div>
             </div>)
           }
@@ -479,14 +540,17 @@ function NewSentence({ audioFile, question }) {
           <div className="w-full">
           <p className="text-md mb-4 text-center">or</p>
             <div className="relative flex items-center">
-              <input
-                type="text"
-                placeholder="Enter your answer here"
-                style={{ borderLeft: 'none', borderRight: 'none'}}
-                className="w-full border border-gray-300 bg-gray-100 py-4 px-4 text-gray-700 focus:outline-none"
-                value={audioTextInput}
-                onChange={(e) => setAudioTextInput(e.target.value)}
-              />
+            <input
+              type="text"
+              placeholder="Enter your answer here"
+              style={{ borderLeft: 'none', borderRight: 'none' }}
+              className={`w-full border border-gray-300 bg-gray-100 py-4 px-4 text-gray-700 focus:outline-none ${
+                isPlaying ? "" : "opacity-50 cursor-not-allowed"
+              }`}
+              value={audioTextInput}
+              onChange={(e) => setAudioTextInput(e.target.value)}
+              disabled={!isPlaying} // Disable input until audio starts playing
+            />
               {/* <button
                 onClick={handleSendText}
                 className="absolute right-2 bg-blue-500 text-white rounded-full p-2 hover:bg-blue-600 focus:outline-none"
@@ -518,18 +582,31 @@ function NewSentence({ audioFile, question }) {
 
       {!isHidden && apiResponse && (
         <div className="mt-6 w-full">
+          {/* Display other key-value pairs side by side */}
           <div className="grid grid-cols-2 gap-4">
-            {Object.entries(apiResponse).map(([key, value], index) => (
+            {Object.entries(apiResponse).map(([key, value], index) =>
+              !key.includes('Reason') ? (
+                <div key={index} className="p-4 bg-gray-100 rounded-lg shadow-md">
+                  <h3 className="font-bold">{key}:</h3>
+                  <p className="text-gray-700">{value}</p>
+                </div>
+              ) : null
+            )}
+          </div>
+          {/* Display the Reason key-value pair in a single row */}
+          {Object.entries(apiResponse).map(([key, value]) =>
+            key.includes('Reason') ? (
               <div
-                key={index}
-                className="p-4 bg-gray-100 rounded-lg shadow-md"
+                key={key}
+                className="p-4 bg-gray-100 rounded-lg shadow-md border-2 border-blue-500 mt-8"
               >
                 <h3 className="font-bold">{key}:</h3>
-                <p className="text-gray-700">{value}</p>
+                <p className="text-gray-700 max-h-[120px] overflow-y-auto">{value}</p>
               </div>
-            ))}
-          </div>
+            ) : null
+          )}
         </div>
+      
       )}
 
       {/* Emoji animation */}
@@ -563,18 +640,32 @@ function NewSentence({ audioFile, question }) {
       </style>
 
       {!apiResponse && isStopped && isLoading && (
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+        <div>
+          <DotLottieReact
+            src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+            loop
+            autoplay
+            style={{ width: '500px', height: '500px' }} // Customize size
+          />
+        </div>
+    </div>
       )}
 
       {!apiResponse && isClicked && isLoading &&(
-        <p className="text-lg font-semibold text-blue-500 mt-4">
-          Evaluating your answer...
-        </p>
+        <div className='bg-gray-100 w-[1000px] min-h-[560px] flex justify-center items-center'>
+            <div>
+              <DotLottieReact
+                src="https://lottie.host/e5a9c9a7-01e3-4d75-ad9c-53e4ead7ab7c/ztelOlO7sv.lottie"
+                loop
+                autoplay
+                style={{ width: '500px', height: '500px' }} // Customize size
+              />
+            </div>
+        </div>
       )}
 
-    {errorOccurred && (
+    {/* {errorOccurred && (
       <div className='flex flex-col items-center'>
         <p className="text-lg font-semibold text-red-500 mb-8">Oops! There seems to be an issue with the server. Please click on 'Try Again'</p>
         <button
@@ -584,7 +675,7 @@ function NewSentence({ audioFile, question }) {
           Try Again
         </button>
       </div>
-    )}
+    )} */}
 
       {/* Conditionally render Submit component when globalId reaches 5 */}
       {apiResponse && (
@@ -601,7 +692,7 @@ function NewSentence({ audioFile, question }) {
 
       {popup.message && (
         <div
-          className={`fixed top-20 left-3/4 flex items-center justify-center w-80 h-20 m-auto rounded-lg text-white shadow-lg ${
+          className={`fixed top-20 left-3/4 flex items-center justify-center max-w-md min-w-[200px] h-20 px-4 py-3 rounded-lg text-white shadow-lg break-words ${
             popup.type === 'success' ? 'bg-green-500' : 'bg-red-500'
           }`}
         >

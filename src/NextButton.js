@@ -7,11 +7,11 @@ function NextButton({ setIsHidden, id }) {
   const [loading, setLoading] = useState(false);
   const user_id = localStorage.getItem('user_id');
   const [popup, setPopup] = useState({ message: '', type: '' });
-
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const handleNextClick = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://127.0.0.1:8000/generate_sentences', {
+      const response = await fetch(`${aiEndpoint}/generate_sentences`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

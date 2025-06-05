@@ -3,7 +3,6 @@ import Header from './Header';
 import Paragraph from './Paragraph';
 import active from 'url:./assets/Vector.png';
 import inactive from 'url:./assets/Icon.png';
-import { Link } from 'react-router-dom';
 
 function Generator() {
   const [loading, setLoading] = useState(false); // Initially not loading
@@ -13,9 +12,10 @@ function Generator() {
   const [isClicked, setIsClicked] = useState(false);
   const [hasError, setHasError] = useState(false); // State to track if there was an error fetching data
   const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
-    "Correct the Tenses": '/level-tenses',
+    "Convert the Tenses": '/level-tenses',
     "Listening Comprehension": '/level-listen',
     "Reading Comprehension": '/level-para',
     "Image Description": '/image',
@@ -42,7 +42,7 @@ function Generator() {
       const fetchData = async () => {
         const user_id = localStorage.getItem('user_id'); // Retrieve the user ID from localStorage
         try {
-          const response = await fetch('http://127.0.0.1:8000/reading_comprehension', {
+          const response = await fetch(`${aiEndpoint}/reading_comprehension`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ function Generator() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/bonus']}/>
+      <Header showNav={true} />
 
       <div className="flex items-center space-x-4 mb-10">
         {levelsList.map((level, index) => {
@@ -140,7 +140,7 @@ function Generator() {
         })}
       </div>
 
-      <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[900px] h-auto flex flex-col justify-center items-center">
+      <div className="bg-gray-100 rounded-lg p-8 w-full max-w-[1240px] h-auto flex flex-col justify-content-left">
         <h2 className="text-2xl font-bold mb-4">Reading Comprehension</h2>
         {!paragraph && questions.length === 0 && (
           <div> 
@@ -160,7 +160,7 @@ function Generator() {
         {!isClicked && (
           <button
             onClick={handleClick}
-            className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg"
+            className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg text-lg mx-auto"
           >
             Start
           </button>

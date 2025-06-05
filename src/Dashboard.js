@@ -9,10 +9,11 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const userName = localStorage.getItem('user_id');
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const fetchScores = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://127.0.0.1:8000/user/get/score', {
+      const response = await fetch(`${aiEndpoint}/user/get/score`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

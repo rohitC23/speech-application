@@ -13,9 +13,10 @@ function NextLevel() {
   const [popup, setPopup] = useState({ message: '', type: '' }); // State for popup message
   const user_id = localStorage.getItem('user_id');
   const levelsList = JSON.parse(localStorage.getItem('levelsList')) || [];
+  const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
   const navigationMap = {
     "Correct the Sentences": '/app',
-    "Correct the Tenses": '/level-tenses',
+    "Convert the Tenses": '/level-tenses',
     "Listening Comprehension": '/level-listen',
     "Reading Comprehension": '/level-para',
     "Image Description": '/image',
@@ -23,7 +24,7 @@ function NextLevel() {
 
   const handleStartClick = async () => {
     if (!difficultyLevel) {
-      setPopup({ message: 'Please select a difficulty level!', type: 'error' });
+      setPopup({ message: 'Please select a level!', type: 'error' });
       setTimeout(() => setPopup({ message: '', type: '' }), 3000); // Clear popup after 3 seconds
       return;
     }
@@ -39,7 +40,7 @@ function NextLevel() {
 
     try {
       // Fetch audio file
-      const audioResponse = await fetch('http://127.0.0.1:8000/generate_tenses', {
+      const audioResponse = await fetch(`${aiEndpoint}/generate_tenses`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -63,7 +64,7 @@ function NextLevel() {
       }
 
       // Fetch question
-      const questionResponse = await fetch('http://127.0.0.1:8000/generate_question', {
+      const questionResponse = await fetch(`${aiEndpoint}/generate_question`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,12 +89,12 @@ function NextLevel() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4 pt-20">
-      <Header showNav={true} hiddenNavItems={['/Home']}/>
+      <Header showNav={true} />
       <div className="flex items-center space-x-4 mb-10">
         {levelsList.map((level, index) => {
           // Get the corresponding route from the navigationMap
           const route = navigationMap[level];
-          const isActive = level === "Correct the Tenses"; // Mark active based on string
+          const isActive = level === "Convert the Tenses"; // Mark active based on string
 
           return (
             <React.Fragment key={index}>
