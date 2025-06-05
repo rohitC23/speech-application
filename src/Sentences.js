@@ -9,6 +9,9 @@ import audioWave from 'url:./assets/sound__1_-0021-removebg-preview.png';
 import audioWavegif from 'url:./assets/sound-unscreen.gif';
 import NextSentence from './NextSentence';
 import AudioPlay from './audioPlay';
+import { Play, Pause, ChevronDown } from "lucide-react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+
 
 function convertToWav(blob) {
   return new Promise((resolve, reject) => {
@@ -102,34 +105,42 @@ function Sentences({ audioFile, question }) {
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [popup, setPopup] = useState({ message: '', type: '' });
   const aiEndpoint = process.env.REACT_APP_AI_ENDPOINT;
+  const [playbackSpeed, setPlaybackSpeed] = useState(1.0);
+
   useEffect(() => {
     const audio = audioRef.current;
     const updateCurrentTime = () => {
       setCurrentTime(audio.currentTime);
     };
-
+  
     if (audio) {
       audio.addEventListener('timeupdate', updateCurrentTime);
+      audio.playbackRate = playbackSpeed; // Set initial speed
     }
-
+  
     if (audio && audioFile) {
       audio.src = audioFile.url;
-      // const playPromise = audioElement.play();
-      // if (playPromise !== undefined) {
-      //   playPromise.catch((error) =>
-      //     console.log('Audio playback prevented or failed:', error)
-      //   );
-      // }
       setAudioURL('');
       setApiResponse(null);
     }
-
+  
     return () => {
       if (audio) {
         audio.removeEventListener('timeupdate', updateCurrentTime);
       }
     };
-  }, []);
+  }, [audioFile, playbackSpeed]);
+
+  const reloadAudio = () => {
+    const audio = audioRef.current;
+    const updateCurrentTime = () => {
+      setCurrentTime(audio.currentTime);
+    };
+    if (audio) {
+      audio.addEventListener('timeupdate', updateCurrentTime);
+      audio.load();
+    }
+  }
 
   const startRecording = async () => {
     setIsRecording(true);
@@ -335,13 +346,15 @@ function Sentences({ audioFile, question }) {
     window.location.reload();
   };
 
-  const playAudio = () => {
-    if (audioRef.current) {
-      setIsPlaying(true);
-      setIsPlayed(true);
-      audioRef.current.play();
-    }
-  };
+    const playAudio = () => {
+  if (audioRef.current) {
+    reloadAudio();
+    setIsPlaying(true);
+    setIsPlayed(true);
+    audioRef.current.playbackRate = playbackSpeed;
+    audioRef.current.play();
+  }
+};
 
   const onAudioEnd = () => {
     if (audioRef.current) {
@@ -409,13 +422,45 @@ function Sentences({ audioFile, question }) {
                     
                   </div> */}
                 </div>
-                <a
-                  style={{ 
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    color: '#586FCC', 
-                  }}
-                  onClick={playAudio}>Replay Again</a>
+                <div className="flex items-center gap-4 justify-center mt-2">
+                  <a
+                    style={{
+                      cursor: "pointer",
+                      textDecoration: "underline",
+                      color: "#586FCC",
+                    }}
+                    onClick={playAudio}
+                  >
+                    Replay Again
+                  </a>
+
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button
+                        className="inline-flex items-center px-3 py-1 bg-gray-200 text-sm font-medium text-gray-800 rounded-md hover:bg-gray-300 transition"
+                      >
+                        {playbackSpeed}x <ChevronDown className="ml-1 w-4 h-4" />
+                      </button>
+                    </DropdownMenu.Trigger>
+                    <DropdownMenu.Content
+                      className="bg-white shadow-lg rounded-md py-1"
+                      sideOffset={5}
+                      style={{ height: '90px', overflowY: 'auto', overflowX: 'hidden' }}
+                    >
+                      {[0.5, 1.0, 1.25, 1.5, 2.0].map((speed) => (
+                        <DropdownMenu.Item
+                          key={speed}
+                          onSelect={() => setPlaybackSpeed(speed)}
+                          className={`px-4 py-1 text-sm cursor-pointer hover:bg-gray-100 ${
+                            speed === playbackSpeed ? "font-semibold text-blue-600" : ""
+                          }`}
+                        >
+                          {speed}x
+                        </DropdownMenu.Item>
+                      ))}
+                    </DropdownMenu.Content>
+                  </DropdownMenu.Root>
+                </div>
               </div>
             </div>)
           }
@@ -533,7 +578,7 @@ function Sentences({ audioFile, question }) {
                 className="p-4 bg-gray-100 rounded-lg shadow-md border-2 border-blue-500 mt-8"
               >
                 <h3 className="font-bold">{key}:</h3>
-                <p className="text-gray-700">{value}</p>
+                <p className="text-gray-700 max-h-[120px] overflow-y-auto">{value}</p>
               </div>
             ) : null
           )}
